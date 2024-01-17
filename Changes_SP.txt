@@ -1,0 +1,18 @@
+----------Changes--------------
+Implementation of rcoulomb/rvdw as flag in the mm.dat section
+
+operations/qmmm.py:
+    write_mdp need the flag from mm.dat file (done)
+    is called by 
+	make_gmx_inp	(done)
+	get_energy	--> already needs the mminfo
+	    make_opt_step
+	    perform_sp
+	    perform_scan
+
+readInput.py --> changed read_mmparams in mmparams class
+		 now mmparam.info:[0]=ff,[1]=rcoulomb,[2]=rvdw
+ 
+
+
+
