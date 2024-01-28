@@ -26,10 +26,51 @@ from gmx2qmmm._helper import _flatten
 from gmx2qmmm.pointcharges import sum_pcf_tm as make_p_sum
 
 def uvec(vec):
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        normalizing a vector \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        INPUT: \\
+        vec: 1d list or np.array
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        np.array -> normalized vector \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
     return np.array(vec) / np.linalg.norm(np.array(vec))
 
 def create_corr_charges(m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, m2_nolist):
-
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    Create and normalize a list of displacement charges. \\
+    --------------- \\
+    INPUT: \\
+    m1coordsq: float \\
+        \\
+    m2coordsqlist: list \\
+        List of coordinates for the second masses. \\
+    disp_vec: list or np.array \\
+        List of displacement vectors. \\
+    disp_charge_vec: list \\
+        List of displacement charges. \\
+    m2_nolist: list \\
+        List of lists specifying the number of m2 atoms for each m1. \\
+    --------------- \\
+    RETURN: \\
+    np.array \\
+        Normalized vector of displacement charges. \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
     corr_charge_list = []
     count = 0
     for i in range(0, len(m2_nolist)):
@@ -573,6 +614,21 @@ def generate_charge_shift_fieldsonly(pcf, m1list, qmcoords, m2list, jobname, bas
 
 
 def generate_charge_shift(syscmds):
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
     basedir = os.path.dirname(os.path.abspath(__file__))
     inp = syscmds[1]
     m1list = syscmds[2]
@@ -597,7 +653,7 @@ def generate_charge_shift(syscmds):
             make_p_sum.sum_pcf_tm_nofile(orgfield, element[0], element[1], element[2])
         )
 
-    m1coordsq = []
+    m1coordsq = []          # list of xyzq coordinates for m1 atoms AJ
     m2_nolist = []
     m2coordsqlist = []
     dispcharge = 0.1944  # for 0.023333333333 shifted charge on three M2 atoms; should work in any case unless distances become HUGE
