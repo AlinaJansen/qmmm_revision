@@ -424,24 +424,24 @@ def make_gmx_inp(
     nbradius = get_nbradius(gro)
     write_mdp(mdpname, nbradius, mminfo)
     update_gro_box(gro, groname, nbradius, logfile)
-    subprocess.call(
-        [
-            realprefix,
-            "grompp",
-            "-p",
-            str(qmmmtop),
-            "-c",
-            str(groname),
-            "-n",
-            str(ndxname),
-            "-f",
-            str(mdpname),
-            "-o",
-            str(tprname),
-            "-backup",
-            "no",
-        ]
-    )
+    # subprocess.call(
+    #     [
+    #         realprefix,
+    #         "grompp",
+    #         "-p",
+    #         str(qmmmtop),
+    #         "-c",
+    #         str(groname),
+    #         "-n",
+    #         str(ndxname),
+    #         "-f",
+    #         str(mdpname),
+    #         "-o",
+    #         str(tprname),
+    #         "-backup",
+    #         "no",
+    #     ]
+    # )
     subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
@@ -2013,7 +2013,7 @@ def get_energy(
         g16cmd = pathinfo[4]
         if not os.path.isfile(str(qmfile) + ".log"):
             logger(logfile, "Running G16 file.\n")
-            subprocess.call([g16cmd, str(qmfile)])
+            # subprocess.call([g16cmd, str(qmfile)])
             logname = qmfile[:-3]
             logname += "log"
             subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
@@ -2044,26 +2044,26 @@ def get_energy(
     outname = str(jobname + insert + ".out.gro")
     gmxlogname = str(jobname + insert + ".gmx.log")
     edrname = str(jobname + insert + ".edr")
-    subprocess.call(
-        [
-            realprefix,
-            "mdrun",
-            "-s",
-            mmfile,
-            "-o",
-            trrname,
-            "-c",
-            outname,
-            "-x",
-            xtcname,
-            "-g",
-            gmxlogname,
-            "-e",
-            edrname,
-            "-backup",
-            "no",
-        ]
-    )
+    # subprocess.call(
+    #     [
+    #         realprefix,
+    #         "mdrun",
+    #         "-s",
+    #         mmfile,
+    #         "-o",
+    #         trrname,
+    #         "-c",
+    #         outname,
+    #         "-x",
+    #         xtcname,
+    #         "-g",
+    #         gmxlogname,
+    #         "-e",
+    #         edrname,
+    #         "-backup",
+    #         "no",
+    #     ]
+    # )
     subprocess.call(["rm", outname])
 
     # get qm energy 

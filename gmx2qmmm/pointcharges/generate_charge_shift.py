@@ -26,24 +26,18 @@ from gmx2qmmm._helper import _flatten
 from gmx2qmmm.pointcharges import sum_pcf_tm as make_p_sum
 
 def uvec(vec):
-        '''
-        ------------------------------ \\
-        EFFECT: \\
-        normalizing a vector \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        INPUT: \\
-        vec: 1d list or np.array
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        RETURN: \\
-        np.array -> normalized vector \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        '''
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    normalizing a vector \\
+    --------------- \\
+    INPUT: \\
+    vec: 1d list or np.array
+    ------------------------------ \\
+    RETURN: \\
+    np.array -> normalized vector \\
+    --------------- \\
+    '''
     return np.array(vec) / np.linalg.norm(np.array(vec))
 
 def create_corr_charges(m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, m2_nolist):
@@ -68,8 +62,6 @@ def create_corr_charges(m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, m2_
     np.array \\
         Normalized vector of displacement charges. \\
     --------------- \\
-    NONE \\
-    ------------------------------ \\
     '''
     corr_charge_list = []
     count = 0
@@ -614,21 +606,21 @@ def generate_charge_shift_fieldsonly(pcf, m1list, qmcoords, m2list, jobname, bas
 
 
 def generate_charge_shift(syscmds):
-        '''
-        ------------------------------ \\
-        EFFECT: \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        INPUT: \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        RETURN: \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        '''
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
     basedir = os.path.dirname(os.path.abspath(__file__))
     inp = syscmds[1]
     m1list = syscmds[2]
