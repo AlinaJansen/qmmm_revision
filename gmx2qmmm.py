@@ -1,12 +1,12 @@
-import re
-import os
-import subprocess
-import sys
+# import re
+# import os
+# import subprocess
+# #import sys
 
-import numpy as np
-from gmx2qmmm._helper import _flatten, logger, stepper
-from gmx2qmmm.operations.qmmm_job import perform_sp, perform_opt, perform_nma, perform_scan, perform_opt_root
-from readInput import QMMMInputs
+# import numpy as np
+# from gmx2qmmm._helper import _flatten, logger, stepper
+# from gmx2qmmm.operations.qmmm_job import perform_sp, perform_opt, perform_nma, perform_scan, perform_opt_root
+# from readInput import QMMMInputs
 
 def userInputs():
     '''
