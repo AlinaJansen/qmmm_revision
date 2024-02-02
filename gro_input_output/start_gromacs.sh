@@ -11,7 +11,8 @@
 #SBATCH --job-name=cap_scan
 
 #Load modules and libs
-module load GROMACS
+module load GROMACS/2019-foss-2018b
+source /scratch/spetry/Gromacs_bin/bin/GMXRC
 export GMXLIB=/home/jansea92/GROLIB/top
 
 
