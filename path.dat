@@ -1,4 +1,4 @@
-gmxtop_path=C:/Users/Alina/GROLIB/top/
+gmxtop_path=/home/jansea92/GROLIB/top/
 gmxcmd=gmx
 gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
 g16cmd=g16

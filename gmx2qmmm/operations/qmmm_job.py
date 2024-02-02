@@ -541,24 +541,25 @@ def make_gmx_inp(qmmmInputs):
     nbradius = get_nbradius(gro)
     write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout)
     update_gro_box(gro, groname, nbradius, logfile)
-    subprocess.call(
-        [
-            prefix,
-            "grompp",
-            "-p",
-            str(qmmmtop),
-            "-c",
-            str(groname),
-            "-n",
-            str(ndxname),
-            "-f",
-            str(mdpname),
-            "-o",
-            str(tprname),
-            "-backup",
-            "no",
-        ]
-    )
+    # XXX
+    # subprocess.call(
+        # [
+        #     prefix,
+        #     "grompp",
+        #     "-p",
+        #     str(qmmmtop),
+        #     "-c",
+        #     str(groname),
+        #     "-n",
+        #     str(ndxname),
+        #     "-f",
+        #     str(mdpname),
+        #     "-o",
+        #     str(tprname),
+        #     "-backup",
+        #     "no",
+        # ]
+    # )
     subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
@@ -1050,11 +1051,11 @@ def run_g16(qmfile, qmmmInputs):
 
     if not os.path.isfile(str(qmfile) + ".log"):
         logger(logfile, "Running G16 file.\n")
-        subprocess.call([g16cmd, str(qmfile)])
+        # subprocess.call([g16cmd, str(qmfile)])
         logname = qmfile[:-3]
         logname += "log"
-        subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
-        subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
+        #subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
+        #subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
         logger(logfile, "G16 Done.\n")
     else:
         logger(
