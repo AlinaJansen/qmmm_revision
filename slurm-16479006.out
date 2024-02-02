@@ -1,0 +1,108 @@
+                       :-) GROMACS - gmx grompp, 2019 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, version 2019
+Executable:   /trinity/shared/easybuild/software/GROMACS/2019-foss-2018b/bin/gmx
+Data prefix:  /trinity/shared/easybuild/software/GROMACS/2019-foss-2018b
+Working dir:  /home/jansea92/qmmm_revision
+Command line:
+  gmx grompp -p testopt.qmmm.top -c testopt.boxlarge.g96 -n testopt.qmmm.top.ndx -f testopt.mdp -o testopt.tpr -backup no
+
+Ignoring obsolete mdp entry 'title'
+Ignoring obsolete mdp entry 'cpp'
+
+NOTE 1 [file testopt.mdp]:
+  The group cutoff scheme is deprecated since GROMACS 5.0 and will be
+  removed in a future release when all interaction forms are supported for
+  the verlet scheme. The verlet scheme already scales better, and it is
+  compatible with GPUs and other accelerators.
+
+
+NOTE 2 [file testopt.mdp]:
+  Setting nstcalcenergy (100) equal to nstenergy (1)
+
+
+NOTE 3 [file testopt.mdp]:
+  You are using a cut-off for VdW interactions with NVE, for good energy
+  conservation use vdwtype = Shift (possibly with DispCorr)
+
+
+NOTE 4 [file testopt.mdp]:
+  You are using a cut-off for electrostatics with NVE, for good energy
+  conservation use coulombtype = PME-Switch or Reaction-Field-zero
+
+Setting the LD random seed to 431991228
+Generated 2145 of the 2145 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2145 of the 2145 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'QMMM_model'
+
+NOTE 5 [file testopt.qmmm.top, line 219]:
+  System has non-zero total charge: -0.955900
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+NOTE 6 [file testopt.qmmm.top, line 219]:
+  The bond in molecule-type QMMM_model between atoms 17 OG and 18 HG has an
+  estimated oscillational period of 9.0e-03 ps, which is less than 10 times
+  the time step of 1.0e-03 ps.
+  Maybe you forgot to change the constraints mdp option.
+
+Number of degrees of freedom in T-Coupling group rest is 63.00
+
+NOTE 7 [file testopt.mdp]:
+  You are using a plain Coulomb cut-off, which might produce artifacts.
+  You might want to consider using PME electrostatics.
+
+
+
+There were 7 notes
+
+GROMACS reminds you: "And after some more talk we agreed that the wisdom of rats had been grossly overrated, being in fact no greater than that of men" (Joseph Conrad)
+
+This run will generate roughly 0 Mb of data
+
+== Epilog Slurmctld ==================================================
+
+Job ID: 16479006
+Cluster: curta
+User/Group: jansea92/root
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:01
+CPU Efficiency: 6.25% of 00:00:16 core-walltime
+Job Wall-clock time: 00:00:02
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 1000.00 MB (1000.00 MB/node)
+
+======================================================================
