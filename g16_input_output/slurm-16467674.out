@@ -1,0 +1,16 @@
+
+== Epilog Slurmctld ==================================================
+
+Job ID: 16467674
+Cluster: curta
+User/Group: jansea92/aggoetze
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:04
+CPU Efficiency: 7.14% of 00:00:56 core-walltime
+Job Wall-clock time: 00:00:07
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 1000.00 MB (1000.00 MB/node)
+
+======================================================================
