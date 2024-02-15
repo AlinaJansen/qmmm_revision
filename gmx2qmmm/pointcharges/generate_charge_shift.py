@@ -126,13 +126,14 @@ def write_disp_charges(m1, m2coordsqlist, disp_vec, dispcharge):
     return charge_list
 
 def make_new_field(m2coordsqlist,corr_charge_list):
-	new_field=[]
-	for element in m2coordsqlist:
-		for entry in element:
-			new_field.append(entry)
-	for element in corr_charge_list:
-		new_field.append(element)
-	return new_field
+    '''combine m2 and corr charges to a new list'''
+    new_field=[]
+    for element in m2coordsqlist:
+        for entry in element:
+            new_field.append(entry)
+    for element in corr_charge_list:
+        new_field.append(element)
+    return new_field
 
 def write_new_pcf(inp, out, m1line, m1, m2list, m2atoms, disp_vec, dispcharge, distrib_charge):
     with open(inp) as ifile:
@@ -216,6 +217,26 @@ def write_new_pcf(inp, out, m1line, m1, m2list, m2atoms, disp_vec, dispcharge, d
         ofile.close()
 
 def write_new_field_to_disk_listsonly(inp, ofilename, new_field, getlist, m2_nolist):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    write point charge fiel file
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    inp: list, list, xyzq for all atoms, 'QM' for qm atoms
+    ofilename: string, name for pcf file
+    new_field: 2d array, xyzq of new charges
+    getlist: list, m1 atoms
+    m2_nolist: list, m2 atoms
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    None
+    ------------------------------
+    '''
+
     ofile = open(ofilename, "w")
     count = 0
     m2list = np.array(m2_nolist).reshape(-1)
@@ -367,6 +388,7 @@ def get_m2vec(line, inp):
 
 
 def get_m2vec_fieldsonly(m2entry, pcf):
+    '''extract m2 xyzq from pcf'''
     m2coordsq = []
     for i in range(0, len(m2entry)):
         m2coordsq.append(pcf[int(m2entry[i] - 1)])
@@ -387,11 +409,32 @@ def make_droplist(inp, m1line, m2list):
 
 
 def generate_charge_shift_fieldsonly(pcf, m1list, qmcoords, m2list, jobname, basedir):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    create new pcf
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    pcf: list, xyzq for all atoms, 'QM' for qm atoms
+    m1list: list of m1 atom indices
+    qmcoords: list, xyzq for qm atoms
+    m2list: list of m2 atom indices
+    jobname: string, jobname
+    basedir: directory
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    None
+    ------------------------------
+    '''
 
     getlist = m1list
     orgfield = []
     qmlist = qmcoords
     target_sum = np.array([0.0, 0.0, 0.0])
+    # append m1 atoms xyzq to orgfield
     for i in range(0, len(getlist)):
         orgcoordsq = pcf[int(getlist[i]) - 1]
 
