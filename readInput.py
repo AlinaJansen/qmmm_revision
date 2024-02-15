@@ -782,6 +782,7 @@ def get_connlist(offset, molname, top):
     return connlist
 
 def read_conn_list_from_top(top, mollist, gmxtop_path):
+    '''read connection of atoms from topology'''
     count = 0
     connlist = []
     for element in mollist:

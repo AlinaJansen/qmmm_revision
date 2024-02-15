@@ -21,6 +21,22 @@ import sys
 import numpy as np
 
 def checkformol(molname, inp):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    function checks if the molecule (molname) is listed in the topology file
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    molname: string, name of molecule
+    inp: string, name of topology file
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    correct: -> bool
+    ------------------------------
+    '''
     with open(inp) as ifile:
         correct = False
         for line in ifile:
@@ -44,6 +60,22 @@ def checkformol(molname, inp):
     return correct
 
 def getincludelist(inp, gmxtop_path):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    looks for other topology files referred to in the original file and adds them to the list of topology files
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    inp: string, name of topology file
+    gmxtop_path: string, path to grolib
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    toplist: list of topology files
+    ------------------------------
+    '''
     toplist = []
     with open(inp) as ifile:
         for line in ifile:
@@ -67,7 +99,8 @@ def getincludelist(inp, gmxtop_path):
                 foundname = match.group(1)
                 check = os.path.isfile(foundname)
                 if not check:
-                    foundname = gmxtop_path + foundname
+                    qmmm_path = os.getcwd()
+                    foundname = qmmm_path + gmxtop_path + foundname
                     check = os.path.isfile(foundname)
                     if not check:
                         print("File " + foundname + " was not found. Maybe update the gmxpath variable in the script? Exiting.")
@@ -78,6 +111,33 @@ def getincludelist(inp, gmxtop_path):
     return toplist
 
 def readcharges(molvecentry, top, gmxtop_path):
+    '''
+    ------------------------------
+\\
+    EFFECT: \\
+    --------------- 
+\\
+    reads charges for all atoms in a molecule type
+\\
+    ------------------------------
+\\
+    INPUT: \\
+    --------------- 
+\\
+    molvecentry: list with molecule name and amount of this molecule
+    top: string, name of topology file
+    gmxtop_path: string, path to grolib
+    ------------------------------
+\\
+    RETURN: \\
+    --------------- 
+\\
+    finalvec: list of charges for every atom in this molecule types
+\\
+    ------------------------------
+\\
+    '''
+
     cvec = []
     curr_top = top
     molname = molvecentry[0]
@@ -85,12 +145,10 @@ def readcharges(molvecentry, top, gmxtop_path):
     found = checkformol(molname, top)
 
     if not found:
-
         toplist = getincludelist(top, gmxtop_path)
         for element in toplist:
             found = checkformol(molname, element)
             if found:
-
                 curr_top = element
                 break
     if not found:
@@ -145,6 +203,21 @@ def readcharges(molvecentry, top, gmxtop_path):
     return finalcvec
 
 def readg96(inp):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    reads coordinates of all atoms from a g96 file
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    inp: string, name of g96 file
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    coords: list of coordinates
+    ------------------------------
+    '''
     coords = []
     with open(inp) as ifile:
         count = 0
@@ -203,6 +276,22 @@ def readgeo(inp):
     return coords
 
 def readmols(top):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    reads list of molecules from the topology file
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    top: string, name of topology file
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    mollist: list of molecules and their amount in the system
+    ------------------------------
+    '''
+
     mollist = []
     with open(top) as ifile:
         found = False
@@ -230,6 +319,22 @@ def readmols(top):
     return mollist
 
 def read_numatoms(inp):
+    '''
+    ------------------------------
+    EFFECT: \\
+    --------------- 
+    reads and returns the number of atoms in the system
+    ------------------------------
+    INPUT: \\
+    --------------- 
+    inp: string, name of structure file
+    ------------------------------
+    RETURN: \\
+    --------------- 
+    int, number of atoms
+    ------------------------------
+    '''
+
     file_info = open(inp, 'r')
     filetype = inp[-3:]
     if filetype == 'g96':

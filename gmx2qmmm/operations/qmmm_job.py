@@ -541,7 +541,6 @@ def make_gmx_inp(qmmmInputs):
     nbradius = get_nbradius(gro)
     write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout)
     update_gro_box(gro, groname, nbradius, logfile)
-    # XXX
     # subprocess.call(
         # [
         #     prefix,
@@ -560,7 +559,7 @@ def make_gmx_inp(qmmmInputs):
         #     "no",
         # ]
     # )
-    subprocess.call(["rm", "mdout.mdp"])
+    # subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
 def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout):
@@ -1091,27 +1090,27 @@ def run_gmx(mmfile, qmmmInputs):
     outname = str(jobname + insert + ".out.gro")
     gmxlogname = str(jobname + insert + ".gmx.log")
     edrname = str(jobname + insert + ".edr")
-    subprocess.call(
-        [
-            prefix,
-            "mdrun",
-            "-s",
-            mmfile,
-            "-o",
-            trrname,
-            "-c",
-            outname,
-            "-x",
-            xtcname,
-            "-g",
-            gmxlogname,
-            "-e",
-            edrname,
-            "-backup",
-            "no",
-        ]
-    )
-    subprocess.call(["rm", outname])
+    # subprocess.call(
+        # [
+        #     prefix,
+        #     "mdrun",
+        #     "-s",
+        #     mmfile,
+        #     "-o",
+        #     trrname,
+        #     "-c",
+        #     outname,
+        #     "-x",
+        #     xtcname,
+        #     "-g",
+        #     gmxlogname,
+        #     "-e",
+        #     edrname,
+        #     "-backup",
+        #     "no",
+        # ]
+    # )
+    # subprocess.call(["rm", outname])
 
     return edrname
 
@@ -1411,22 +1410,23 @@ def get_mmenergy(edrname, qmmmInputs):
 
     mmenergy = 0.0
     logger(logfile, "Extracting MM energy.\n")
-    p = subprocess.Popen(
-        [
-            prefix,
-            "energy",
-            "-f",
-            edrname,
-            "-o",
-            str(edrname + ".xvg"),
-            "-backup",
-            "no",
-        ],
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    p.communicate(input=b"11\n\n")
+    # p = subprocess.Popen(
+    #     [
+    #         prefix,
+    #         "energy",
+    #         "-f",
+    #         edrname,
+    #         "-o",
+    #         str(edrname + ".xvg"),
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     stdout=subprocess.PIPE,
+    #     stdin=subprocess.PIPE,
+    #     stderr=subprocess.STDOUT,
+    # )
+    # p.communicate(input=b"11\n\n")
+    
     with open(str(edrname + ".xvg")) as ifile:
         for line in ifile:
             match = re.search(
@@ -1853,27 +1853,27 @@ def get_mmforces_au(qmmmInputs):
     trrname = str(jobname + insert + ".trr")
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
-    p = subprocess.Popen(
-        [
-            prefix,
-            "traj",
-            "-fp",
-            "-f",
-            trrname,
-            "-s",
-            tprname,
-            "-of",
-            xvgname,
-            "-xvg",
-            "none",
-            "-backup",
-            "no",
-        ],
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    p.communicate(input=b"0\n")
+    # p = subprocess.Popen(
+    #     [
+    #         prefix,
+    #         "traj",
+    #         "-fp",
+    #         "-f",
+    #         trrname,
+    #         "-s",
+    #         tprname,
+    #         "-of",
+    #         xvgname,
+    #         "-xvg",
+    #         "none",
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     stdout=subprocess.PIPE,
+    #     stdin=subprocess.PIPE,
+    #     stderr=subprocess.STDOUT,
+    # )
+    # p.communicate(input=b"0\n")
     with open(xvgname) as ifile:
         for line in ifile:
             forcelist = re.findall("\S+", line)
