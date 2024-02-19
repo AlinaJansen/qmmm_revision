@@ -32,7 +32,7 @@ def uvec(vec):
     normalizing a vector \\
     --------------- \\
     INPUT: \\
-    vec: 1d list or np.array
+    vec: np.array
     ------------------------------ \\
     RETURN: \\
     np.array -> normalized vector \\
@@ -48,7 +48,6 @@ def create_corr_charges(m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, m2_
     --------------- \\
     INPUT: \\
     m1coordsq: float \\
-        \\
     m2coordsqlist: list \\
         List of coordinates for the second masses. \\
     disp_vec: list or np.array \\
@@ -221,7 +220,7 @@ def write_new_field_to_disk_listsonly(inp, ofilename, new_field, getlist, m2_nol
     ------------------------------
     EFFECT: \\
     --------------- 
-    write point charge fiel file
+    write point charge field file
     ------------------------------
     INPUT: \\
     --------------- 
