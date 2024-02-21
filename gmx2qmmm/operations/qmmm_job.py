@@ -423,8 +423,8 @@ def make_g16_inp(qmmmInputs):
         oldchkfile = str(jobname + ".chk")
 
     with open(gaufile, "w") as ofile:
-        fullcoords = get_full_coords_angstrom(gro)
-        atoms = get_atoms(qmmmtop, logfile)
+        fullcoords = get_full_coords_angstrom(gro)  # seems unnecessary since we already have xyzq, maybe for 2nd opt? (AJ) XX
+        atoms = get_atoms(qmmmtop, logfile) # are we doing this every loop? dont they stay the same? (AJ)
         original_stdout = sys.stdout # Save a reference to the original standard output
         with open('top_info.txt', 'w') as f:
             sys.stdout = f # Change the standard output to the file we created.
