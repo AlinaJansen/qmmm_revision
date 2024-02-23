@@ -11,7 +11,7 @@ __date__ = "$06-Feb-2018 12:45:17$"
 import math
 import os
 import re
-import subprocess
+# import subprocess
 
 import numpy as np
 import sqlite3
@@ -442,7 +442,7 @@ def make_gmx_inp(
     #         "no",
     #     ]
     # )
-    subprocess.call(["rm", "mdout.mdp"])
+    #subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
 
@@ -1441,18 +1441,18 @@ def make_opt_step(
             xvgname = str(jobname + insert + ".edr.xvg")
             g16name = str(jobname + insert + ".gjf.log")
             fortname = str(jobname + insert + ".fort.7")
-            subprocess.call(
-                [
-                    "rm",
-                    trrname,
-                    tprname,
-                    gmxlogname,
-                    edrname,
-                    xvgname,
-                    g16name,
-                    fortname,
-                ]
-            )
+            #subprocess.call(
+            #    [
+            #        "rm",
+            #        trrname,
+            #        tprname,
+            #        gmxlogname,
+            #        edrname,
+            #        xvgname,
+            #        g16name,
+            #        fortname,
+            #    ]
+            ###)
             higher_energy = True
             initstep *= 0.2
         else:
@@ -1460,7 +1460,7 @@ def make_opt_step(
 
     imporved = True
     if higher_energy and float(initstep) < 0.000001:
-        subprocess.call(["rm", new_gro, new_pcffile])
+        #subprocess.call(["rm", new_gro, new_pcffile])
         imporved = False
     return (
         qmenergy,
@@ -2016,8 +2016,8 @@ def get_energy(
             # subprocess.call([g16cmd, str(qmfile)])
             logname = qmfile[:-3]
             logname += "log"
-            subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
-            subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
+            #subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
+            #subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
             logger(logfile, "G16 done.\n")
         else:
             logger(
@@ -2031,7 +2031,7 @@ def get_energy(
                     "No fort.7 file was created by the last Gaussian run! Exiting.\n",
                 )
                 exit(1)
-            subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
+            #subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
             logger(
                 logfile,
                 "WARNING: Had to rename fort.7 file but not the log file. MAKE SURE THAT THE FORT.7 FILE FITS TO THE LOG FILE!\n",
@@ -2064,7 +2064,7 @@ def get_energy(
     #         "no",
     #     ]
     # )
-    subprocess.call(["rm", outname])
+    #subprocess.call(["rm", outname])
 
     # get qm energy 
     qmenergy, qm_corrdata = get_qmenergy(
@@ -2643,10 +2643,10 @@ def perform_opt(
         if count > 0:
             jobname += "." + str(int(count))
         archivename = str(jobname) + ".tar.gz"
-        if os.path.isfile(archivename):
-            subprocess.call(["tar", "-xf", archivename])
-            subprocess.call(["rm", archivename])
-        archive = ["tar", "-cf", str(jobname) + ".tar"]
+        #if os.path.isfile(archivename):
+        #    subprocess.call(["tar", "-xf", archivename])
+        #    subprocess.call(["rm", archivename])
+        #archive = ["tar", "-cf", str(jobname) + ".tar"]
         files = [
             new_pcffile,
             str(jobname) + ".edr",
@@ -2705,11 +2705,11 @@ def perform_opt(
             done = 2
             break
         archive.extend(files)
-        subprocess.call(archive)
-        subprocess.call(["gzip", str(jobname) + ".tar"])
-        delete = ["rm"]
-        delete.extend(files)
-        subprocess.call(delete)
+        #subprocess.call(archive)
+        #subprocess.call(["gzip", str(jobname) + ".tar"])
+        #delete = ["rm"]
+        #delete.extend(files)
+        #subprocess.call(delete)
 
         energy_file = "optenergy.txt"
         force_file = "optforce.txt"
@@ -2737,15 +2737,15 @@ def perform_opt(
                 )
             oforce.close()
 
-        if not done:
-            if qmmminfo[9] == "YES":
-                subprocess.call(["rm", rmname + ".chk"])
-                subprocess.call(["rm", rmname + ".tar.gz"])
+        # if not done:
+        #     if qmmminfo[9] == "YES":
+        #         subprocess.call(["rm", rmname + ".chk"])
+        #         subprocess.call(["rm", rmname + ".tar.gz"])
 
         count += 1
 
-    subprocess.call(["rm", qmmminfo[0] + "." + str(int(count + 1)) + ".chk"])
-    subprocess.call(["rm", qmmminfo[0] + "." + str(int(count + 1)) + ".gjf"])
+    # subprocess.call(["rm", qmmminfo[0] + "." + str(int(count + 1)) + ".chk"])
+    # subprocess.call(["rm", qmmminfo[0] + "." + str(int(count + 1)) + ".gjf"])
 
     if done == 0:
         logger(logfile, "Optimization canceled due to step limit.\n")
