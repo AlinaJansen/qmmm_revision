@@ -2353,7 +2353,7 @@ def perform_opt(qmmmInputs):
                 stepsize *= 0.2
                 logger(logfile, "Reduced stepsize = "+str(stepsize)+"\n")
                 #Simon wants to archive the trash stuff, please delete this if you are not Simon
-                archive_trash(jobname, curr_step, count_trash)
+                # archive_trash(jobname, curr_step, count_trash)
 
                 #remove files                
                 insert      = str("." + str(curr_step))
@@ -2366,7 +2366,7 @@ def perform_opt(qmmmInputs):
                 fortname    = str(jobname + insert + ".fort.7")
                 pcfname     = str(jobname + insert + ".pointcharges")
                 gjfname     = str(jobname + insert + ".gjf") 
-                subprocess.call("rm %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname), shell=True)
+                # subprocess.call("rm %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname), shell=True)
 
             else:
                 count_trash=0
@@ -2444,7 +2444,8 @@ def perform_opt(qmmmInputs):
             subprocess.call("rm %s"%(filename), shell=True)
     '''
     # Remove the last but failed with criteria files         
-    subprocess.call("rm %s"%str(jobname + '.' + str(count+1) + '*'), shell=True)
+    # testing
+    # subprocess.call("rm %s"%str(jobname + '.' + str(count+1) + '*'), shell=True)
     
     # opt status 
     if done == STEPLIMIT:
@@ -2641,13 +2642,16 @@ def perform_opt_root(qmmmInputs):
     if qmmmInputs.qmmmparams.optlastonly == "YES":
         logger(logfile, "Remain last result. Remove other results.\n")
         #remove first
-        remove_files(jobname, 0, True)
+        # don't remove files for testing (AJ)
+        #remove_files(jobname, 0, True) 
         for steps in range(count-1):
             filename = jobname+('.%d*'%(steps+1))
             subprocess.call("rm %s"%(filename), shell=True)
-    else:
-        for steps in range(count):
-            remove_files(jobname,steps)
+    # else:
+        # for steps in range(count):
+            # testing
+            # remove_files(jobname,steps)
+
 
     # Remove the last but failed with criteria files         
     subprocess.call("rm %s"%str(jobname + '.' + str(count+1) + '*'), shell=True)

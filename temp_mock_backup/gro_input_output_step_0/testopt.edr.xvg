@@ -1,12 +1,12 @@
-# This file was created Fri Feb 23 12:25:53 2024
+# This file was created Wed Feb 14 17:52:36 2024
 # Created by:
-#                      :-) GROMACS - gmx energy, 2019.4 (-:
+#                       :-) GROMACS - gmx energy, 2022 (-:
 # 
-# Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
-# Data prefix:  /scratch/spetry/Gromacs_bin
-# Working dir:  /home/jansea92/qmmm_revision/example/opt_reference
+# Executable:   /home/janjoswig/local/gromacs-2022/bin/gmx22
+# Data prefix:  /home/janjoswig/local/gromacs-2022
+# Working dir:  /home/jansea92/mnt/Curta_home/qmmm_revision/gro_input_output
 # Command line:
-#   gmx energy -f testopt.edr -o testopt.edr.xvg -backup no
+#   gmx22 energy -f testopt.edr -o testopt.edr.xvg -backup no
 # gmx energy is part of G R O M A C S:
 #
 # Good ROcking Metal Altar for Chronical Sinners

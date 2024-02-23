@@ -2,8 +2,8 @@
  Input=testopt.gjf
  Output=testopt.log
  Initial command:
- /trinity/shared/software/gaussian/g16_A03/g16/l1.exe "/home/jansea92/qmmm_revision/example/opt_reference/Gau-262214.inp" -scrdir="/home/jansea92/qmmm_revision/example/opt_reference/"
- Entering Link 1 = /trinity/shared/software/gaussian/g16_A03/g16/l1.exe PID=    262215.
+ /trinity/shared/software/gaussian/g16_A03/g16/l1.exe "/home/jansea92/qmmm_revision/g16_input/Gau-132236.inp" -scrdir="/home/jansea92/qmmm_revision/g16_input/"
+ Entering Link 1 = /trinity/shared/software/gaussian/g16_A03/g16/l1.exe PID=    132238.
   
  Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009,2016,
             Gaussian, Inc.  All Rights Reserved.
@@ -77,7 +77,7 @@
  
  ******************************************
  Gaussian 16:  ES64L-G16RevA.03 25-Dec-2016
-                23-Feb-2024 
+                 1-Feb-2024 
  ******************************************
  %NPROCSHARED=1
  Will use up to    1 processors via shared memory.
@@ -96,7 +96,7 @@
  7/7=1,16=-2,29=1,30=1/1,2,3,16;
  1/10=7,18=10,28=-2,30=1/3;
  99/10=4,12=1/99;
- Leave Link    1 at Fri Feb 23 12:25:45 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
+ Leave Link    1 at Thu Feb  1 15:03:28 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l101.exe)
  -----------------
  QM part of step 0
@@ -165,7 +165,7 @@
  XXXZ=      -16338527.1937 YYYX=     -158451125.4430 YYYZ=     -118778766.0654 ZZZX=       -9302760.2956
  ZZZY=      -17951702.9548 XXYY=      -81754294.6404 XXZZ=      -12345739.2164 YYZZ=      -46140970.5216
  XXYZ=      -31745618.7943 YYXZ=      -61489526.0662 ZZXY=      -23898583.9974
- Leave Link  101 at Fri Feb 23 12:25:45 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
+ Leave Link  101 at Thu Feb  1 15:03:28 2024, MaxMem=   131072000 cpu:               0.2 elap:               0.2
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l103.exe)
 
  GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
@@ -175,7 +175,7 @@
  Number of steps in this run=      2 maximum allowed number of steps=      2.
  GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
 
- Leave Link  103 at Fri Feb 23 12:25:46 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
+ Leave Link  103 at Thu Feb  1 15:03:29 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l202.exe)
  ---------------------------------------------------------------------------------------------------
                             Z-MATRIX (ANGSTROMS AND DEGREES)
@@ -224,7 +224,7 @@
  Deg. of freedom    18
  Full point group                 C1      NOp   1
  Rotational constants (GHZ):          91.0011643          21.5758079          21.4323111
- Leave Link  202 at Fri Feb 23 12:25:46 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
+ Leave Link  202 at Thu Feb  1 15:03:29 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l301.exe)
  Standard basis: STO-3G (5D, 7F)
                          Coordinates in L301:                         
@@ -412,7 +412,7 @@
  MM   energy of the charges =         0.0000000000 a.u.
  Nuclei-charges interaction =        -1.4551737864 a.u.
  Nuclear repulsion after external point charges =       47.4402334310 Hartrees.
- Leave Link  301 at Fri Feb 23 12:25:46 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
+ Leave Link  301 at Thu Feb  1 15:03:29 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l302.exe)
  NPDir=0 NMtPBC=     1 NCelOv=     1 NCel=       1 NClECP=     1 NCelD=      1
          NCelK=      1 NCelE2=     1 NClLst=     1 CellRange=     0.0.
@@ -741,7 +741,7 @@
  IAtBtD: 
               1            2            3            4            5
               6            7            8
- Leave Link  302 at Fri Feb 23 12:25:46 2024, MaxMem=   131072000 cpu:               0.2 elap:               0.2
+ Leave Link  302 at Thu Feb  1 15:03:29 2024, MaxMem=   131072000 cpu:               0.2 elap:               0.2
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l303.exe)
  DipDrv:  MaxL=1.
  DipPsm:  J= 1 NJ= 4 MaxL=1 MMat= 4 MaxMat= 4.
@@ -907,13 +907,13 @@
      14   0.628247D+00  0.174786D-01  0.148913D-01
      15   0.174786D-01  0.628247D+00  0.147600D-01
      16   0.148913D-01  0.147600D-01  0.628247D+00
- Leave Link  303 at Fri Feb 23 12:25:46 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
+ Leave Link  303 at Thu Feb  1 15:03:30 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l401.exe)
  Projected New-EHT guess.
  Enter ItEHT:  IZDO=4 IZDPar=0 Conv= 1.00D-06 N=   14
  It=   1                  EEH= -43.5800943512     EQH= 0.000000000000E+00 EH= -43.5800943512    
  JPrj=0 DoOrth=T DoCkMO=T.
- Leave Link  401 at Fri Feb 23 12:25:47 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
+ Leave Link  401 at Thu Feb  1 15:03:30 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l502.exe)
  Keep J ints in memory in canonical form, NReq=871357.
  FoFCou: FMM=F IPFlag=           0 FMFlag=           0 FMFlg1=           0
@@ -1052,7 +1052,7 @@
  SCF Done:  E(RB-P86) =  -95.7692756811     A.U. after   10 cycles
             NFock= 10  Conv=0.76D-08     -V/T= 2.0300
  KE= 9.297928254581D+01 PE=-3.106349553633D+02 EE= 7.444616370535D+01
- Leave Link  502 at Fri Feb 23 12:25:48 2024, MaxMem=   131072000 cpu:               1.5 elap:               1.5
+ Leave Link  502 at Thu Feb  1 15:03:32 2024, MaxMem=   131072000 cpu:               2.0 elap:               2.0
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l601.exe)
  Copying SCF densities to generalized density rwf, IOpCl= 0 IROHF=0.
 
@@ -1217,7 +1217,7 @@
   16         V                 0.356444          2.731051
  Total kinetic energy from orbitals= 9.297928254581D+01
  No NMR shielding tensors so no spin-rotation constants.
- Leave Link  601 at Fri Feb 23 12:25:49 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
+ Leave Link  601 at Thu Feb  1 15:03:32 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l602.exe)
  FitSet:  NAtFit=     8 NAtPot=     8 NAtFrz=     0 MDM=    12 TotChg=   1.00000
  Merz-Kollman atomic radii used.
@@ -1306,14 +1306,14 @@
   476           0.160352      0.012383      0.013822      0.015864
   477           0.230490      0.057721      0.064299      0.038455
  -----------------------------------------------------------------
- Leave Link  602 at Fri Feb 23 12:25:49 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
+ Leave Link  602 at Thu Feb  1 15:03:32 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l701.exe)
  ... and contract with generalized density number  0.
  Compute integral first derivatives.
- Leave Link  701 at Fri Feb 23 12:25:49 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
+ Leave Link  701 at Thu Feb  1 15:03:32 2024, MaxMem=   131072000 cpu:               0.1 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l702.exe)
  L702 exits ... SP integral derivatives will be done elsewhere.
- Leave Link  702 at Fri Feb 23 12:25:49 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
+ Leave Link  702 at Thu Feb  1 15:03:33 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l703.exe)
  Integral derivatives from FoFJK, PRISM(SPDF).
  Compute integral first derivatives, UseDBF=F ICtDFT=           0.
@@ -1325,7 +1325,7 @@
          wScrn=  0.000000 ICntrl=      2527 IOpCl=  0 I1Cent=           0 NGrid=           0
          NMat0=    1 NMatS0=      1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
  Symmetry not used in FoFCou.
- Leave Link  703 at Fri Feb 23 12:25:50 2024, MaxMem=   131072000 cpu:               0.6 elap:               0.6
+ Leave Link  703 at Thu Feb  1 15:03:33 2024, MaxMem=   131072000 cpu:               0.6 elap:               0.7
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l716.exe)
  Dipole        = 9.02239597D+01 1.61664656D+02 5.90126287D+01
  -------------------------------------------------------------------
@@ -1418,7 +1418,7 @@
      22  0.285399D-01  0.212365D+00
      23  0.219169D-01  0.129941D-01  0.328101D+00
      24  0.434652D-01  0.309538D-01  0.124575D+00  0.244426D+00
- Leave Link  716 at Fri Feb 23 12:25:50 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
+ Leave Link  716 at Thu Feb  1 15:03:33 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.0
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l103.exe)
 
  GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
@@ -1470,11 +1470,11 @@
  Predicted change in Energy=-5.158301D-02
  GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
 
- Leave Link  103 at Fri Feb 23 12:25:50 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
+ Leave Link  103 at Thu Feb  1 15:03:34 2024, MaxMem=   131072000 cpu:               0.0 elap:               0.1
  (Enter /trinity/shared/software/gaussian/g16_A03/g16/l9999.exe)
 
  Test job not archived.
- 1\1\GINC-C035\Force\RBP86\STO-3G\C1H6N1(1+)\JANSEA92\23-Feb-2024\0\\#P
+ 1\1\GINC-C100\Force\RBP86\STO-3G\C1H6N1(1+)\JANSEA92\01-Feb-2024\0\\#P
   BP86/STO-3G nosymm gfinput gfprint force charge guess=huckel punch=de
  rivatives iop(3/33=1,6/7=3) prop(field,read) pop=esp\\QM part of step 
  0\\1,1\N,47.9,85.62,31.12\H,47.7,84.87,30.47\H,47.2,86.37,30.9\H,48.77
@@ -1485,8 +1485,11 @@
  4.1389026,9539.8337319\PG=C01 [X(C1H6N1)]\\@
 
 
- OPTIMIST - A PESSIMIST WHO LACKS EXPERIENCE
- Job cpu time:       0 days  0 hours  0 minutes  3.0 seconds.
- Elapsed time:       0 days  0 hours  0 minutes  3.3 seconds.
+ WHAT THE SLIME CONTAINS, THE GLOWING REVEALS
+ BY THE FLAME'S BRIGHT HUE WHEN YOU IGNITE IT.
+   --  LEONARD THURNEYSSER, 1531-1596
+ DESCRIBING HIS FLAME PHOTOLYSIS ANALYTIC METHOD
+ Job cpu time:       0 days  0 hours  0 minutes  3.7 seconds.
+ Elapsed time:       0 days  0 hours  0 minutes  3.9 seconds.
  File lengths (MBytes):  RWF=     17 Int=      0 D2E=      0 Chk=      2 Scr=      2
- Normal termination of Gaussian 16 at Fri Feb 23 12:25:50 2024.
+ Normal termination of Gaussian 16 at Thu Feb  1 15:03:34 2024.
