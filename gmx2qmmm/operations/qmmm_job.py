@@ -560,6 +560,24 @@ def make_gmx_inp(qmmmInputs):
         # ]
     # )
     # subprocess.call(["rm", "mdout.mdp"])
+    execute_gmx(
+        [
+            prefix,
+            "grompp",
+            "-p",
+            str(qmmmtop),
+            "-c",
+            str(groname),
+            "-n",
+            str(ndxname),
+            "-f",
+            str(mdpname),
+            "-o",
+            str(tprname),
+            "-backup",
+            "no",
+        ]
+    )
     return tprname
 
 def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout):
@@ -1036,6 +1054,10 @@ def databasecorrection(energy_or_force, cut, dist, qmmmInputs):
                 logger(logfile, "No force correction.\n")
     return returnvalue
 
+def execute_g16(qmfile):
+    # call g16 in a seperate function to be able to mock it
+    subprocess.call([g16cmd, str(qmfile)])
+
 #Run program command
 def run_g16(qmfile, qmmmInputs):
     jobname = qmmmInputs.qmmmparams.jobname
@@ -1050,11 +1072,11 @@ def run_g16(qmfile, qmmmInputs):
 
     if not os.path.isfile(str(qmfile) + ".log"):
         logger(logfile, "Running G16 file.\n")
-        # subprocess.call([g16cmd, str(qmfile)])
+        execute_g16(str(qmfile))
         logname = qmfile[:-3]
         logname += "log"
-        #subprocess.call(["mv", logname, str(jobname + insert + ".gjf.log")])
-        #subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
+        # os.rename(logname, str(jobname + insert + ".gjf.log"))
+        os.rename(logname, str("fort.7", str(jobname + insert + ".fort.7")))
         logger(logfile, "G16 Done.\n")
     else:
         logger(
@@ -1068,11 +1090,19 @@ def run_g16(qmfile, qmmmInputs):
                 "No fort.7 file was created by the last Gaussian run! Exiting.\n",
             )
             exit(1)
-        subprocess.call(["mv", "fort.7", str(jobname + insert + ".fort.7")])
+        os.rename("fort.7", str(jobname + insert + ".fort.7"))
         logger(
             logfile,
             "WARNING: Had to rename fort.7 file but not the log file. MAKE SURE THAT THE FORT.7 FILE FITS TO THE LOG FILE!\n",
         )
+
+def execute_gmx(command_list, input_data=None):
+    # call gmx in a seperate function to be able to mock it
+    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+
+    if input_data is not None:
+        process.stdin.write(input_data)
+        process.stdin.close()
 
 def run_gmx(mmfile, qmmmInputs):
     jobname = qmmmInputs.qmmmparams.jobname
@@ -1090,27 +1120,27 @@ def run_gmx(mmfile, qmmmInputs):
     outname = str(jobname + insert + ".out.gro")
     gmxlogname = str(jobname + insert + ".gmx.log")
     edrname = str(jobname + insert + ".edr")
-    # subprocess.call(
-        # [
-        #     prefix,
-        #     "mdrun",
-        #     "-s",
-        #     mmfile,
-        #     "-o",
-        #     trrname,
-        #     "-c",
-        #     outname,
-        #     "-x",
-        #     xtcname,
-        #     "-g",
-        #     gmxlogname,
-        #     "-e",
-        #     edrname,
-        #     "-backup",
-        #     "no",
-        # ]
-    # )
-    # subprocess.call(["rm", outname])
+    execute_gmx(
+        [
+            prefix,
+            "mdrun",
+            "-s",
+            mmfile,
+            "-o",
+            trrname,
+            "-c",
+            outname,
+            "-x",
+            xtcname,
+            "-g",
+            gmxlogname,
+            "-e",
+            edrname,
+            "-backup",
+            "no",
+        ]
+    )
+    # os.remove(outname)
 
     return edrname
 
@@ -1342,7 +1372,7 @@ def get_qmenergy(qmfile, qmmmInputs):
     logger(logfile, "Extracting QM energy.\n")
     qmenergy = 0.0
     qm_corrdata = []
-    if str(qmprog) == "G16":
+    if str(qmprog) == "G16":    
         with open(str(qmfile + ".log")) as ifile:
             for line in ifile:
                 match = []
@@ -1411,21 +1441,33 @@ def get_mmenergy(edrname, qmmmInputs):
     mmenergy = 0.0
     logger(logfile, "Extracting MM energy.\n")
     # p = subprocess.Popen(
-    #     [
-    #         prefix,
-    #         "energy",
-    #         "-f",
-    #         edrname,
-    #         "-o",
-    #         str(edrname + ".xvg"),
-    #         "-backup",
-    #         "no",
-    #     ],
+        # [
+        #     prefix,
+        #     "energy",
+        #     "-f",
+        #     edrname,
+        #     "-o",
+        #     str(edrname + ".xvg"),
+        #     "-backup",
+        #     "no",
+        # ],
     #     stdout=subprocess.PIPE,
     #     stdin=subprocess.PIPE,
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"11\n\n")
+    execute_gmx([
+            prefix,
+            "energy",
+            "-f",
+            edrname,
+            "-o",
+            str(edrname + ".xvg"),
+            "-backup",
+            "no",
+        ],
+        input_data=b"11\n\n"
+        )
     
     with open(str(edrname + ".xvg")) as ifile:
         for line in ifile:
@@ -1854,26 +1896,45 @@ def get_mmforces_au(qmmmInputs):
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
     # p = subprocess.Popen(
-    #     [
-    #         prefix,
-    #         "traj",
-    #         "-fp",
-    #         "-f",
-    #         trrname,
-    #         "-s",
-    #         tprname,
-    #         "-of",
-    #         xvgname,
-    #         "-xvg",
-    #         "none",
-    #         "-backup",
-    #         "no",
-    #     ],
+        # [
+        #     prefix,
+        #     "traj",
+        #     "-fp",
+        #     "-f",
+        #     trrname,
+        #     "-s",
+        #     tprname,
+        #     "-of",
+        #     xvgname,
+        #     "-xvg",
+        #     "none",
+        #     "-backup",
+        #     "no",
+        # ],
     #     stdout=subprocess.PIPE,
     #     stdin=subprocess.PIPE,
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"0\n")
+    execute_gmx(
+                [
+            prefix,
+            "traj",
+            "-fp",
+            "-f",
+            trrname,
+            "-s",
+            tprname,
+            "-of",
+            xvgname,
+            "-xvg",
+            "none",
+            "-backup",
+            "no",
+        ],
+        input_data=b"0\n"
+    )
+
     with open(xvgname) as ifile:
         for line in ifile:
             forcelist = re.findall("\S+", line)
@@ -2444,7 +2505,7 @@ def perform_opt(qmmmInputs):
             subprocess.call("rm %s"%(filename), shell=True)
     '''
     # Remove the last but failed with criteria files         
-    subprocess.call("rm %s"%str(jobname + '.' + str(count+1) + '*'), shell=True)
+    # subprocess.call("rm %s"%str(jobname + '.' + str(count+1) + '*'), shell=True)
     
     # opt status 
     if done == STEPLIMIT:
