@@ -1,0 +1,79 @@
+                      :-) GROMACS - gmx mdrun, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/gro_input_output_step_1
+Command line:
+  gmx mdrun -s testopt.tpr -o testopt.trr -c testopt.out.gro -x testopt.xtc -g testopt.gmx.log -e testopt.edr -backup no
+
+Reading file testopt.tpr, VERSION 2019 (single precision)
+Non-default thread affinity set, disabling internal thread affinity
+
+Multiple energy groups is not implemented for GPUs, falling back to the CPU. For better performance, run on the GPU without energy groups and then do gmx mdrun -rerun option on the trajectory with an energy group .tpr file.
+
+NOTE: Parallelization is limited by the small number of atoms,
+      only starting 1 thread-MPI ranks.
+      You can use the -nt and/or -ntmpi option to optimize the number of threads.
+
+
+Using 1 MPI thread
+
+
+NOTE: This file uses the deprecated 'group' cutoff_scheme. This will be
+removed in a future release when 'verlet' supports all interaction forms.
+
+starting mdrun 'Protein'
+1 steps,      0.0 ps.
+
+Writing final coordinates.
+
+               Core t (s)   Wall t (s)        (%)
+       Time:        0.017        0.020       87.6
+                 (ns/day)    (hour/ns)
+Performance:        8.718        2.753
+
+GROMACS reminds you: "The best way to obtain plausible negative examples is to run a docking program with a biophysics-based function." (Julie Bernauer)
+
+
+== Epilog Slurmctld ==================================================
+
+Job ID: 16864661
+Cluster: curta
+User/Group: jansea92/aggoetze
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:01
+CPU Efficiency: 2.50% of 00:00:40 core-walltime
+Job Wall-clock time: 00:00:05
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 1000.00 MB (1000.00 MB/node)
+
+======================================================================
