@@ -16,6 +16,7 @@ import copy
 import numpy as np
 import sqlite3
 import sys
+import scipy.sparse as sp
 
 from gmx2qmmm._helper import logger, _flatten, stepper
 from gmx2qmmm._helper import get_linkatoms_ang, make_xyzq, make_xyzq_io
@@ -359,23 +360,24 @@ def get_full_coords_nm(gro):  # read g96
     return fullcoords
 
 def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
-    s = xyz - old_xyz
-    if s.shape[1] != 1:
-        s = s.reshape(3 * len(s), 1)  # reshape s so it can be used in dot products
-    g = grad - old_grad
-    if g.shape[1] != 1:
-        g = g.reshape(3 * len(g), 1)  # reshape g so it can be used in dot products
+    geometry_difference = xyz - old_xyz
+    if geometry_difference.shape[1] != 1:
+        geometry_difference = sp.csr_matrix(geometry_difference.reshape(3 * len(geometry_difference), 1))  # reshape s so it can be used in dot products
+    gradient_difference = grad - old_grad
+    if gradient_difference.shape[1] != 1:
+        gradient_difference = sp.csr_matrix(gradient_difference.reshape(3 * len(gradient_difference), 1))  # reshape g so it can be used in dot products
     # Broyden-Fletcher-Goldfarb-Shanno
     # Define a few values and matrices first for convenience
-    mat = old_hess.dot(s)
-    factor1 = g.T.dot(s)
-    factor2 = s.T.dot(mat)
-    idmat = np.eye(len(g))
+    mat = sp.csr_matrix(old_hess.dot(geometry_difference))
+    factor1 = float(gradient_difference.T.dot(geometry_difference)[0,0])
+    factor2 = float(geometry_difference.T.dot(mat)[0,0])
+    # idmat = np.eye(len(gradient_difference))
 
     # update formula
-    new_hess = old_hess + g.dot(g.T) / factor1 - mat.dot(mat.T) / factor2
+    new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
     # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
-    eigvals, eigvecs = np.linalg.eig(new_hess)
+    # eigvals, eigvecs = np.linalg.eig(new_hess)
+    eigvals, eigvecs = sp.linalg.eigs(new_hess)
 
     # Check BFGS condition
     if factor1 > 0:
@@ -672,7 +674,7 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
     maxatom = -1
     maxcoord = -1
     check_force = list(_flatten(clean_force))
-    #search index of max info
+    #search index of max info XX
     for i in range(0, int(len(check_force) / 3)):
         for j in range(0, 3):
                 if abs(float(check_force[i * 3 + j])) > abs(maxforce):
@@ -694,7 +696,7 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
     #All use steep for first propagation
     if curr_step <= 1:
         logger(logfile, "Propagate with steepest descent for first step...\n")
-        for element in clean_force:
+        for element in clean_force: # XX
             dispvec.append(
                 [
                     float(element[0]) * float(stepsize) / abs(float(maxforce)),
@@ -745,17 +747,19 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
                     + " a.u.\n"
                 ),
             )
-        elif propagator == "BFGS":
+        elif propagator == "BFGS": #XX
             logger(logfile, "Propagate with BFGS method...\n")
             coords = np.array(new_xyzq)[:, 0:3]
             old_coords = np.array(xyzq)[:, 0:3]
-            old_hessian = np.loadtxt("bfgs_hessian.txt")
+            # old_hessian = np.loadtxt("bfgs_hessian.txt")
+            old_hessian = sp.load_npz('bfgs_hessian.npz')
             gradient = np.array(total_force)
             old_gradient = np.array(last_forces)
             hessian, hesseig, warning_flag = get_approx_hessian(
                 coords, old_coords, gradient, old_gradient, old_hessian, logfile
             )
-            np.savetxt("bfgs_hessian.txt", hessian)
+            # np.savetxt("bfgs_hessian.txt", hessian)
+            sp.save_npz('bfgs_hessian.npz', hessian)
 
             coords = coords.reshape(
                 3 * len(coords), 1
@@ -764,7 +768,8 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
                 3 * len(gradient), 1
             )  # reshape grad to use in dot products
 
-            direc = -np.linalg.inv(hessian).dot(gradient)
+            # direc = -sp.linalg.inv(hessian).dot(gradient) #XX CSC
+            direc = -sp.linalg.spsolve(hessian.tocsc(), sp.csc_matrix(gradient)) #XX CSC
             direc = direc.reshape(int(len(coords) / 3), 3)
 
             for i in range(len(total_force)):
@@ -907,7 +912,7 @@ def qmmm_prep(qmmmInputs):
     logger(logfile, "Done.\n")
     logger(logfile, "Reading charges...\n")
     chargevec = []
-    for element in mollist:
+    for element in mollist: #XX
         chargevec.extend(make_pcf.readcharges(element, top, gmxtop))
     logger(logfile, "Done.\n")
     if qmmmInputs.inout:
@@ -1076,7 +1081,7 @@ def run_g16(qmfile, qmmmInputs):
         logname = qmfile[:-3]
         logname += "log"
         # os.rename(logname, str(jobname + insert + ".gjf.log"))
-        os.rename(logname, str("fort.7", str(jobname + insert + ".fort.7")))
+        # os.rename("fort.7", str(jobname + insert + ".fort.7"))
         logger(logfile, "G16 Done.\n")
     else:
         logger(
@@ -1375,6 +1380,7 @@ def get_qmenergy(qmfile, qmmmInputs):
     if str(qmprog) == "G16":    
         with open(str(qmfile + ".log")) as ifile:
             for line in ifile:
+                
                 match = []
                 match2 = []
                 match2 = re.search(
@@ -1895,27 +1901,6 @@ def get_mmforces_au(qmmmInputs):
     trrname = str(jobname + insert + ".trr")
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
-    # p = subprocess.Popen(
-        # [
-        #     prefix,
-        #     "traj",
-        #     "-fp",
-        #     "-f",
-        #     trrname,
-        #     "-s",
-        #     tprname,
-        #     "-of",
-        #     xvgname,
-        #     "-xvg",
-        #     "none",
-        #     "-backup",
-        #     "no",
-        # ],
-    #     stdout=subprocess.PIPE,
-    #     stdin=subprocess.PIPE,
-    #     stderr=subprocess.STDOUT,
-    # )
-    # p.communicate(input=b"0\n")
     execute_gmx(
                 [
             prefix,
@@ -2365,8 +2350,9 @@ def perform_opt(qmmmInputs):
 
         # init BFGS hessian: initial guess for identity hessian
         if propagator == "BFGS":
-            init_hessian = np.eye(3 * len(xyzq))
-            np.savetxt("bfgs_hessian.txt", init_hessian)
+            init_hessian = sp.identity(3 * len(xyzq))
+            # np.savetxt("bfgs_hessian.txt", init_hessian)
+            sp.save_npz('bfgs_hessian.npz', init_hessian)
 
         ############## start optimization loop ##############
         while not done and count <= maxcycle:
@@ -2445,7 +2431,7 @@ def perform_opt(qmmmInputs):
             clean_force = make_clean_force(total_force)
             maxforce = 0.0
             
-            for element in _flatten(clean_force):
+            for element in _flatten(clean_force): #XX
                 if abs(float(element)) > abs(maxforce):
                     maxforce = float(element)
             if abs(maxforce) < float(f_thresh):

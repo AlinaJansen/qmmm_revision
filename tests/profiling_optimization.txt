@@ -1,0 +1,110 @@
+Wed Mar  6 07:43:01 2024    C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\tests\profiling_optimization.prof
+
+         296992 function calls (292310 primitive calls) in 0.585 seconds
+
+   Ordered by: cumulative time
+   List reduced from 452 to 100 due to restriction <100>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.585    0.585 {built-in method builtins.exec}
+        1    0.000    0.000    0.585    0.585 <string>:1(<module>)
+        1    0.000    0.000    0.585    0.585 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\tests\IntegrationTest.py:23(execute_gmx2qmmm_mocking)
+        1    0.000    0.000    0.575    0.575 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm_execute.py:75(gmx2qmmm)
+        1    0.000    0.000    0.432    0.432 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm_execute.py:42(perform_job)
+        1    0.002    0.002    0.431    0.431 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:2286(perform_opt)
+        3    0.001    0.000    0.285    0.095 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:2227(perform_sp)
+    32902    0.043    0.000    0.209    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:173(search)
+        3    0.000    0.000    0.184    0.061 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1743(get_energy)
+        3    0.033    0.011    0.161    0.054 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1365(get_qmenergy)
+    33085    0.056    0.000    0.148    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:272(_compile)
+        1    0.003    0.003    0.142    0.142 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:453(__init__)
+        2    0.000    0.000    0.105    0.052 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:381(call)
+        4    0.000    0.000    0.093    0.023 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:1259(wait)
+        4    0.000    0.000    0.093    0.023 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:1580(_wait)
+        2    0.093    0.047    0.093    0.047 {built-in method _winapi.WaitForSingleObject}
+      158    0.002    0.000    0.090    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\_helper.py:21(logger)
+        3    0.001    0.000    0.061    0.020 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:2144(read_forces)
+      265    0.057    0.000    0.058    0.000 {built-in method io.open}
+        2    0.000    0.000    0.056    0.028 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1324(archive)
+        1    0.000    0.000    0.050    0.050 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1344(archive_first_step)
+      258    0.049    0.000    0.049    0.000 {method '__exit__' of '_io._IOBase' objects}
+       98    0.001    0.000    0.046    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_compiler.py:740(compile)
+        1    0.000    0.000    0.044    0.044 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\generate_top.py:1143(generate_top_listsonly)
+    32820    0.034    0.000    0.042    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\enum.py:193(__get__)
+        3    0.008    0.003    0.037    0.012 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1772(get_qmforces_au)
+       98    0.001    0.000    0.028    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:979(parse)
+        1    0.005    0.005    0.027    0.027 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\generate_top.py:216(make_large_top)
+   210/98    0.001    0.000    0.026    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:456(_parse_sub)
+   211/99    0.012    0.000    0.025    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:516(_parse)
+    32902    0.021    0.000    0.021    0.000 {method 'search' of 're.Pattern' objects}
+        3    0.002    0.001    0.017    0.006 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:392(make_g16_inp)
+        3    0.005    0.002    0.017    0.006 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1559(get_linkenergy_au)
+       98    0.000    0.000    0.017    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_compiler.py:573(_code)
+        3    0.006    0.002    0.015    0.005 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1933(get_linkforces_au)
+        2    0.000    0.000    0.015    0.007 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:890(qmmm_prep)
+2121/1051    0.009    0.000    0.013    0.000 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\_helper.py:7(_flatten)
+   576/98    0.007    0.000    0.013    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_compiler.py:37(_compile)
+        1    0.005    0.005    0.011    0.011 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:797(get_linkcorrlist)
+      3/1    0.002    0.001    0.011    0.011 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\generate_pcf_from_top.py:62(getincludelist)
+        2    0.000    0.000    0.011    0.006 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:807(__init__)
+        2    0.001    0.000    0.011    0.006 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:1436(_execute_child)
+        3    0.002    0.001    0.011    0.004 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:69(read_pcf_self)
+        2    0.000    0.000    0.011    0.005 c:\Users\Alina\.vscode\extensions\ms-python.debugpy-2024.2.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydev_bundle\pydev_monkey.py:891(new_CreateProcess)
+        3    0.000    0.000    0.010    0.003 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:518(make_gmx_inp)
+   1563/3    0.005    0.000    0.009    0.003 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:128(deepcopy)
+     18/3    0.000    0.000    0.009    0.003 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:259(_reconstruct)
+     18/3    0.001    0.000    0.009    0.003 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:227(_deepcopy_dict)
+        4    0.002    0.000    0.009    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\generate_pcf_from_top.py:278(readmols)
+        6    0.000    0.000    0.008    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:963(databasecorrection)
+    32820    0.007    0.000    0.007    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\enum.py:1255(value)
+        3    0.001    0.000    0.007    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:284(prepare_pcf_for_shift_fieldsonly)
+        3    0.001    0.000    0.007    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:128(get_atoms)
+        1    0.000    0.000    0.007    0.007 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm_execute.py:11(userInputs)
+    40181    0.005    0.000    0.007    0.000 {built-in method builtins.isinstance}
+        2    0.007    0.003    0.007    0.003 {built-in method _winapi.CreateProcess}
+   201/57    0.002    0.000    0.006    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:201(_deepcopy_list)
+        3    0.001    0.000    0.006    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\generate_pcf_from_top.py:113(readcharges)
+        3    0.000    0.000    0.006    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:608(update_gro_box)
+        1    0.000    0.000    0.005    0.005 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:784(read_conn_list_from_top)
+        1    0.000    0.000    0.005    0.005 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:355(__init__)
+        1    0.000    0.000    0.005    0.005 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:363(read_qmmmparams)
+       43    0.005    0.000    0.005    0.000 {built-in method nt.stat}
+        6    0.001    0.000    0.005    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:43(read_pcffile)
+     1331    0.003    0.000    0.005    0.000 {method 'write' of '_io.TextIOWrapper' objects}
+        1    0.000    0.000    0.005    0.005 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:291(__init__)
+        1    0.000    0.000    0.004    0.004 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:297(read_pathparams)
+        1    0.000    0.000    0.004    0.004 c:\Users\Alina\anaconda3\envs\habitat\Lib\argparse.py:1737(__init__)
+        3    0.000    0.000    0.004    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1437(get_mmenergy)
+        1    0.000    0.000    0.004    0.004 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:215(__init__)
+     4149    0.003    0.000    0.004    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:168(__getitem__)
+       98    0.001    0.000    0.004    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_compiler.py:511(_compile_info)
+        1    0.000    0.000    0.004    0.004 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:220(read_qmparams)
+     1747    0.002    0.000    0.004    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:261(get)
+        2    0.001    0.000    0.004    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:653(propagate_dispvec)
+  680/206    0.003    0.000    0.003    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:178(getwidth)
+       12    0.003    0.000    0.003    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
+        2    0.001    0.000    0.003    0.002 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:836(make_g96_inp)
+        3    0.001    0.000    0.003    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:92(identify_m1)
+       13    0.000    0.000    0.003    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\argparse.py:1419(add_argument)
+     2061    0.003    0.000    0.003    0.000 {built-in method numpy.array}
+       14    0.000    0.000    0.003    0.000 <frozen importlib._bootstrap>:1165(_find_and_load)
+        3    0.000    0.000    0.003    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\generate_pcf_from_top.py:205(readg96)
+        3    0.000    0.000    0.003    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1208(write_output)
+       17    0.000    0.000    0.003    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\genericpath.py:27(isfile)
+      354    0.002    0.000    0.003    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\numpy\linalg\linalg.py:2383(norm)
+        2    0.000    0.000    0.003    0.001 <frozen importlib._bootstrap>:1120(_find_and_load_unlocked)
+        2    0.000    0.000    0.003    0.001 <frozen importlib._bootstrap>:1054(_find_spec)
+      136    0.002    0.000    0.003    0.000 {built-in method builtins.print}
+        2    0.000    0.000    0.003    0.001 <frozen importlib._bootstrap_external>:1496(find_spec)
+        2    0.000    0.000    0.003    0.001 <frozen importlib._bootstrap_external>:1464(_get_spec)
+       30    0.000    0.000    0.003    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:225(compile)
+        1    0.000    0.000    0.003    0.003 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\readInput.py:659(get_mollength_direct)
+       14    0.000    0.000    0.003    0.000 <frozen importlib._bootstrap_external>:1604(find_spec)
+        3    0.002    0.001    0.003    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:236(eliminate_and_shift_to_m1)
+       24    0.002    0.000    0.003    0.000 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:25(get_bondpartners)
+        3    0.000    0.000    0.002    0.001 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\gmx2qmmm\operations\qmmm_job.py:1884(get_mmforces_au)
+        3    0.000    0.000    0.002    0.001 c:\Users\Alina\anaconda3\envs\habitat\Lib\gettext.py:616(gettext)
+        3    0.000    0.000    0.002    0.001 c:\Users\Alina\anaconda3\envs\habitat\Lib\gettext.py:578(dgettext)
+     1985    0.002    0.000    0.002    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\_parser.py:240(__next)
+
+
