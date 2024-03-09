@@ -1106,7 +1106,7 @@ def execute_gmx(command_list, input_data=None):
     process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
     if input_data is not None:
-        process.stdin.write(input_data)
+        process.stdin.write(input_data.decode())
         process.stdin.close()
 
 def run_gmx(mmfile, qmmmInputs):
