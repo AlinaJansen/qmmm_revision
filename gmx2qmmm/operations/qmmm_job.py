@@ -1059,7 +1059,7 @@ def databasecorrection(energy_or_force, cut, dist, qmmmInputs):
                 logger(logfile, "No force correction.\n")
     return returnvalue
 
-def execute_g16(qmfile):
+def execute_g16(g16cmd, qmfile):
     # call g16 in a seperate function to be able to mock it
     subprocess.call([g16cmd, str(qmfile)])
 
@@ -1077,7 +1077,7 @@ def run_g16(qmfile, qmmmInputs):
 
     if not os.path.isfile(str(qmfile) + ".log"):
         logger(logfile, "Running G16 file.\n")
-        execute_g16(str(qmfile))
+        execute_g16(g16cmd, str(qmfile))
         logname = qmfile[:-3]
         logname += "log"
         # os.rename(logname, str(jobname + insert + ".gjf.log"))
