@@ -25,4 +25,4 @@ IntegrationTest.execute_gmx2qmmm_mocking(directory)
 pass
 
 
-Next step: untar step2!
+# Next step: untar step2!

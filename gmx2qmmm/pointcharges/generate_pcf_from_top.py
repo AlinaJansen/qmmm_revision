@@ -99,8 +99,7 @@ def getincludelist(inp, gmxtop_path):
                 foundname = match.group(1)
                 check = os.path.isfile(foundname)
                 if not check:
-                    qmmm_path = os.getcwd()
-                    foundname = qmmm_path + gmxtop_path + foundname
+                    foundname = gmxtop_path + foundname
                     check = os.path.isfile(foundname)
                     if not check:
                         print("File " + foundname + " was not found. Maybe update the gmxpath variable in the script? Exiting.")
