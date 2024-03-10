@@ -11,20 +11,10 @@ from IntegrationTest import IntegrationTest
 
 # set working directory
 test_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-prof_file = 'profiling_bfgs_cp24.prof'
-txt_file = 'profiling_bfgs_cp24.txt'
+prof_file = 'profiling_optimization.prof'
+txt_file = 'profiling_optimization.txt'
 
-'''
------------------------------------------------------------------
-Insert path to folder here:
------------------------------------------------------------------
-'''
-directory = os.path.join(os.path.dirname(__file__), 'temp_bfgs_cp24')
-'''
------------------------------------------------------------------
-'''
-
-cProfile.run("IntegrationTest.execute_gmx2qmmm_mocking(directory)", filename=os.path.join(test_path, prof_file))
+cProfile.run("IntegrationTest.execute_gmx2qmmm_mocking()", filename=os.path.join(test_path, prof_file))
 with open(os.path.join(test_path, txt_file), "w") as output_file:
     stats = pstats.Stats(os.path.join(test_path, prof_file), stream=output_file)
     stats.sort_stats('cumtime')
