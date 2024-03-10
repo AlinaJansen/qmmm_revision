@@ -544,22 +544,22 @@ def make_gmx_inp(qmmmInputs):
     write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout)
     update_gro_box(gro, groname, nbradius, logfile)
     # subprocess.call(
-        # [
-        #     prefix,
-        #     "grompp",
-        #     "-p",
-        #     str(qmmmtop),
-        #     "-c",
-        #     str(groname),
-        #     "-n",
-        #     str(ndxname),
-        #     "-f",
-        #     str(mdpname),
-        #     "-o",
-        #     str(tprname),
-        #     "-backup",
-        #     "no",
-        # ]
+    #     [
+    #         prefix,
+    #         "grompp",
+    #         "-p",
+    #         str(qmmmtop),
+    #         "-c",
+    #         str(groname),
+    #         "-n",
+    #         str(ndxname),
+    #         "-f",
+    #         str(mdpname),
+    #         "-o",
+    #         str(tprname),
+    #         "-backup",
+    #         "no",
+    #     ]
     # )
     # subprocess.call(["rm", "mdout.mdp"])
     execute_gmx(
@@ -1452,23 +1452,8 @@ def get_mmenergy(edrname, qmmmInputs):
 
     mmenergy = 0.0
     logger(logfile, "Extracting MM energy.\n")
-    # p = subprocess.Popen(
-        # [
-        #     prefix,
-        #     "energy",
-        #     "-f",
-        #     edrname,
-        #     "-o",
-        #     str(edrname + ".xvg"),
-        #     "-backup",
-        #     "no",
-        # ],
-    #     stdout=subprocess.PIPE,
-    #     stdin=subprocess.PIPE,
-    #     stderr=subprocess.STDOUT,
-    # )
-    # p.communicate(input=b"11\n\n")
-    execute_gmx_communicate([
+    p = subprocess.Popen(
+        [
             prefix,
             "energy",
             "-f",
@@ -1478,8 +1463,23 @@ def get_mmenergy(edrname, qmmmInputs):
             "-backup",
             "no",
         ],
-        input_data=b"11\n\n"
-        )
+        stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    p.communicate(input=b"11\n\n")
+    # execute_gmx_communicate([
+    #         prefix,
+    #         "energy",
+    #         "-f",
+    #         edrname,
+    #         "-o",
+    #         str(edrname + ".xvg"),
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     input_data=b"11\n\n"
+    #     )
     
     with open(str(edrname + ".xvg")) as ifile:
         for line in ifile:
@@ -1907,8 +1907,8 @@ def get_mmforces_au(qmmmInputs):
     trrname = str(jobname + insert + ".trr")
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
-    execute_gmx(
-                [
+    p = subprocess.Popen(
+        [
             prefix,
             "traj",
             "-fp",
@@ -1923,8 +1923,29 @@ def get_mmforces_au(qmmmInputs):
             "-backup",
             "no",
         ],
-        input_data=b"0\n"
+        stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
     )
+    p.communicate(input=b"0\n")
+    # execute_gmx(
+    #             [
+    #         prefix,
+    #         "traj",
+    #         "-fp",
+    #         "-f",
+    #         trrname,
+    #         "-s",
+    #         tprname,
+    #         "-of",
+    #         xvgname,
+    #         "-xvg",
+    #         "none",
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     input_data=b"0\n"
+    # )
 
     with open(xvgname) as ifile:
         for line in ifile:
