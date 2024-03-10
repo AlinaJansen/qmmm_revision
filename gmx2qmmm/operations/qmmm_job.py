@@ -17,6 +17,7 @@ import numpy as np
 import sqlite3
 import sys
 import scipy.sparse as sp
+import scipy.sparse.linalg as spla
 
 from gmx2qmmm._helper import logger, _flatten, stepper
 from gmx2qmmm._helper import get_linkatoms_ang, make_xyzq, make_xyzq_io
@@ -377,7 +378,7 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
     new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
     # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
     # eigvals, eigvecs = np.linalg.eig(new_hess)
-    eigvals, eigvecs = sp.linalg.eigs(new_hess)
+    eigvals, eigvecs = spla.eigs(new_hess)
 
     # Check BFGS condition
     if factor1 > 0:
