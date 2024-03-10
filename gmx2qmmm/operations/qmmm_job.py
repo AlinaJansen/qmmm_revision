@@ -1109,6 +1109,12 @@ def execute_gmx(command_list, input_data=None):
         process.stdin.write(input_data.decode())
         process.stdin.close()
 
+def execute_gmx_communicate(command_list, input_data=None):
+    # XX combine functions! call gmx in a seperate function to be able to mock it
+    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+
+    process.communicate(input=input_data)
+
 def run_gmx(mmfile, qmmmInputs):
     jobname = qmmmInputs.qmmmparams.jobname
     prefix =  qmmmInputs.pathparams.gmxpath + qmmmInputs.pathparams.gmxcmd
@@ -1462,7 +1468,7 @@ def get_mmenergy(edrname, qmmmInputs):
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"11\n\n")
-    execute_gmx([
+    execute_gmx_communicate([
             prefix,
             "energy",
             "-f",
