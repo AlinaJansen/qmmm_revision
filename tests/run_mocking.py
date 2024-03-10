@@ -23,7 +23,7 @@ txt_file = 'profiling_bfgs_cp24.txt'
 -----------------------------------------------------------------
 '''
 
-IntegrationTest.execute_gmx2qmmm_mocking(directory)
+# IntegrationTest.execute_gmx2qmmm_mocking(directory)
 
 cProfile.run("IntegrationTest.execute_gmx2qmmm_mocking(directory)", filename=os.path.join(directory, prof_file))
 with open(os.path.join(directory, txt_file), "w") as output_file:
