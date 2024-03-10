@@ -1080,8 +1080,8 @@ def run_g16(qmfile, qmmmInputs):
         execute_g16(g16cmd, str(qmfile))
         logname = qmfile[:-3]
         logname += "log"
-        # os.rename(logname, str(jobname + insert + ".gjf.log"))
-        # os.rename("fort.7", str(jobname + insert + ".fort.7"))
+        os.rename(logname, str(jobname + insert + ".gjf.log"))
+        os.rename("fort.7", str(jobname + insert + ".fort.7"))
         logger(logfile, "G16 Done.\n")
     else:
         logger(
