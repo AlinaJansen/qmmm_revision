@@ -543,26 +543,7 @@ def make_gmx_inp(qmmmInputs):
     nbradius = get_nbradius(gro)
     write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout)
     update_gro_box(gro, groname, nbradius, logfile)
-    # subprocess.call(
-    #     [
-    #         prefix,
-    #         "grompp",
-    #         "-p",
-    #         str(qmmmtop),
-    #         "-c",
-    #         str(groname),
-    #         "-n",
-    #         str(ndxname),
-    #         "-f",
-    #         str(mdpname),
-    #         "-o",
-    #         str(tprname),
-    #         "-backup",
-    #         "no",
-    #     ]
-    # )
-    # subprocess.call(["rm", "mdout.mdp"])
-    execute_gmx(
+    subprocess.call(
         [
             prefix,
             "grompp",
@@ -580,6 +561,25 @@ def make_gmx_inp(qmmmInputs):
             "no",
         ]
     )
+    subprocess.call(["rm", "mdout.mdp"])
+    # execute_gmx(
+    #     [
+    #         prefix,
+    #         "grompp",
+    #         "-p",
+    #         str(qmmmtop),
+    #         "-c",
+    #         str(groname),
+    #         "-n",
+    #         str(ndxname),
+    #         "-f",
+    #         str(mdpname),
+    #         "-o",
+    #         str(tprname),
+    #         "-backup",
+    #         "no",
+    #     ]
+    # )
     return tprname
 
 def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout):
