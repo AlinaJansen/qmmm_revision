@@ -1,0 +1,508 @@
+                      :-) GROMACS - gmx grompp, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx grompp -p testopt.qmmm.top -c testopt.boxlarge.g96 -n testopt.qmmm.top.ndx -f testopt.mdp -o testopt.tpr -backup no
+
+Ignoring obsolete mdp entry 'title'
+Ignoring obsolete mdp entry 'cpp'
+
+NOTE 1 [file testopt.mdp]:
+  The group cutoff scheme is deprecated since GROMACS 5.0 and will be
+  removed in a future release when all interaction forms are supported for
+  the verlet scheme. The verlet scheme already scales better, and it is
+  compatible with GPUs and other accelerators.
+
+
+NOTE 2 [file testopt.mdp]:
+  Setting nstcalcenergy (100) equal to nstenergy (1)
+
+
+NOTE 3 [file testopt.mdp]:
+  You are using a cut-off for VdW interactions with NVE, for good energy
+  conservation use vdwtype = Shift (possibly with DispCorr)
+
+
+NOTE 4 [file testopt.mdp]:
+  You are using a cut-off for electrostatics with NVE, for good energy
+  conservation use coulombtype = PME-Switch or Reaction-Field-zero
+
+Setting the LD random seed to -1913209212
+Generated 2145 of the 2145 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2145 of the 2145 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'QMMM_model'
+
+NOTE 5 [file testopt.qmmm.top, line 219]:
+  System has non-zero total charge: -0.955900
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+NOTE 6 [file testopt.qmmm.top, line 219]:
+  The bond in molecule-type QMMM_model between atoms 17 OG and 18 HG has an
+  estimated oscillational period of 9.0e-03 ps, which is less than 10 times
+  the time step of 1.0e-03 ps.
+  Maybe you forgot to change the constraints mdp option.
+
+Number of degrees of freedom in T-Coupling group rest is 63.00
+
+NOTE 7 [file testopt.mdp]:
+  You are using a plain Coulomb cut-off, which might produce artifacts.
+  You might want to consider using PME electrostatics.
+
+
+
+There were 7 notes
+
+GROMACS reminds you: "Computers are like humans - they do everything except think." (John von Neumann)
+
+This run will generate roughly 0 Mb of data
+                      :-) GROMACS - gmx mdrun, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx mdrun -s testopt.tpr -o testopt.trr -c testopt.out.gro -x testopt.xtc -g testopt.gmx.log -e testopt.edr -backup no
+
+Reading file testopt.tpr, VERSION 2019.4 (single precision)
+Non-default thread affinity set, disabling internal thread affinity
+
+Multiple energy groups is not implemented for GPUs, falling back to the CPU. For better performance, run on the GPU without energy groups and then do gmx mdrun -rerun option on the trajectory with an energy group .tpr file.
+
+NOTE: Parallelization is limited by the small number of atoms,
+      only starting 1 thread-MPI ranks.
+      You can use the -nt and/or -ntmpi option to optimize the number of threads.
+
+
+Using 1 MPI thread
+
+
+NOTE: This file uses the deprecated 'group' cutoff_scheme. This will be
+removed in a future release when 'verlet' supports all interaction forms.
+
+starting mdrun 'Protein'
+1 steps,      0.0 ps.
+
+Writing final coordinates.
+
+               Core t (s)   Wall t (s)        (%)
+       Time:        0.078        0.082       94.1
+                 (ns/day)    (hour/ns)
+Performance:        2.096       11.448
+
+GROMACS reminds you: "I have a hunch that the unknown sequences of DNA will decode into copyright notices and patent protections." (Donald Knuth)
+
+                      :-) GROMACS - gmx grompp, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx grompp -p testopt.qmmm.top -c testopt.boxlarge.g96 -n testopt.qmmm.top.ndx -f testopt.mdp -o testopt.1.tpr -backup no
+
+Ignoring obsolete mdp entry 'title'
+Ignoring obsolete mdp entry 'cpp'
+
+NOTE 1 [file testopt.mdp]:
+  The group cutoff scheme is deprecated since GROMACS 5.0 and will be
+  removed in a future release when all interaction forms are supported for
+  the verlet scheme. The verlet scheme already scales better, and it is
+  compatible with GPUs and other accelerators.
+
+
+NOTE 2 [file testopt.mdp]:
+  Setting nstcalcenergy (100) equal to nstenergy (1)
+
+
+NOTE 3 [file testopt.mdp]:
+  You are using a cut-off for VdW interactions with NVE, for good energy
+  conservation use vdwtype = Shift (possibly with DispCorr)
+
+
+NOTE 4 [file testopt.mdp]:
+  You are using a cut-off for electrostatics with NVE, for good energy
+  conservation use coulombtype = PME-Switch or Reaction-Field-zero
+
+Setting the LD random seed to -1101707695
+Generated 2145 of the 2145 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2145 of the 2145 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'QMMM_model'
+
+NOTE 5 [file testopt.qmmm.top, line 219]:
+  System has non-zero total charge: -0.955900
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+NOTE 6 [file testopt.qmmm.top, line 219]:
+  The bond in molecule-type QMMM_model between atoms 17 OG and 18 HG has an
+  estimated oscillational period of 9.0e-03 ps, which is less than 10 times
+  the time step of 1.0e-03 ps.
+  Maybe you forgot to change the constraints mdp option.
+
+Number of degrees of freedom in T-Coupling group rest is 63.00
+
+NOTE 7 [file testopt.mdp]:
+  You are using a plain Coulomb cut-off, which might produce artifacts.
+  You might want to consider using PME electrostatics.
+
+
+
+There were 7 notes
+
+GROMACS reminds you: "If you open your mind too much, your brains will fall out." (Tim Minchin)
+
+This run will generate roughly 0 Mb of data
+                      :-) GROMACS - gmx mdrun, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx mdrun -s testopt.1.tpr -o testopt.1.trr -c testopt.1.out.gro -x testopt.1.xtc -g testopt.1.gmx.log -e testopt.1.edr -backup no
+
+Reading file testopt.1.tpr, VERSION 2019.4 (single precision)
+Non-default thread affinity set, disabling internal thread affinity
+
+Multiple energy groups is not implemented for GPUs, falling back to the CPU. For better performance, run on the GPU without energy groups and then do gmx mdrun -rerun option on the trajectory with an energy group .tpr file.
+
+NOTE: Parallelization is limited by the small number of atoms,
+      only starting 1 thread-MPI ranks.
+      You can use the -nt and/or -ntmpi option to optimize the number of threads.
+
+
+Using 1 MPI thread
+
+
+NOTE: This file uses the deprecated 'group' cutoff_scheme. This will be
+removed in a future release when 'verlet' supports all interaction forms.
+
+starting mdrun 'Protein'
+1 steps,      0.0 ps.
+
+Writing final coordinates.
+
+               Core t (s)   Wall t (s)        (%)
+       Time:        0.046        0.052       90.3
+                 (ns/day)    (hour/ns)
+Performance:        3.355        7.154
+
+GROMACS reminds you: "I Snipe Like Wesley" (Urban Dance Squad)
+
+                      :-) GROMACS - gmx grompp, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx grompp, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx grompp -p testopt.qmmm.top -c testopt.boxlarge.g96 -n testopt.qmmm.top.ndx -f testopt.mdp -o testopt.2.tpr -backup no
+
+Ignoring obsolete mdp entry 'title'
+Ignoring obsolete mdp entry 'cpp'
+
+NOTE 1 [file testopt.mdp]:
+  The group cutoff scheme is deprecated since GROMACS 5.0 and will be
+  removed in a future release when all interaction forms are supported for
+  the verlet scheme. The verlet scheme already scales better, and it is
+  compatible with GPUs and other accelerators.
+
+
+NOTE 2 [file testopt.mdp]:
+  Setting nstcalcenergy (100) equal to nstenergy (1)
+
+
+NOTE 3 [file testopt.mdp]:
+  You are using a cut-off for VdW interactions with NVE, for good energy
+  conservation use vdwtype = Shift (possibly with DispCorr)
+
+
+NOTE 4 [file testopt.mdp]:
+  You are using a cut-off for electrostatics with NVE, for good energy
+  conservation use coulombtype = PME-Switch or Reaction-Field-zero
+
+Setting the LD random seed to 2029585871
+Generated 2145 of the 2145 non-bonded parameter combinations
+Generating 1-4 interactions: fudge = 0.5
+Generated 2145 of the 2145 1-4 parameter combinations
+Excluding 3 bonded neighbours molecule type 'QMMM_model'
+
+NOTE 5 [file testopt.qmmm.top, line 219]:
+  System has non-zero total charge: -0.955900
+  Total charge should normally be an integer. See
+  http://www.gromacs.org/Documentation/Floating_Point_Arithmetic
+  for discussion on how close it should be to an integer.
+  
+
+
+
+NOTE 6 [file testopt.qmmm.top, line 219]:
+  The bond in molecule-type QMMM_model between atoms 17 OG and 18 HG has an
+  estimated oscillational period of 9.0e-03 ps, which is less than 10 times
+  the time step of 1.0e-03 ps.
+  Maybe you forgot to change the constraints mdp option.
+
+Number of degrees of freedom in T-Coupling group rest is 63.00
+
+NOTE 7 [file testopt.mdp]:
+  You are using a plain Coulomb cut-off, which might produce artifacts.
+  You might want to consider using PME electrostatics.
+
+
+
+There were 7 notes
+
+GROMACS reminds you: "Take away paradox from the thinker and you have a professor." (Soren Kirkegaard)
+
+This run will generate roughly 0 Mb of data
+                      :-) GROMACS - gmx mdrun, 2019.4 (-:
+
+                            GROMACS is written by:
+     Emile Apol      Rossen Apostolov      Paul Bauer     Herman J.C. Berendsen
+    Par Bjelkmar      Christian Blau   Viacheslav Bolnykh     Kevin Boyd    
+ Aldert van Buuren   Rudi van Drunen     Anton Feenstra       Alan Gray     
+  Gerrit Groenhof     Anca Hamuraru    Vincent Hindriksen  M. Eric Irrgang  
+  Aleksei Iupinov   Christoph Junghans     Joe Jordan     Dimitrios Karkoulis
+    Peter Kasson        Jiri Kraus      Carsten Kutzner      Per Larsson    
+  Justin A. Lemkul    Viveca Lindahl    Magnus Lundborg     Erik Marklund   
+    Pascal Merz     Pieter Meulenhoff    Teemu Murtola       Szilard Pall   
+    Sander Pronk      Roland Schulz      Michael Shirts    Alexey Shvetsov  
+   Alfons Sijbers     Peter Tieleman      Jon Vincent      Teemu Virolainen 
+ Christian Wennberg    Maarten Wolf   
+                           and the project leaders:
+        Mark Abraham, Berk Hess, Erik Lindahl, and David van der Spoel
+
+Copyright (c) 1991-2000, University of Groningen, The Netherlands.
+Copyright (c) 2001-2018, The GROMACS development team at
+Uppsala University, Stockholm University and
+the Royal Institute of Technology, Sweden.
+check out http://www.gromacs.org for more information.
+
+GROMACS is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation; either version 2.1
+of the License, or (at your option) any later version.
+
+GROMACS:      gmx mdrun, version 2019.4
+Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+Data prefix:  /scratch/spetry/Gromacs_bin
+Working dir:  /home/jansea92/qmmm_revision/example/opt_bfgs
+Command line:
+  gmx mdrun -s testopt.2.tpr -o testopt.2.trr -c testopt.2.out.gro -x testopt.2.xtc -g testopt.2.gmx.log -e testopt.2.edr -backup no
+
+Reading file testopt.2.tpr, VERSION 2019.4 (single precision)
+Non-default thread affinity set, disabling internal thread affinity
+
+Multiple energy groups is not implemented for GPUs, falling back to the CPU. For better performance, run on the GPU without energy groups and then do gmx mdrun -rerun option on the trajectory with an energy group .tpr file.
+
+NOTE: Parallelization is limited by the small number of atoms,
+      only starting 1 thread-MPI ranks.
+      You can use the -nt and/or -ntmpi option to optimize the number of threads.
+
+
+Using 1 MPI thread
+
+
+NOTE: This file uses the deprecated 'group' cutoff_scheme. This will be
+removed in a future release when 'verlet' supports all interaction forms.
+
+starting mdrun 'Protein'
+1 steps,      0.0 ps.
+
+Writing final coordinates.
+
+               Core t (s)   Wall t (s)        (%)
+       Time:        0.071        0.076       92.5
+                 (ns/day)    (hour/ns)
+Performance:        2.262       10.612
+
+GROMACS reminds you: "Throwing the Baby Away With the SPC" (S. Hayward)
+
+gmx2qmmm, a python interface for Quantum mechanics/Molecular mechanics (QM/MM) calculation
+[8]
+[[9, 10]]
+-----Run g16file:testopt.gjf---------------
+
+-----Run g16file:testopt.1.gjf---------------
+
+-----Run g16file:testopt.2.gjf---------------
+
+Traceback (most recent call last):
+  File "/home/jansea92/qmmm_revision/gmx2qmmm_execute.py", line 90, in <module>
+    gmx2qmmm(inputFiles)
+  File "/home/jansea92/qmmm_revision/gmx2qmmm_execute.py", line 86, in gmx2qmmm
+    perform_job(qmmmInputs)
+  File "/home/jansea92/qmmm_revision/gmx2qmmm_execute.py", line 57, in perform_job
+    perform_opt(qmmmInputs)
+  File "/home/jansea92/qmmm_revision/gmx2qmmm/operations/qmmm_job.py", line 2429, in perform_opt
+    dispvec = propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, stepsize, curr_step, logfile)
+  File "/home/jansea92/qmmm_revision/gmx2qmmm/operations/qmmm_job.py", line 763, in propagate_dispvec
+    coords, old_coords, gradient, old_gradient, old_hessian, logfile
+  File "/home/jansea92/qmmm_revision/gmx2qmmm/operations/qmmm_job.py", line 377, in get_approx_hessian
+    term1 = gradient_difference.dot(gradient_difference.T) / factor1
+  File "/trinity/shared/easybuild/software/Python/3.6.6-foss-2018b/lib/python3.6/site-packages/scipy-1.1.0-py3.6-linux-x86_64.egg/scipy/sparse/base.py", line 615, in __truediv__
+    return self._divide(other, true_divide=True)
+  File "/trinity/shared/easybuild/software/Python/3.6.6-foss-2018b/lib/python3.6/site-packages/scipy-1.1.0-py3.6-linux-x86_64.egg/scipy/sparse/base.py", line 580, in _divide
+    return self.astype(np.float_)._mul_scalar(1./other)
+ZeroDivisionError: float division by zero
+
+== Epilog Slurmctld ==================================================
+
+Job ID: 16987607
+Cluster: curta
+User/Group: jansea92/aggoetze
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:17
+CPU Efficiency: 7.59% of 00:03:44 core-walltime
+Job Wall-clock time: 00:00:28
+Memory Utilized: 74.58 MB
+Memory Efficiency: 7.46% of 1000.00 MB
+
+======================================================================
