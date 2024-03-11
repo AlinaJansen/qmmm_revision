@@ -1,0 +1,173 @@
+2024-03-11 07:11:35.136588 Reading input parameters...
+2024-03-11 07:11:35.162081 Done.
+2024-03-11 07:11:35.165585 Initializing dependencies...
+2024-03-11 07:11:35.168286 complete.
+2024-03-11 07:11:35.171626 Trying to understand your MM files.
+2024-03-11 07:11:35.173638 List of molecules...
+2024-03-11 07:11:35.195252 Done.
+2024-03-11 07:11:35.199581 Reading charges...
+2024-03-11 07:11:35.205281 Done.
+2024-03-11 07:11:35.209104 Reading geometry (.g96)...
+2024-03-11 07:11:35.217288 Done.
+2024-03-11 07:11:35.221580 Reading connectivity matrix...
+2024-03-11 07:11:35.228306 Done.
+2024-03-11 07:11:35.233401 Trying to understand your QM, MM and QM/MM parameters.
+2024-03-11 07:11:35.237975 Reading QM atom list...
+2024-03-11 07:11:35.244152 Done.
+2024-03-11 07:11:35.248220 Setting up a calculation named "testopt" of type "OPT".
+2024-03-11 07:11:35.251397 Starting the preparation of the point charge field used in the calculation.
+2024-03-11 07:11:35.254488 Creating the full xyzq Matrix...
+2024-03-11 07:11:35.260442 Done.
+2024-03-11 07:11:35.263202 Preparing the point charge field for a numerically optimized charge shift...
+2024-03-11 07:11:35.269084 Done.
+2024-03-11 07:11:35.273084 Setting up link atoms...
+2024-03-11 07:11:35.277821 Done.
+2024-03-11 07:11:35.280954 Shifting...
+2024-03-11 07:11:35.672846 Done.
+2024-03-11 07:11:35.676054 Preparing the QM/MM top file...
+2024-03-11 07:11:35.713116 Did not find an ffnonbonded file. Check your masses in the qmmm.top file!
+2024-03-11 07:11:35.719172 Cleaning exclusion list...
+2024-03-11 07:11:35.722412 Cleaning done.
+2024-03-11 07:11:35.725242 Formatting exclusion list...
+2024-03-11 07:11:35.728499 Formatting done.
+2024-03-11 07:11:35.734368 Done.
+2024-03-11 07:11:35.736639 Reading indices of active atoms...
+2024-03-11 07:11:35.742873 Done.
+2024-03-11 07:11:35.745626 Performing an optimization.
+2024-03-11 07:11:35.749859 Getting initial energy:
+2024-03-11 07:11:35.752356 Computing a single point.
+2024-03-11 07:11:35.756966 Preparing QM and MM inputs:
+2024-03-11 07:11:35.759593 -----OPT 0---------------.
+2024-03-11 07:11:35.766579 moleculetype section was identified
+2024-03-11 07:11:35.769561 atoms section was identified
+2024-03-11 07:11:35.795126 Gaussian input file, testopt.gjf, is ready.
+2024-03-11 07:11:35.798308 Running G16 file.
+2024-03-11 07:11:42.606018 G16 Done.
+2024-03-11 07:11:42.617085 Finding a larger .gro box size to avoid problems with .mdp input...
+2024-03-11 07:11:42.624149 Done.
+2024-03-11 07:11:42.979589 Gromacs input file, testopt.tpr, is ready.
+2024-03-11 07:11:42.982721 Running Gromacs file.
+2024-03-11 07:11:43.177204 Reading energies.
+2024-03-11 07:11:43.180336 Extracting QM energy.
+2024-03-11 07:11:43.193694 Obtaining charge self-interaction...
+2024-03-11 07:11:43.197553 Done:        -0.6947009102 a.u.
+2024-03-11 07:11:43.204037 QM energy is -95.0745747709 a.u..
+2024-03-11 07:11:43.207750 Extracting MM energy.
+2024-03-11 07:11:43.238580 MM energy is 0.11828619417307631 a.u..
+2024-03-11 07:11:43.263917 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:43.269469 Single point energy done. QM/MM energy is       -95.1751263833 (QM, link atom corrected BP86/STO-3G) +         0.1182861942 (MM) =       -95.0568401892 (a.u.)
+2024-03-11 07:11:43.272526 Reading forces.
+2024-03-11 07:11:43.274832 Reading QM forces using file: testopt.gjf.log and testopt.fort.7
+2024-03-11 07:11:43.285340 QM forces read.
+2024-03-11 07:11:43.288591 Reading MM forces using file: testopt.trr/.tpr/.tpr
+2024-03-11 07:11:43.331780 MM forces read.
+2024-03-11 07:11:43.340504 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:43.345524 Forces for link atom correction read.
+2024-03-11 07:11:43.349041 Total forces obtained.
+2024-03-11 07:11:43.352244 Deleted forces of inactive atoms.
+2024-03-11 07:11:43.355496 Writing OPT output.
+2024-03-11 07:11:43.375118 Max force not below threshold. Continuing.
+2024-03-11 07:11:43.499190 using total force with max force: -0.235457296313445 for the displacement
+2024-03-11 07:11:43.502447 Maximum force is -0.235457296313445 a.u. at coord 20/3.
+2024-03-11 07:11:43.518460 Propagate with steepest descent for first step...
+2024-03-11 07:11:43.528857 Successfully wrote 21 atoms to new g96 file.
+2024-03-11 07:11:43.538185 Made new coordinates in file testopt.1.g96.
+2024-03-11 07:11:43.544746 List of molecules...
+2024-03-11 07:11:43.552892 Done.
+2024-03-11 07:11:43.560806 Reading charges...
+2024-03-11 07:11:43.571804 Done.
+2024-03-11 07:11:43.577837 Made new xyzq matrix.
+2024-03-11 07:11:43.586998 Preparing the point charge field for a numerically optimized charge shift...
+2024-03-11 07:11:43.594881 Done.
+2024-03-11 07:11:43.602908 Updated positions of link atoms.
+2024-03-11 07:11:43.611302 Shifting...
+2024-03-11 07:11:44.010564 Made new PCF file.
+2024-03-11 07:11:44.014258 Done.
+2024-03-11 07:11:44.025516 Computing a single point.
+2024-03-11 07:11:44.033436 Preparing QM and MM inputs:
+2024-03-11 07:11:44.041113 -----OPT 1---------------.
+2024-03-11 07:11:44.052890 moleculetype section was identified
+2024-03-11 07:11:44.058078 atoms section was identified
+2024-03-11 07:11:44.084683 Gaussian input file, testopt.1.gjf, is ready.
+2024-03-11 07:11:44.088629 Running G16 file.
+2024-03-11 07:11:51.079786 G16 Done.
+2024-03-11 07:11:51.094645 Finding a larger .gro box size to avoid problems with .mdp input...
+2024-03-11 07:11:51.100577 Done.
+2024-03-11 07:11:51.217508 Gromacs input file, testopt.1.tpr, is ready.
+2024-03-11 07:11:51.221595 Running Gromacs file.
+2024-03-11 07:11:51.378962 Reading energies.
+2024-03-11 07:11:51.383121 Extracting QM energy.
+2024-03-11 07:11:51.401045 Obtaining charge self-interaction...
+2024-03-11 07:11:51.405204 Done:        -0.6726897377 a.u.
+2024-03-11 07:11:51.410959 QM energy is -95.1019247335 a.u..
+2024-03-11 07:11:51.417180 Extracting MM energy.
+2024-03-11 07:11:51.449094 MM energy is 0.06922442418879564 a.u..
+2024-03-11 07:11:51.458648 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:51.463616 Single point energy done. QM/MM energy is       -95.2014739773 (QM, link atom corrected BP86/STO-3G) +         0.0692244242 (MM) =       -95.1322495531 (a.u.)
+2024-03-11 07:11:51.466957 Reading forces.
+2024-03-11 07:11:51.475289 Reading QM forces using file: testopt.1.gjf.log and testopt.1.fort.7
+2024-03-11 07:11:51.487389 QM forces read.
+2024-03-11 07:11:51.492140 Reading MM forces using file: testopt.1.trr/.tpr/.tpr
+2024-03-11 07:11:51.529373 MM forces read.
+2024-03-11 07:11:51.539775 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:51.545263 Forces for link atom correction read.
+2024-03-11 07:11:51.550157 Total forces obtained.
+2024-03-11 07:11:51.558659 Deleted forces of inactive atoms.
+2024-03-11 07:11:51.566319 Writing OPT output.
+2024-03-11 07:11:51.575552 Archive previous files
+2024-03-11 07:11:51.587395 Due to the decrease of the energy, the structure testopt.1.g96 will be used from now on.
+2024-03-11 07:11:51.591541 using total force with max force: -0.12626372545711498 for the displacement
+2024-03-11 07:11:51.595470 Maximum force is -0.12626372545711498 a.u. at coord 20/3.
+2024-03-11 07:11:51.598474 Propagate with BFGS method...
+2024-03-11 07:11:51.622615 BFGS condition not fulfilled! We keep the old Hessian.
+2024-03-11 07:11:51.638402 Successfully wrote 21 atoms to new g96 file.
+2024-03-11 07:11:51.643427 Made new coordinates in file testopt.2.g96.
+2024-03-11 07:11:51.647598 List of molecules...
+2024-03-11 07:11:51.652484 Done.
+2024-03-11 07:11:51.655651 Reading charges...
+2024-03-11 07:11:51.660015 Done.
+2024-03-11 07:11:51.663840 Made new xyzq matrix.
+2024-03-11 07:11:51.677327 Preparing the point charge field for a numerically optimized charge shift...
+2024-03-11 07:11:51.682132 Done.
+2024-03-11 07:11:51.685640 Updated positions of link atoms.
+2024-03-11 07:11:51.688628 Shifting...
+2024-03-11 07:11:52.109862 Made new PCF file.
+2024-03-11 07:11:52.113496 Done.
+2024-03-11 07:11:52.116390 Computing a single point.
+2024-03-11 07:11:52.119168 Preparing QM and MM inputs:
+2024-03-11 07:11:52.122512 -----OPT 2---------------.
+2024-03-11 07:11:52.158403 moleculetype section was identified
+2024-03-11 07:11:52.161448 atoms section was identified
+2024-03-11 07:11:52.185336 Gaussian input file, testopt.2.gjf, is ready.
+2024-03-11 07:11:52.189404 Running G16 file.
+2024-03-11 07:11:58.520446 G16 Done.
+2024-03-11 07:11:58.533150 Finding a larger .gro box size to avoid problems with .mdp input...
+2024-03-11 07:11:58.538991 Done.
+2024-03-11 07:11:58.660397 Gromacs input file, testopt.2.tpr, is ready.
+2024-03-11 07:11:58.663274 Running Gromacs file.
+2024-03-11 07:11:58.847197 Reading energies.
+2024-03-11 07:11:58.850896 Extracting QM energy.
+2024-03-11 07:11:58.863057 Obtaining charge self-interaction...
+2024-03-11 07:11:58.867181 Done:        -0.6750123659 a.u.
+2024-03-11 07:11:58.872765 QM energy is -95.0994481904 a.u..
+2024-03-11 07:11:58.876473 Extracting MM energy.
+2024-03-11 07:11:58.907441 MM energy is 0.07379133887098367 a.u..
+2024-03-11 07:11:58.916490 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:58.922115 Single point energy done. QM/MM energy is       -95.1988573241 (QM, link atom corrected BP86/STO-3G) +         0.0737913389 (MM) =       -95.1250659852 (a.u.)
+2024-03-11 07:11:58.925543 Reading forces.
+2024-03-11 07:11:58.928385 Reading QM forces using file: testopt.2.gjf.log and testopt.2.fort.7
+2024-03-11 07:11:58.936092 QM forces read.
+2024-03-11 07:11:58.939901 Reading MM forces using file: testopt.2.trr/.tpr/.tpr
+2024-03-11 07:11:58.976252 MM forces read.
+2024-03-11 07:11:58.985349 Unexisted method in correction database, changing to default correction method...
+2024-03-11 07:11:58.990583 Forces for link atom correction read.
+2024-03-11 07:11:58.994080 Total forces obtained.
+2024-03-11 07:11:58.998185 Deleted forces of inactive atoms.
+2024-03-11 07:11:59.001533 Writing OPT output.
+2024-03-11 07:11:59.004500 Rejected one optimization step due to energy increasing. Trying again, with smaller step.
+2024-03-11 07:11:59.008381 Reduced stepsize = 0.024
+2024-03-11 07:11:59.012806 Due to the rejection use maximum force: -0.12626372545711498
+2024-03-11 07:11:59.015675 Due to the increase of the energy, the used structure remains testopt.1.g96.
+2024-03-11 07:11:59.018620 using total force with max force: -0.12626372545711498 for the displacement
+2024-03-11 07:11:59.022968 Maximum force is -0.12626372545711498 a.u. at coord 20/3.
+2024-03-11 07:11:59.026579 Propagate with BFGS method...

@@ -374,8 +374,11 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
     factor2 = float(geometry_difference.T.dot(mat)[0,0])
     # idmat = np.eye(len(gradient_difference))
 
+    term1 = gradient_difference.dot(gradient_difference.T) / factor1
+    term2 = mat.dot(mat.T) / factor2
+
     # update formula
-    new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
+    new_hess = old_hess + term1 - term2
     # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
     # eigvals, eigvecs = np.linalg.eig(new_hess)
     eigvals, eigvecs = spla.eigs(new_hess)
