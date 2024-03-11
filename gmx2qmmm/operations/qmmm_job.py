@@ -81,7 +81,7 @@ def read_pcf_self(qmfile):
                 break
     return pcf_self
 
-def remove_inactive(total_force, active):
+def remove_inactive(total_force, active): # mask xx
     new_total_force = []
     for i in range(0, len(total_force)):
         if (i + 1) in np.array(active).astype(int):
@@ -373,20 +373,23 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
     factor2 = float(geometry_difference.T.dot(mat)[0,0])
     # idmat = np.eye(len(gradient_difference))
 
-    # update formula
-    new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
-    # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
-    # eigvals, eigvecs = np.linalg.eig(new_hess)
-    eigvals, eigvecs = sp.linalg.eigs(new_hess)
+
 
     # Check BFGS condition
     if factor1 > 0:
         logger(logfile, "BFGS condition fulfilled.\n")
         WARN = False
+        # update formula
+        # AJ calculate new hessian only if condition is fulfilled to save time and avoid division by zero 
+        new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
+        # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
+        # eigvals, eigvecs = np.linalg.eig(new_hess)
+        eigvals, eigvecs = sp.linalg.eigs(new_hess)
     else:
         logger(logfile, "BFGS condition not fulfilled! We keep the old Hessian.\n")
         WARN = True
         new_hess = old_hess
+        eigvals = [0] # seems like eigenvalues are never used anyway ... AJ
 
     return new_hess, eigvals.min(), WARN
 
@@ -1080,7 +1083,7 @@ def run_g16(qmfile, qmmmInputs):
         execute_g16(g16cmd, str(qmfile))
         logname = qmfile[:-3]
         logname += "log"
-        os.rename(logname, str(jobname + insert + ".gjf.log"))
+        # os.rename(logname, str(jobname + insert + ".gjf.log"))
         os.rename("fort.7", str(jobname + insert + ".fort.7"))
         logger(logfile, "G16 Done.\n")
     else:

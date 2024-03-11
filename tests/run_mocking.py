@@ -16,21 +16,20 @@ from IntegrationTest import IntegrationTest
 Insert path to folder here:
 -----------------------------------------------------------------
 '''
-directory = os.path.join(os.path.dirname(__file__), 'temp_bfgs_cp24')
+# directory = os.path.join(os.path.dirname(__file__), 'temp_bfgs_cp24')
+directory = os.path.join(os.path.dirname(__file__), 'bfgs_zerodivision')
 prof_file = 'profiling_bfgs_cp24.prof'
 txt_file = 'profiling_bfgs_cp24.txt'
 '''
 -----------------------------------------------------------------
 '''
 
-# IntegrationTest.execute_gmx2qmmm_mocking(directory)
+IntegrationTest.execute_gmx2qmmm_mocking(directory)
 
-cProfile.run("IntegrationTest.execute_gmx2qmmm_mocking(directory)", filename=os.path.join(directory, prof_file))
-with open(os.path.join(directory, txt_file), "w") as output_file:
-    stats = pstats.Stats(os.path.join(directory, prof_file), stream=output_file)
-    stats.sort_stats('cumtime')
-    stats.print_stats(100)
+# cProfile.run("IntegrationTest.execute_gmx2qmmm_mocking(directory)", filename=os.path.join(directory, prof_file))
+# with open(os.path.join(directory, txt_file), "w") as output_file:
+#     stats = pstats.Stats(os.path.join(directory, prof_file), stream=output_file)
+#     stats.sort_stats('cumtime')
+#     stats.print_stats(100)
 
-print(f"Profiling analysis saved to {txt_file}")
-
-# Next step: untar step2!
+# print(f"Profiling analysis saved to {txt_file}")
