@@ -374,25 +374,26 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
     factor2 = float(geometry_difference.T.dot(mat)[0,0])
     # idmat = np.eye(len(gradient_difference))
 
-    term1 = gradient_difference.dot(gradient_difference.T) / factor1
-    term2 = mat.dot(mat.T) / factor2
 
-    # update formula
-    new_hess = old_hess + term1 - term2
-    # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
-    # eigvals, eigvecs = np.linalg.eig(new_hess)
-    eigvals, eigvecs = spla.eigs(new_hess)
 
     # Check BFGS condition
     if factor1 > 0:
         logger(logfile, "BFGS condition fulfilled.\n")
         WARN = False
+        # update formula
+        # AJ calculate new hessian only if condition is fulfilled to save time and avoid division by zero 
+        new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
+        # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
+        # eigvals, eigvecs = np.linalg.eig(new_hess)
+        eigvals, eigvecs = sp.linalg.eigs(new_hess)
     else:
         logger(logfile, "BFGS condition not fulfilled! We keep the old Hessian.\n")
         WARN = True
         new_hess = old_hess
+        eigvals = [0] # seems like eigenvalues are never used anyway ... AJ
 
     return new_hess, eigvals.min(), WARN
+
 
 #qm & mm program ultis
 def make_g16_inp(qmmmInputs):
