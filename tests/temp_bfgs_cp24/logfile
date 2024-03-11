@@ -1,196 +1,76 @@
-2024-03-11 06:24:31.660137 Reading input parameters...
-2024-03-11 06:24:31.683050 Done.
-2024-03-11 06:24:31.684049 Initializing dependencies...
-2024-03-11 06:24:31.684049 complete.
-2024-03-11 06:24:31.684049 Trying to understand your MM files.
-2024-03-11 06:24:31.685086 List of molecules...
-2024-03-11 06:24:31.688178 Done.
-2024-03-11 06:24:31.688178 Reading charges...
-2024-03-11 06:24:40.610600 Done.
-2024-03-11 06:24:40.611597 Reading geometry (.g96)...
-2024-03-11 06:24:42.258950 Done.
-2024-03-11 06:24:42.259948 Reading connectivity matrix...
-2024-03-11 06:25:12.408622 Done.
-2024-03-11 06:25:12.409659 Trying to understand your QM, MM and QM/MM parameters.
-2024-03-11 06:25:12.409659 Reading QM atom list...
-2024-03-11 06:25:12.410662 Done.
-2024-03-11 06:25:12.439536 Setting up a calculation named "opt" of type "OPT".
-2024-03-11 06:25:12.439536 Starting the preparation of the point charge field used in the calculation.
-2024-03-11 06:25:12.440544 Creating the full xyzq Matrix...
-2024-03-11 06:25:12.483066 Done.
-2024-03-11 06:25:12.484065 Preparing the point charge field for a numerically optimized charge shift...
-2024-03-11 06:25:27.275506 Done.
-2024-03-11 06:25:27.276508 No linkatoms has been identified, if this not intended please check your QM/MM region.
-2024-03-11 06:25:27.304088 NOTE: Shifting omitted due to opt.pointcharges being an existing file!
-2024-03-11 06:25:27.305077 Done.
-2024-03-11 06:25:27.305077 Preparing the QM/MM top file...
-2024-03-11 06:26:31.976690 Did not find an ffnonbonded file. Check your masses in the qmmm.top file!
-2024-03-11 06:26:54.041313 Cleaning exclusion list...
-2024-03-11 06:26:55.572751 Cleaning done.
-2024-03-11 06:26:55.581727 Formatting exclusion list...
-2024-03-11 06:26:55.687867 Formatting done.
-2024-03-11 06:26:56.189705 Done.
-2024-03-11 06:26:56.190703 Reading indices of active atoms...
-2024-03-11 06:26:56.222567 Done.
-2024-03-11 06:26:56.222567 Performing an optimization.
-2024-03-11 06:26:56.223565 Getting initial energy:
-2024-03-11 06:26:56.223565 Computing a single point.
-2024-03-11 06:26:56.223565 Preparing QM and MM inputs:
-2024-03-11 06:26:56.224550 -----OPT 0---------------.
-2024-03-11 06:26:57.680470 moleculetype section was identified
-2024-03-11 06:26:57.680470 atoms section was identified
-2024-03-11 06:27:08.689224 Gaussian input file, opt.gjf, is ready.
-2024-03-11 06:27:08.690186 NOTE: Using existing G16 files, skipping calculation for this step.
-2024-03-11 06:27:10.746879 Finding a larger .gro box size to avoid problems with .mdp input...
-2024-03-11 06:27:12.037090 Done.
-2024-03-11 06:27:12.039062 Gromacs input file, opt.tpr, is ready.
-2024-03-11 06:27:12.039062 Running Gromacs file.
-2024-03-11 06:27:12.039062 Reading energies.
-2024-03-11 06:27:12.040037 Extracting QM energy.
-2024-03-11 06:27:38.479229 Obtaining charge self-interaction...
-2024-03-11 06:27:39.342778 Done:      -971.5177109567 a.u.
-2024-03-11 06:27:47.910343 QM energy is -1556.7949228333 a.u..
-2024-03-11 06:27:47.910343 Extracting MM energy.
-2024-03-11 06:27:47.913335 MM energy is 1.3132810793355547 a.u..
-2024-03-11 06:27:47.914307 Single point energy done. QM/MM energy is     -1556.7949228333 (QM, link atom corrected BP86/STO-3G) +         1.3132810793 (MM) =     -1555.4816417540 (a.u.)
-2024-03-11 06:27:47.914307 Reading forces.
-2024-03-11 06:27:47.915303 Reading QM forces using file: opt.gjf.log and opt.fort.7
-2024-03-11 06:28:01.380618 QM forces read.
-2024-03-11 06:28:01.380618 Reading MM forces using file: opt.trr/.tpr/.tpr
-2024-03-11 06:28:02.112264 MM forces read.
-2024-03-11 06:28:02.113245 Forces for link atom correction read.
-2024-03-11 06:28:02.190144 Total forces obtained.
-2024-03-11 06:28:17.660132 Deleted forces of inactive atoms.
-2024-03-11 06:28:17.678083 Writing OPT output.
-2024-03-11 06:28:32.939388 Max force not below threshold. Continuing.
-2024-03-11 06:28:55.229621 using total force with max force: -0.08628622493656249 for the displacement
-2024-03-11 06:29:01.947604 Maximum force is -0.08628622493656249 a.u. at coord 3569/1.
-2024-03-11 06:29:01.947604 Propagate with steepest descent for first step...
-2024-03-11 06:29:05.568682 Successfully wrote 129549 atoms to new g96 file.
-2024-03-11 06:29:05.569679 Made new coordinates in file opt.1.g96.
-2024-03-11 06:29:07.063696 List of molecules...
-2024-03-11 06:29:07.064683 Done.
-2024-03-11 06:29:07.065691 Reading charges...
-2024-03-11 06:29:16.359734 Done.
-2024-03-11 06:29:16.387671 Made new xyzq matrix.
-2024-03-11 06:29:16.388619 Preparing the point charge field for a numerically optimized charge shift...
-2024-03-11 06:29:31.969024 Done.
-2024-03-11 06:29:31.969024 Updated positions of link atoms.
-2024-03-11 06:29:31.970019 NOTE: Shifting omitted due to opt.1.pointcharges being an existing file!
-2024-03-11 06:29:31.970019 Done.
-2024-03-11 06:29:31.982040 Computing a single point.
-2024-03-11 06:29:31.982987 Preparing QM and MM inputs:
-2024-03-11 06:29:31.982987 -----OPT 1---------------.
-2024-03-11 06:29:33.636481 moleculetype section was identified
-2024-03-11 06:29:33.637476 atoms section was identified
-2024-03-11 06:29:45.424192 Gaussian input file, opt.1.gjf, is ready.
-2024-03-11 06:29:45.425188 NOTE: Using existing G16 files, skipping calculation for this step.
-2024-03-11 06:29:48.169741 Finding a larger .gro box size to avoid problems with .mdp input...
-2024-03-11 06:29:50.275668 Done.
-2024-03-11 06:29:50.275668 Gromacs input file, opt.1.tpr, is ready.
-2024-03-11 06:29:50.275668 Running Gromacs file.
-2024-03-11 06:29:50.276685 Reading energies.
-2024-03-11 06:29:50.277663 Extracting QM energy.
-2024-03-11 06:30:19.888189 Obtaining charge self-interaction...
-2024-03-11 06:30:20.760872 Done:      -971.4775148768 a.u.
-2024-03-11 06:30:31.044521 QM energy is -1556.8377946532 a.u..
-2024-03-11 06:30:31.044521 Extracting MM energy.
-2024-03-11 06:30:31.044521 MM energy is 0.5112670770180548 a.u..
-2024-03-11 06:30:31.046031 Single point energy done. QM/MM energy is     -1556.8377946532 (QM, link atom corrected BP86/STO-3G) +         0.5112670770 (MM) =     -1556.3265275762 (a.u.)
-2024-03-11 06:30:31.046031 Reading forces.
-2024-03-11 06:30:31.047031 Reading QM forces using file: opt.1.gjf.log and opt.1.fort.7
-2024-03-11 06:30:47.739175 QM forces read.
-2024-03-11 06:30:47.739175 Reading MM forces using file: opt.1.trr/.tpr/.tpr
-2024-03-11 06:30:48.680700 MM forces read.
-2024-03-11 06:30:48.680700 Forces for link atom correction read.
-2024-03-11 06:30:48.824833 Total forces obtained.
-2024-03-11 06:31:07.657285 Deleted forces of inactive atoms.
-2024-03-11 06:31:07.672208 Writing OPT output.
-2024-03-11 06:31:07.676197 Archive previous files
-2024-03-11 06:31:25.235135 Due to the decrease of the energy, the structure opt.1.g96 will be used from now on.
-2024-03-11 06:31:25.235135 using total force with max force: 0.055446798379438 for the displacement
-2024-03-11 06:31:33.012414 Maximum force is 0.055446798379438 a.u. at coord 3569/2.
-2024-03-11 06:31:33.012414 Propagate with BFGS method...
-2024-03-11 06:31:49.708128 BFGS condition not fulfilled! We keep the old Hessian.
-2024-03-11 06:31:55.096347 Successfully wrote 129549 atoms to new g96 file.
-2024-03-11 06:31:55.096347 Made new coordinates in file opt.2.g96.
-2024-03-11 06:31:57.562922 List of molecules...
-2024-03-11 06:31:57.564918 Done.
-2024-03-11 06:31:57.564918 Reading charges...
-2024-03-11 06:32:14.953381 Done.
-2024-03-11 06:32:14.998260 Made new xyzq matrix.
-2024-03-11 06:32:14.998260 Preparing the point charge field for a numerically optimized charge shift...
-2024-03-11 06:32:32.315682 Done.
-2024-03-11 06:32:32.315682 Updated positions of link atoms.
-2024-03-11 06:32:32.316644 NOTE: Shifting omitted due to opt.2.pointcharges being an existing file!
-2024-03-11 06:32:32.316644 Done.
-2024-03-11 06:32:32.334341 Computing a single point.
-2024-03-11 06:32:32.334341 Preparing QM and MM inputs:
-2024-03-11 06:32:32.334341 -----OPT 2---------------.
-2024-03-11 06:32:34.819092 moleculetype section was identified
-2024-03-11 06:32:34.820089 atoms section was identified
-2024-03-11 06:32:53.660306 Gaussian input file, opt.2.gjf, is ready.
-2024-03-11 06:32:53.662339 NOTE: Using existing G16 files, skipping calculation for this step.
-2024-03-11 06:32:57.342863 Finding a larger .gro box size to avoid problems with .mdp input...
-2024-03-11 06:33:00.208013 Done.
-2024-03-11 06:33:00.208013 Gromacs input file, opt.2.tpr, is ready.
-2024-03-11 06:33:00.209012 Running Gromacs file.
-2024-03-11 06:33:00.209012 Reading energies.
-2024-03-11 06:33:00.209012 Extracting QM energy.
-2024-03-11 06:33:41.220253 Obtaining charge self-interaction...
-2024-03-11 06:33:42.849430 Done:      -971.4497118035 a.u.
-2024-03-11 06:33:59.034661 QM energy is -1556.8606454164997 a.u..
-2024-03-11 06:33:59.035659 Extracting MM energy.
-2024-03-11 06:33:59.036660 MM energy is 0.21643629365742983 a.u..
-2024-03-11 06:33:59.037696 Single point energy done. QM/MM energy is     -1556.8606454165 (QM, link atom corrected BP86/STO-3G) +         0.2164362937 (MM) =     -1556.6442091228 (a.u.)
-2024-03-11 06:33:59.037696 Reading forces.
-2024-03-11 06:33:59.038661 Reading QM forces using file: opt.2.gjf.log and opt.2.fort.7
-2024-03-11 06:34:21.759466 QM forces read.
-2024-03-11 06:34:21.759466 Reading MM forces using file: opt.2.trr/.tpr/.tpr
-2024-03-11 06:34:24.172414 MM forces read.
-2024-03-11 06:34:24.173384 Forces for link atom correction read.
-2024-03-11 06:34:24.290616 Total forces obtained.
-2024-03-11 06:34:45.892014 Deleted forces of inactive atoms.
-2024-03-11 06:34:45.923926 Writing OPT output.
-2024-03-11 06:34:45.936891 Archive previous files
-2024-03-11 06:35:13.435105 Due to the decrease of the energy, the structure opt.2.g96 will be used from now on.
-2024-03-11 06:35:13.436067 using total force with max force: -0.126824885478844 for the displacement
-2024-03-11 06:35:20.762581 Maximum force is -0.126824885478844 a.u. at coord 3569/1.
-2024-03-11 06:35:20.763552 Propagate with BFGS method...
-2024-03-11 06:35:44.876716 BFGS condition fulfilled.
-2024-03-11 06:36:38.485544 Successfully wrote 129549 atoms to new g96 file.
-2024-03-11 06:36:38.486512 Made new coordinates in file opt.3.g96.
-2024-03-11 06:36:42.288725 List of molecules...
-2024-03-11 06:36:42.319164 Done.
-2024-03-11 06:36:42.320162 Reading charges...
-2024-03-11 06:36:57.617617 Done.
-2024-03-11 06:36:57.665071 Made new xyzq matrix.
-2024-03-11 06:36:57.665071 Preparing the point charge field for a numerically optimized charge shift...
-2024-03-11 06:37:13.932494 Done.
-2024-03-11 06:37:13.933858 Updated positions of link atoms.
-2024-03-11 06:37:13.934855 Shifting...
-2024-03-11 06:37:22.042494 Made new PCF file.
-2024-03-11 06:37:22.042494 Done.
-2024-03-11 06:37:22.062478 Computing a single point.
-2024-03-11 06:37:22.063441 Preparing QM and MM inputs:
-2024-03-11 06:37:22.063441 -----OPT 3---------------.
-2024-03-11 06:37:24.114193 moleculetype section was identified
-2024-03-11 06:37:24.114193 atoms section was identified
-2024-03-11 06:37:40.050439 Gaussian input file, opt.3.gjf, is ready.
-2024-03-11 06:37:40.051436 NOTE: Using existing G16 files, skipping calculation for this step.
-2024-03-11 06:37:44.922073 Finding a larger .gro box size to avoid problems with .mdp input...
-2024-03-11 06:37:47.326052 Done.
-2024-03-11 06:37:47.326052 Gromacs input file, opt.3.tpr, is ready.
-2024-03-11 06:37:47.327049 Running Gromacs file.
-2024-03-11 06:37:47.327049 Reading energies.
-2024-03-11 06:37:47.327049 Extracting QM energy.
-2024-03-11 06:38:24.252949 Obtaining charge self-interaction...
-2024-03-11 06:38:25.767996 Done:      -971.4492490209 a.u.
-2024-03-11 06:38:40.368386 QM energy is -1556.8696152291 a.u..
-2024-03-11 06:38:40.368386 Extracting MM energy.
-2024-03-11 06:38:40.369855 MM energy is 0.0372323070703908 a.u..
-2024-03-11 06:38:40.369855 Single point energy done. QM/MM energy is     -1556.8696152291 (QM, link atom corrected BP86/STO-3G) +         0.0372323071 (MM) =     -1556.8323829220 (a.u.)
-2024-03-11 06:38:40.370856 Reading forces.
-2024-03-11 06:38:40.370856 Reading QM forces using file: opt.3.gjf.log and opt.3.fort.7
-2024-03-11 06:39:00.934010 QM forces read.
-2024-03-11 06:39:00.934010 Reading MM forces using file: opt.3.trr/.tpr/.tpr
+2024-03-11 11:23:29.777858 Reading input parameters...
+2024-03-11 11:23:29.800903 Done.
+2024-03-11 11:23:29.800903 Initializing dependencies...
+2024-03-11 11:23:29.801858 complete.
+2024-03-11 11:23:29.801858 Trying to understand your MM files.
+2024-03-11 11:23:29.802864 List of molecules...
+2024-03-11 11:23:29.804882 Done.
+2024-03-11 11:23:29.805850 Reading charges...
+2024-03-11 11:23:38.280851 Done.
+2024-03-11 11:23:38.280851 Reading geometry (.g96)...
+2024-03-11 11:23:39.642050 Done.
+2024-03-11 11:23:39.642050 Reading connectivity matrix...
+2024-03-11 11:24:04.202293 Done.
+2024-03-11 11:24:04.203257 Trying to understand your QM, MM and QM/MM parameters.
+2024-03-11 11:24:04.203664 Reading QM atom list...
+2024-03-11 11:24:04.204665 Done.
+2024-03-11 11:24:04.232800 Setting up a calculation named "opt" of type "OPT".
+2024-03-11 11:24:04.233807 Starting the preparation of the point charge field used in the calculation.
+2024-03-11 11:24:04.233807 Creating the full xyzq Matrix...
+2024-03-11 11:24:04.263803 Done.
+2024-03-11 11:24:04.264800 Preparing the point charge field for a numerically optimized charge shift...
+2024-03-11 11:24:17.721119 Done.
+2024-03-11 11:24:17.722117 No linkatoms has been identified, if this not intended please check your QM/MM region.
+2024-03-11 11:24:17.723114 NOTE: Shifting omitted due to opt.pointcharges being an existing file!
+2024-03-11 11:24:17.723114 Done.
+2024-03-11 11:24:17.723114 Preparing the QM/MM top file...
+2024-03-11 11:25:09.785544 Did not find an ffnonbonded file. Check your masses in the qmmm.top file!
+2024-03-11 11:25:29.246524 Cleaning exclusion list...
+2024-03-11 11:25:30.610830 Cleaning done.
+2024-03-11 11:25:30.619809 Formatting exclusion list...
+2024-03-11 11:25:30.707455 Formatting done.
+2024-03-11 11:25:31.215944 Done.
+2024-03-11 11:25:31.215944 Reading indices of active atoms...
+2024-03-11 11:25:31.222931 Done.
+2024-03-11 11:25:31.223928 Performing an optimization.
+2024-03-11 11:25:31.223928 Getting initial energy:
+2024-03-11 11:25:31.224925 Computing a single point.
+2024-03-11 11:25:31.224925 Preparing QM and MM inputs:
+2024-03-11 11:25:31.225923 -----OPT 0---------------.
+2024-03-11 11:25:32.394404 moleculetype section was identified
+2024-03-11 11:25:32.395407 atoms section was identified
+2024-03-11 11:25:41.330804 Gaussian input file, opt.gjf, is ready.
+2024-03-11 11:25:41.331796 NOTE: Using existing G16 files, skipping calculation for this step.
+2024-03-11 11:25:43.256050 Finding a larger .gro box size to avoid problems with .mdp input...
+2024-03-11 11:25:44.281977 Done.
+2024-03-11 11:25:44.282975 Gromacs input file, opt.tpr, is ready.
+2024-03-11 11:25:44.283972 Running Gromacs file.
+2024-03-11 11:25:44.283972 Reading energies.
+2024-03-11 11:25:44.284969 Extracting QM energy.
+2024-03-11 11:26:03.112191 Obtaining charge self-interaction...
+2024-03-11 11:26:03.748646 Done:      -971.5177109567 a.u.
+2024-03-11 11:26:10.664768 QM energy is -1556.7949228333 a.u..
+2024-03-11 11:26:10.687722 Extracting MM energy.
+2024-03-11 11:26:10.689707 MM energy is 1.3132810793355547 a.u..
+2024-03-11 11:26:10.689707 Single point energy done. QM/MM energy is     -1556.7949228333 (QM, link atom corrected BP86/STO-3G) +         1.3132810793 (MM) =     -1555.4816417540 (a.u.)
+2024-03-11 11:26:10.690663 Reading forces.
+2024-03-11 11:26:10.690663 Reading QM forces using file: opt.gjf.log and opt.fort.7
+2024-03-11 11:26:22.409790 QM forces read.
+2024-03-11 11:26:22.410786 Reading MM forces using file: opt.trr/.tpr/.tpr
+2024-03-11 11:26:23.075523 MM forces read.
+2024-03-11 11:26:23.075523 Forces for link atom correction read.
+2024-03-11 11:26:23.159953 Total forces obtained.
+2024-03-11 11:26:39.238429 Deleted forces of inactive atoms.
+2024-03-11 11:26:39.251450 Writing OPT output.
+2024-03-11 11:26:50.670364 Max force not below threshold. Continuing.
+2024-03-11 11:27:17.455025 using total force with max force: -0.08628622493656249 for the displacement
+2024-03-11 11:27:17.559334 Maximum force is 0.10468053668297633 a.u. at coord 3569/2.
+2024-03-11 11:28:17.011398 Propagate with steepest descent for first step...
+2024-03-11 11:28:19.598654 Successfully wrote 129549 atoms to new g96 file.
+2024-03-11 11:28:19.599635 Made new coordinates in file opt.1.g96.
+2024-03-11 11:28:20.680054 List of molecules...
+2024-03-11 11:28:20.681052 Done.
+2024-03-11 11:28:20.681052 Reading charges...
+2024-03-11 11:28:27.559902 Done.
+2024-03-11 11:28:27.587519 Made new xyzq matrix.
+2024-03-11 11:28:27.587519 Preparing the point charge field for a numerically optimized charge shift...
