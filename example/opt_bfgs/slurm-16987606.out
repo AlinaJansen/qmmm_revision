@@ -1,0 +1,17 @@
+python: can't open file '/home/jansea92/qmmm_revision/gmx2qmmm.py': [Errno 2] No such file or directory
+
+== Epilog Slurmctld ==================================================
+
+Job ID: 16987606
+Cluster: curta
+User/Group: jansea92/aggoetze
+State: FAILED (exit code 2)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:02
+CPU Efficiency: 6.25% of 00:00:32 core-walltime
+Job Wall-clock time: 00:00:04
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 1000.00 MB (1000.00 MB/node)
+
+======================================================================
