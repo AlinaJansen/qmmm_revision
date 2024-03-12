@@ -1,0 +1,4 @@
+jobtype=opt
+jobname=testopt
+propagator=bfgs
+maxcycle=100

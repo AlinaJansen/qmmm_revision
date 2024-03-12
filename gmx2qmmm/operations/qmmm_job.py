@@ -17,6 +17,7 @@ import numpy as np
 import sqlite3
 import sys
 import scipy.sparse as sp
+import scipy.sparse.linalg as spla
 
 from gmx2qmmm._helper import logger, _flatten, stepper
 from gmx2qmmm._helper import get_linkatoms_ang, make_xyzq, make_xyzq_io
@@ -373,22 +374,25 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
     factor2 = float(geometry_difference.T.dot(mat)[0,0])
     # idmat = np.eye(len(gradient_difference))
 
-    # update formula
-    new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
-    # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
-    # eigvals, eigvecs = np.linalg.eig(new_hess)
-    eigvals, eigvecs = sp.linalg.eigs(new_hess)
-
     # Check BFGS condition
     if factor1 > 0:
         logger(logfile, "BFGS condition fulfilled.\n")
         WARN = False
+        # update formula
+        # AJ calculate new hessian only if condition is fulfilled to save time and avoid division by zero 
+        new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
+        # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
+        # eigvals, eigvecs = np.linalg.eig(new_hess)
+        eigvals, eigvecs = sp.linalg.eigs(new_hess)
+        min_eigval = eigvals.min()
     else:
         logger(logfile, "BFGS condition not fulfilled! We keep the old Hessian.\n")
         WARN = True
         new_hess = old_hess
+        min_eigval = 0 # seems like eigenvalues are never used anyway ... AJ
 
-    return new_hess, eigvals.min(), WARN
+    return new_hess, min_eigval, WARN
+
 
 #qm & mm program ultis
 def make_g16_inp(qmmmInputs):
