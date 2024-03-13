@@ -585,6 +585,7 @@ def make_gmx_inp(qmmmInputs):
             "no",
         ]
     )
+    print('Remove mdout.mdp')
     subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
@@ -1109,11 +1110,7 @@ def run_g16(qmfile, qmmmInputs):
 
 def execute_gmx(command_list, input_data=None):
     # call gmx in a seperate function to be able to mock it
-    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-
-    if input_data is not None:
-        process.stdin.write(input_data.decode())
-        process.stdin.close()
+    subprocess.call(command_list)
 
 def execute_gmx_communicate(command_list, input_data=None):
     # XX combine functions! call gmx in a seperate function to be able to mock it
