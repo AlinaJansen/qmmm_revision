@@ -1952,7 +1952,7 @@ def get_mmforces_au(qmmmInputs):
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"0\n")
-    execute_gmx(
+    execute_gmx_communicate(
         [
             prefix,
             "traj",
@@ -1968,7 +1968,7 @@ def get_mmforces_au(qmmmInputs):
             "-backup",
             "no",
         ],
-        input_data=b"0\n"
+        input_data="0\n"
     )
 
     with open(xvgname) as ifile:
