@@ -1114,7 +1114,7 @@ def execute_gmx(command_list, input_data=None):
 
 def execute_gmx_communicate(command_list, input_data=None):
     # XX combine functions! call gmx in a seperate function to be able to mock it
-    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     process.communicate(input=input_data)
 
@@ -1475,7 +1475,23 @@ def get_mmenergy(edrname, qmmmInputs):
 
     mmenergy = 0.0
     logger(logfile, "Extracting MM energy.\n")
-    p = subprocess.Popen(
+    # p = subprocess.Popen(
+    #     [
+    #         prefix,
+    #         "energy",
+    #         "-f",
+    #         edrname,
+    #         "-o",
+    #         str(edrname + ".xvg"),
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     stdout=subprocess.PIPE,
+    #     stdin=subprocess.PIPE,
+    #     stderr=subprocess.STDOUT,
+    # )
+    # p.communicate(input=b"11\n\n")
+    execute_gmx_communicate(
         [
             prefix,
             "energy",
@@ -1486,23 +1502,8 @@ def get_mmenergy(edrname, qmmmInputs):
             "-backup",
             "no",
         ],
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    p.communicate(input=b"11\n\n")
-    # execute_gmx_communicate([
-    #         prefix,
-    #         "energy",
-    #         "-f",
-    #         edrname,
-    #         "-o",
-    #         str(edrname + ".xvg"),
-    #         "-backup",
-    #         "no",
-    #     ],
-    #     input_data=b"11\n\n"
-    #     )
+        input_data=b"11\n\n"
+        )
     
     with open(str(edrname + ".xvg")) as ifile:
         for line in ifile:
