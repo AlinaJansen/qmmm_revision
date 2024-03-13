@@ -1110,7 +1110,11 @@ def run_g16(qmfile, qmmmInputs):
 
 def execute_gmx(command_list, input_data=None):
     # call gmx in a seperate function to be able to mock it
-    subprocess.call(command_list)
+    if input_data:
+        process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+        process.communicate(input=input_data)
+    else:
+        subprocess.call(command_list)
 
 def execute_gmx_communicate(command_list, input_data=None):
     # XX combine functions! call gmx in a seperate function to be able to mock it
@@ -1491,7 +1495,7 @@ def get_mmenergy(edrname, qmmmInputs):
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"11\n\n")
-    execute_gmx_communicate(
+    execute_gmx(
         [
             prefix,
             "energy",
@@ -1952,7 +1956,7 @@ def get_mmforces_au(qmmmInputs):
     #     stderr=subprocess.STDOUT,
     # )
     # p.communicate(input=b"0\n")
-    execute_gmx_communicate(
+    execute_gmx(
         [
             prefix,
             "traj",
@@ -1968,7 +1972,7 @@ def get_mmforces_au(qmmmInputs):
             "-backup",
             "no",
         ],
-        input_data="0\n"
+        input_data=b"0\n"
     )
 
     with open(xvgname) as ifile:
