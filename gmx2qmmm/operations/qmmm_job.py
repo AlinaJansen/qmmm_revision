@@ -1931,7 +1931,28 @@ def get_mmforces_au(qmmmInputs):
     trrname = str(jobname + insert + ".trr")
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
-    p = subprocess.Popen(
+    # p = subprocess.Popen(
+    #     [
+    #         prefix,
+    #         "traj",
+    #         "-fp",
+    #         "-f",
+    #         trrname,
+    #         "-s",
+    #         tprname,
+    #         "-of",
+    #         xvgname,
+    #         "-xvg",
+    #         "none",
+    #         "-backup",
+    #         "no",
+    #     ],
+    #     stdout=subprocess.PIPE,
+    #     stdin=subprocess.PIPE,
+    #     stderr=subprocess.STDOUT,
+    # )
+    # p.communicate(input=b"0\n")
+    execute_gmx(
         [
             prefix,
             "traj",
@@ -1947,29 +1968,8 @@ def get_mmforces_au(qmmmInputs):
             "-backup",
             "no",
         ],
-        stdout=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        input_data=b"0\n"
     )
-    p.communicate(input=b"0\n")
-    # execute_gmx(
-    #             [
-    #         prefix,
-    #         "traj",
-    #         "-fp",
-    #         "-f",
-    #         trrname,
-    #         "-s",
-    #         tprname,
-    #         "-of",
-    #         xvgname,
-    #         "-xvg",
-    #         "none",
-    #         "-backup",
-    #         "no",
-    #     ],
-    #     input_data=b"0\n"
-    # )
 
     with open(xvgname) as ifile:
         for line in ifile:
