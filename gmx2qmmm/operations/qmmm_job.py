@@ -1134,27 +1134,7 @@ def run_gmx(mmfile, qmmmInputs):
     outname = str(jobname + insert + ".out.gro")
     gmxlogname = str(jobname + insert + ".gmx.log")
     edrname = str(jobname + insert + ".edr")
-    subprocess.call(
-        [
-            prefix,
-            "mdrun",
-            "-s",
-            mmfile,
-            "-o",
-            trrname,
-            "-c",
-            outname,
-            "-x",
-            xtcname,
-            "-g",
-            gmxlogname,
-            "-e",
-            edrname,
-            "-backup",
-            "no",
-        ]
-    )
-    # execute_gmx(
+    # subprocess.call(
     #     [
     #         prefix,
     #         "mdrun",
@@ -1174,6 +1154,26 @@ def run_gmx(mmfile, qmmmInputs):
     #         "no",
     #     ]
     # )
+    execute_gmx(
+        [
+            prefix,
+            "mdrun",
+            "-s",
+            mmfile,
+            "-o",
+            trrname,
+            "-c",
+            outname,
+            "-x",
+            xtcname,
+            "-g",
+            gmxlogname,
+            "-e",
+            edrname,
+            "-backup",
+            "no",
+        ]
+    )
     os.remove(outname)
 
     return edrname
