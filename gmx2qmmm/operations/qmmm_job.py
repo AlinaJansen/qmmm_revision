@@ -1116,12 +1116,6 @@ def execute_gmx(command_list, input_data=None):
     else:
         subprocess.call(command_list)
 
-def execute_gmx_communicate(command_list, input_data=None):
-    # XX combine functions! call gmx in a seperate function to be able to mock it
-    process = subprocess.Popen(command_list, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-    process.communicate(input=input_data)
-
 def run_gmx(mmfile, qmmmInputs):
     jobname = qmmmInputs.qmmmparams.jobname
     prefix =  qmmmInputs.pathparams.gmxpath + qmmmInputs.pathparams.gmxcmd
@@ -1138,26 +1132,6 @@ def run_gmx(mmfile, qmmmInputs):
     outname = str(jobname + insert + ".out.gro")
     gmxlogname = str(jobname + insert + ".gmx.log")
     edrname = str(jobname + insert + ".edr")
-    # subprocess.call(
-    #     [
-    #         prefix,
-    #         "mdrun",
-    #         "-s",
-    #         mmfile,
-    #         "-o",
-    #         trrname,
-    #         "-c",
-    #         outname,
-    #         "-x",
-    #         xtcname,
-    #         "-g",
-    #         gmxlogname,
-    #         "-e",
-    #         edrname,
-    #         "-backup",
-    #         "no",
-    #     ]
-    # )
     execute_gmx(
         [
             prefix,
@@ -1479,22 +1453,6 @@ def get_mmenergy(edrname, qmmmInputs):
 
     mmenergy = 0.0
     logger(logfile, "Extracting MM energy.\n")
-    # p = subprocess.Popen(
-    #     [
-    #         prefix,
-    #         "energy",
-    #         "-f",
-    #         edrname,
-    #         "-o",
-    #         str(edrname + ".xvg"),
-    #         "-backup",
-    #         "no",
-    #     ],
-    #     stdout=subprocess.PIPE,
-    #     stdin=subprocess.PIPE,
-    #     stderr=subprocess.STDOUT,
-    # )
-    # p.communicate(input=b"11\n\n")
     execute_gmx(
         [
             prefix,
@@ -1935,27 +1893,6 @@ def get_mmforces_au(qmmmInputs):
     trrname = str(jobname + insert + ".trr")
     tprname = str(jobname + insert + ".tpr")
     xvgname = str(jobname + insert + ".xvg")
-    # p = subprocess.Popen(
-    #     [
-    #         prefix,
-    #         "traj",
-    #         "-fp",
-    #         "-f",
-    #         trrname,
-    #         "-s",
-    #         tprname,
-    #         "-of",
-    #         xvgname,
-    #         "-xvg",
-    #         "none",
-    #         "-backup",
-    #         "no",
-    #     ],
-    #     stdout=subprocess.PIPE,
-    #     stdin=subprocess.PIPE,
-    #     stderr=subprocess.STDOUT,
-    # )
-    # p.communicate(input=b"0\n")
     execute_gmx(
         [
             prefix,
