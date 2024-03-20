@@ -82,7 +82,7 @@ def read_pcf_self(qmfile):
                 break
     return pcf_self
 
-def remove_inactive(total_force, active):
+def remove_inactive(total_force, active): # mask xx
     new_total_force = []
     for i in range(0, len(total_force)):
         if (i + 1) in np.array(active).astype(int):
@@ -93,13 +93,15 @@ def remove_inactive(total_force, active):
 
 def make_clean_force(total_force):
 
-    clean_force = []
-    for element in np.array(total_force):
-        forceline = []
-        for entry in np.array(element):
-            forceline.append(float(entry))
-        clean_force.append(forceline)
-    return clean_force
+    # clean_force = []
+    # for element in np.array(total_force):
+    #     forceline = []
+    #     for entry in np.array(element):
+    #         forceline.append(float(entry))
+    #     clean_force.append(forceline)
+    # return clean_force
+    clean_force = np.array(total_force, dtype=float)
+    return clean_force.tolist()
 
 def get_full_coords_angstrom(gro):
     fullcoords = []
@@ -385,14 +387,29 @@ def get_approx_hessian(xyz, old_xyz, grad, old_grad, old_hess, logfile):
         # eigvals, eigvecs = np.linalg.eig(new_hess)
         eigvals, eigvecs = sp.linalg.eigs(new_hess)
         min_eigval = eigvals.min()
+
+
+    # Check BFGS condition
+    if factor1 > 0:
+        logger(logfile, "BFGS condition fulfilled.\n")
+        WARN = False
+        # update formula
+        # AJ calculate new hessian only if condition is fulfilled to save time and avoid division by zero 
+        new_hess = old_hess + gradient_difference.dot(gradient_difference.T) / factor1 - mat.dot(mat.T) / factor2
+        # moreover, we calculate eigenvalues as they are indicative of the curvature of the current PES
+        # eigvals, eigvecs = np.linalg.eig(new_hess)
+        eigvals, eigvecs = sp.linalg.eigs(new_hess)
+        min_eigval = eigvals.min()
     else:
         logger(logfile, "BFGS condition not fulfilled! We keep the old Hessian.\n")
         WARN = True
         new_hess = old_hess
         min_eigval = 0 # seems like eigenvalues are never used anyway ... AJ
+        min_eigval = 0 # seems like eigenvalues are never used anyway ... AJ
 
     return new_hess, min_eigval, WARN
 
+    return new_hess, min_eigval, WARN
 
 #qm & mm program ultis
 def make_g16_inp(qmmmInputs):
@@ -658,7 +675,7 @@ def update_gro_box(gro, groname, nbradius, logfile):
     logger(logfile, str("Done.\n"))
 
 #Propagated
-#initstep = stepsize
+#initstep = stepsize # XXX
 def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, stepsize, curr_step, logfile, scan_flag=False, scan_atoms=[]):
     dispvec = []
     maxforce = 0.0
@@ -680,14 +697,21 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
 
     maxatom = -1
     maxcoord = -1
-    check_force = list(_flatten(clean_force))
-    #search index of max info XX
-    for i in range(0, int(len(check_force) / 3)):
-        for j in range(0, 3):
-                if abs(float(check_force[i * 3 + j])) > abs(maxforce):
-                    maxforce = float(check_force[i * 3 + j])
-                    maxatom = i
-                    maxcoord = j
+    # check_force = list(_flatten(clean_force))
+    # #search index of max info XX
+    # for i in range(0, int(len(check_force) / 3)):
+    #     for j in range(0, 3):
+    #             if abs(float(check_force[i * 3 + j])) > abs(maxforce):
+    #                 maxforce = float(check_force[i * 3 + j])
+    #                 maxatom = i
+    #                 maxcoord = j
+
+    # AJ
+    force_norms = np.linalg.norm(clean_force, axis = 1)
+    maxatom = np.argmax(force_norms)
+    maxforce = force_norms[maxatom]
+    maxcoord = 1 # for testing, remove later if working
+
     logger(
         logfile,
         str(
@@ -703,26 +727,31 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
     #All use steep for first propagation
     if curr_step <= 1:
         logger(logfile, "Propagate with steepest descent for first step...\n")
-        for element in clean_force: # XX
-            dispvec.append(
-                [
-                    float(element[0]) * float(stepsize) / abs(float(maxforce)),
-                    float(element[1]) * float(stepsize) / abs(float(maxforce)),
-                    float(element[2]) * float(stepsize) / abs(float(maxforce)),
-                ]
-            )
+        # AJ efficiency (tested)
+        # for element in clean_force: 
+        #     dispvec.append(
+        #         [
+        #             float(element[0]) * float(stepsize) / abs(float(maxforce)),
+        #             float(element[1]) * float(stepsize) / abs(float(maxforce)),
+        #             float(element[2]) * float(stepsize) / abs(float(maxforce)),
+        #         ]
+        #     )
+        normalized_forces = np.array(clean_force)*float(stepsize)/abs(float(maxforce))
+        dispvec = normalized_forces.tolist()
     else:
         if propagator == "STEEP":
             logger(logfile, "Propagate with steepest descent...\n")
-            for element in clean_force:
-                dispvec.append(
-                    [
-                        float(element[0]) * float(stepsize) / abs(float(maxforce)),
-                        float(element[1]) * float(stepsize) / abs(float(maxforce)),
-                        float(element[2]) * float(stepsize) / abs(float(maxforce)),
-                    ]
-                )
-            corr_length = np.array(total_force)
+            # AJ efficiency (tested)
+            # for element in clean_force:
+            #     dispvec.append(
+            #         [
+            #             float(element[0]) * float(stepsize) / abs(float(maxforce)),
+            #             float(element[1]) * float(stepsize) / abs(float(maxforce)),
+            #             float(element[2]) * float(stepsize) / abs(float(maxforce)),
+            #         ]
+            #     )
+            normalized_forces = np.array(clean_force)*float(stepsize)/abs(float(maxforce))
+            dispvec = normalized_forces.tolist()
 
         elif propagator == "CONJGRAD" :
             logger(logfile, "Propagate with conjugate gradient...\n")
@@ -732,19 +761,20 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
             _flattened = list(_flatten(old_clean_force))
             corr_fac /= np.array(_flattened).dot(np.array(_flattened))
 
-            #2222
             corr_length = np.array(total_force)
             if curr_step > 1:   #0 step for the inital SP 
                 corr_length = np.array(total_force) + corr_fac * corr_length
-
-            for i in range(len(total_force)):
-                dispvec.append(
-                    [
-                        float(stepsize) * corr_length[i][0],
-                        float(stepsize) * corr_length[i][1],
-                        float(stepsize) * corr_length[i][2],
-                    ]
-                )
+            # AJ efficiency (not tested)
+            # for i in range(len(total_force)):
+            #     dispvec.append(
+            #         [
+            #             float(stepsize) * corr_length[i][0],
+            #             float(stepsize) * corr_length[i][1],
+            #             float(stepsize) * corr_length[i][2],
+            #         ]
+            #     )
+            displacement = corr_length*float(stepsize)
+            dispvec = displacement.tolist()
 
             logger(
                 logfile,
@@ -754,7 +784,7 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
                     + " a.u.\n"
                 ),
             )
-        elif propagator == "BFGS": #XX
+        elif propagator == "BFGS":
             logger(logfile, "Propagate with BFGS method...\n")
             coords = np.array(new_xyzq)[:, 0:3]
             old_coords = np.array(xyzq)[:, 0:3]
@@ -778,16 +808,17 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
             # direc = -sp.linalg.inv(hessian).dot(gradient) #XX CSC
             direc = -sp.linalg.spsolve(hessian.tocsc(), sp.csc_matrix(gradient)) #XX CSC
             direc = direc.reshape(int(len(coords) / 3), 3)
-
-            for i in range(len(total_force)):
-                dispvec.append(
-                    [
-                        float(stepsize) * direc[i][0],
-                        float(stepsize) * direc[i][1],
-                        float(stepsize) * direc[i][2],
-                    ]
-                )
-    
+            # AJ efficiency (tested)
+            # for i in range(len(total_force)):
+            #     dispvec.append(
+            #         [
+            #             float(stepsize) * direc[i][0],
+            #             float(stepsize) * direc[i][1],
+            #             float(stepsize) * direc[i][2],
+            #         ]
+            #     )
+            displacement = np.array(direc)*float(stepsize)
+            dispvec = displacement.tolist()
 
     return dispvec
 
@@ -1087,7 +1118,7 @@ def run_g16(qmfile, qmmmInputs):
         execute_g16(g16cmd, str(qmfile))
         logname = qmfile[:-3]
         logname += "log"
-        os.rename(logname, str(jobname + insert + ".gjf.log"))
+        # os.rename(logname, str(jobname + insert + ".gjf.log"))
         os.rename("fort.7", str(jobname + insert + ".fort.7"))
         logger(logfile, "G16 Done.\n")
     else:
@@ -1374,6 +1405,79 @@ def remove_files(jobname, curr_step, tar=False):
         subprocess.call("rm -f %s"%str(jobname + insert + '.tar'), shell=True)
 
 #Energy
+# def get_qmenergy(qmfile, qmmmInputs):
+#     qmprog = qmmmInputs.qmparams.program
+#     extra_string = qmmmInputs.qmparams.extra
+#     pcffile = qmmmInputs.pcffile
+#     logfile = qmmmInputs.logfile
+#     basedir = qmmmInputs.basedir
+
+#     logger(logfile, "Extracting QM energy.\n")
+#     qmenergy = 0.0
+#     qm_corrdata = []
+#     if str(qmprog) == "G16":    
+#         with open(str(qmfile + ".log")) as ifile:
+#             for line in ifile:
+                
+#                 match = []
+#                 match2 = []
+#                 match2 = re.search(
+#                     r"\sTD[=(\s]", extra_string.upper(), flags=re.MULTILINE
+#                 )
+#                 if not match2:
+#                     match2 = re.search(
+#                         r"^TD[=(\s]", extra_string.upper(), flags=re.MULTILINE
+#                     )
+#                 if not match2:
+#                     match2 = re.search(
+#                         r"\sTD$", extra_string.upper(), flags=re.MULTILINE
+#                     )
+#                 if not match2:
+#                     match2 = re.search(
+#                         r"^TD$", extra_string.upper(), flags=re.MULTILINE
+#                     )
+#                 if not match2:
+#                     match = re.search(
+#                         r"^\s*SCF\s*Done:\s*E\(\S+\)\s*\=\s*([-]*\d+\.\d+)",
+#                         line,
+#                         flags=re.MULTILINE,
+#                     )
+#                 else:
+#                     match = re.search(
+#                         r"^\s*Total\s*Energy,\s*E\(\S+\)\s*\=\s*([-]*\d+\.\d+)",
+#                         line,
+#                         flags=re.MULTILINE,
+#                     )
+#                 if match:
+#                     logger(logfile, "Obtaining charge self-interaction...\n")
+#                     pcf_self_pot = read_pcf_self(qmfile)
+#                     logger(
+#                         logfile, "Done: {:>20.10f} a.u.\n".format(float(pcf_self_pot))
+#                     )
+#                     # G16 energy needs to be corrected for self potential of PCF
+#                     qmenergy = float(match.group(1)) - float(pcf_self_pot)
+#                 match = re.search(r"^\s*ESP\s*charges:", line, flags=re.MULTILINE)
+#                 if match:
+#                     for line in ifile:
+#                         break
+#                     for line in ifile:
+#                         match = re.search(
+#                             r"^\s*(\d+)\s+(\S+)\s+(\S+)", line, flags=re.MULTILINE
+#                         )
+#                         if match:
+#                             qm_corrdata.append(
+#                                 [
+#                                     int(match.group(1)),
+#                                     match.group(2),
+#                                     float(match.group(3)),
+#                                 ]
+#                             )
+#                         else:
+#                             break
+#                     break
+#     logger(logfile, "QM energy is " + str(float(qmenergy)) + " a.u..\n")
+#     return qmenergy, qm_corrdata
+
 def get_qmenergy(qmfile, qmmmInputs):
     qmprog = qmmmInputs.qmparams.program
     extra_string = qmmmInputs.qmparams.extra
@@ -1386,7 +1490,8 @@ def get_qmenergy(qmfile, qmmmInputs):
     qm_corrdata = []
     if str(qmprog) == "G16":    
         with open(str(qmfile + ".log")) as ifile:
-            for line in ifile:
+            lines = ifile.readlines()
+            for line in lines:
                 
                 match = []
                 match2 = []

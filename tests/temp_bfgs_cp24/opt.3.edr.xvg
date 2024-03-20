@@ -1,0 +1,26 @@
+# This file was created Mon Nov 21 12:18:52 2022
+# Created by:
+#                      :-) GROMACS - gmx energy, 2019.4 (-:
+# 
+# Executable:   /scratch/spetry/Gromacs_bin/bin/gmx
+# Data prefix:  /scratch/spetry/Gromacs_bin
+# Working dir:  /scratch/jansea92/qmmm/tmp.11587416
+# Command line:
+#   gmx energy -f opt.3.edr -o opt.3.edr.xvg -backup no
+# gmx energy is part of G R O M A C S:
+#
+# Giant Rising Ordinary Mutants for A Clerical Setup
+#
+@    title "GROMACS Energies"
+@    xaxis  label "Time (ps)"
+@    yaxis  label "(kJ/mol)"
+@TYPE xy
+@ view 0.15, 0.15, 0.75, 0.85
+@ legend on
+@ legend box on
+@ legend loctype view
+@ legend 0.78, 0.8
+@ legend length 2
+@ s0 legend "Potential"
+    0.000000   97.753410
+    0.001000  -4207.382812

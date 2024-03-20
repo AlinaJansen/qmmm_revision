@@ -1,0 +1,110 @@
+Mon Mar 11 09:17:00 2024    qmmm\tests\temp_bfgs_cp24\profiling_bfgs_cp24.prof
+
+         471664690 function calls (459313955 primitive calls) in 790.076 seconds
+
+   Ordered by: cumulative time
+   List reduced from 770 to 100 due to restriction <100>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      2/1    0.001    0.000  790.076  790.076 {built-in method builtins.exec}
+        1    0.000    0.000  790.076  790.076 <string>:1(<module>)
+        1    0.025    0.025  790.076  790.076 qmmm\tests\IntegrationTest.py:23(execute_gmx2qmmm_mocking)
+        1    0.000    0.000  790.038  790.038 qmmm\gmx2qmmm_execute.py:75(gmx2qmmm)
+        1    0.047    0.047  635.311  635.311 qmmm\gmx2qmmm_execute.py:42(perform_job)
+        1    6.077    6.077  635.264  635.264 qmmm\gmx2qmmm\operations\qmmm_job.py:2308(perform_opt)
+        4    0.121    0.030  355.088   88.772 qmmm\gmx2qmmm\operations\qmmm_job.py:2249(perform_sp)
+ 48886350   67.865    0.000  270.078    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:173(search)
+ 49514982   88.638    0.000  161.429    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:272(_compile)
+        1    0.002    0.002  154.726  154.726 qmmm\readInput.py:453(__init__)
+        4    0.000    0.000  150.102   37.525 qmmm\gmx2qmmm\operations\qmmm_job.py:1765(get_energy)
+        4   32.795    8.199  150.093   37.523 qmmm\gmx2qmmm\operations\qmmm_job.py:1386(get_qmenergy)
+        4    0.073    0.018  134.231   33.558 qmmm\gmx2qmmm\operations\qmmm_job.py:2166(read_forces)
+        1    0.090    0.090   93.549   93.549 qmmm\gmx2qmmm\operations\generate_top.py:1143(generate_top_listsonly)
+        1   23.881   23.881   87.879   87.879 qmmm\gmx2qmmm\operations\generate_top.py:216(make_large_top)
+        3    5.811    1.937   84.713   28.238 qmmm\gmx2qmmm\operations\qmmm_job.py:659(propagate_dispvec)
+  5357551   81.192    0.000   81.192    0.000 {built-in method numpy.array}
+        3    0.002    0.001   80.060   26.687 qmmm\gmx2qmmm\operations\qmmm_job.py:905(qmmm_prep)
+        4    5.563    1.391   70.423   17.606 qmmm\gmx2qmmm\operations\qmmm_job.py:84(remove_inactive)
+        4    0.000    0.000   69.527   17.382 qmmm\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:284(prepare_pcf_for_shift_fieldsonly)
+ 48882890   56.057    0.000   67.993    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\enum.py:193(__get__)
+        4   20.603    5.151   60.059   15.015 qmmm\gmx2qmmm\operations\qmmm_job.py:1794(get_qmforces_au)
+        4   11.106    2.777   54.727   13.682 qmmm\gmx2qmmm\operations\qmmm_job.py:398(make_g16_inp)
+        4    0.026    0.007   52.093   13.023 qmmm\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:92(identify_m1)
+      384   50.602    0.132   52.054    0.136 qmmm\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:25(get_bondpartners)
+ 48886350   41.555    0.000   41.555    0.000 {method 'search' of 're.Pattern' objects}
+7513124/4   22.215    0.000   39.727    9.932 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:128(deepcopy)
+     24/4    0.000    0.000   39.727    9.932 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:259(_reconstruct)
+     24/4    0.001    0.000   39.727    9.932 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:227(_deepcopy_dict)
+1207808/76   10.872    0.000   39.719    0.523 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:201(_deepcopy_list)
+        3    0.000    0.000   38.934   12.978 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:381(call)
+        6    0.000    0.000   38.914    6.486 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:1259(wait)
+        6    0.000    0.000   38.914    6.486 c:\Users\Alina\anaconda3\envs\habitat\Lib\subprocess.py:1580(_wait)
+        3   38.914   12.971   38.914   12.971 {built-in method _winapi.WaitForSingleObject}
+       40    0.117    0.003   34.654    0.866 qmmm\gmx2qmmm\pointcharges\generate_pcf_from_top.py:112(readcharges)
+        1    0.254    0.254   30.250   30.250 qmmm\readInput.py:784(read_conn_list_from_top)
+6347908/2720536   21.900    0.000   27.945    0.000 qmmm\gmx2qmmm\_helper.py:7(_flatten)
+        1    0.000    0.000   25.875   25.875 qmmm\gmx2qmmm\operations\qmmm_job.py:1365(archive_first_step)
+        2    0.000    0.000   24.647   12.323 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_dsolve\linsolve.py:141(spsolve)
+        2   24.621   12.311   24.621   12.311 {built-in method scipy.sparse.linalg._dsolve._superlu.gssv}
+   612/51    4.972    0.008   24.461    0.480 qmmm\gmx2qmmm\pointcharges\generate_pcf_from_top.py:62(getincludelist)
+        2    0.379    0.189   20.747   10.374 qmmm\gmx2qmmm\operations\qmmm_job.py:362(get_approx_hessian)
+      375    3.916    0.010   19.093    0.051 qmmm\gmx2qmmm\pointcharges\generate_pcf_from_top.py:23(checkformol)
+        1    0.009    0.009   17.824   17.824 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_eigen\arpack\arpack.py:1102(eigs)
+      157    4.154    0.026   17.622    0.112 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_eigen\arpack\arpack.py:721(iterate)
+        4   11.849    2.962   17.432    4.358 qmmm\gmx2qmmm\pointcharges\prepare_pcf_for_shift.py:236(eliminate_and_shift_to_m1)
+        3    0.000    0.000   16.670    5.557 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\_matrix_io.py:11(save_npz)
+        3    0.000    0.000   16.670    5.557 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\numpy\lib\npyio.py:647(savez_compressed)
+        3    0.000    0.000   16.670    5.557 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\numpy\lib\npyio.py:713(_savez)
+       13    0.025    0.002   16.665    1.282 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\numpy\lib\format.py:666(write_array)
+       57    0.038    0.001   16.505    0.290 c:\Users\Alina\anaconda3\envs\habitat\Lib\zipfile.py:1153(write)
+  5903132    9.295    0.000   16.360    0.000 {method 'write' of '_io.TextIOWrapper' objects}
+       57   16.166    0.284   16.166    0.284 {method 'compress' of 'zlib.Compress' objects}
+        4    0.001    0.000   15.887    3.972 qmmm\gmx2qmmm\operations\qmmm_job.py:524(make_gmx_inp)
+        4    7.115    1.779   15.024    3.756 qmmm\gmx2qmmm\operations\qmmm_job.py:129(get_atoms)
+    21528    4.579    0.000   14.367    0.001 qmmm\readInput.py:713(get_connlist)
+      164    0.002    0.000   14.030    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\_base.py:395(dot)
+      164    0.001    0.000   14.025    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\_base.py:620(__matmul__)
+      164    0.004    0.000   14.021    0.085 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\_base.py:505(_mul_dispatch)
+      156    0.003    0.000   13.468    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_interface.py:203(matvec)
+      156    0.002    0.000   13.464    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_interface.py:191(_matvec)
+      156    0.004    0.000   13.462    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_interface.py:305(matmat)
+      156    0.001    0.000   13.456    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\linalg\_interface.py:797(_matmat)
+      156    0.004    0.000   13.442    0.086 c:\Users\Alina\anaconda3\envs\habitat\Lib\site-packages\scipy\sparse\_compressed.py:479(_mul_vector)
+      156   13.429    0.086   13.429    0.086 {built-in method scipy.sparse._sparsetools.csr_matvec}
+        3    0.000    0.000   13.060    4.353 qmmm\gmx2qmmm\operations\qmmm_job.py:1345(archive)
+ 48882890   11.936    0.000   11.936    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\enum.py:1255(value)
+ 54146912    8.023    0.000   10.800    0.000 {built-in method builtins.isinstance}
+        4    2.538    0.634    9.873    2.468 qmmm\gmx2qmmm\operations\qmmm_job.py:324(get_nbradius)
+  7975932    5.510    0.000    9.025    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\encodings\cp1252.py:18(encode)
+        3    3.521    1.174    8.830    2.943 qmmm\gmx2qmmm\operations\qmmm_job.py:851(make_g96_inp)
+       10    0.001    0.000    8.561    0.856 qmmm\readInput.py:643(get_curr_top)
+        4    2.446    0.612    7.106    1.776 qmmm\gmx2qmmm\operations\qmmm_job.py:338(get_full_coords_nm)
+    21528    1.365    0.000    7.068    0.000 qmmm\readInput.py:659(get_mollength_direct)
+        4    2.582    0.646    6.476    1.619 qmmm\gmx2qmmm\pointcharges\generate_pcf_from_top.py:204(readg96)
+        4    2.312    0.578    6.174    1.544 qmmm\gmx2qmmm\operations\qmmm_job.py:103(get_full_coords_angstrom)
+        4    1.048    0.262    6.008    1.502 qmmm\gmx2qmmm\operations\qmmm_job.py:614(update_gro_box)
+       10    4.473    0.447    5.786    0.579 qmmm\gmx2qmmm\operations\qmmm_job.py:93(make_clean_force)
+    66010    5.705    0.000    5.746    0.000 {built-in method io.open}
+  1036405    2.952    0.000    4.988    0.000 {built-in method builtins.print}
+  4191501    4.890    0.000    4.890    0.000 {method 'astype' of 'numpy.ndarray' objects}
+        1    0.000    0.000    4.805    4.805 qmmm\gmx2qmmm\operations\generate_top.py:110(get_molfindlist)
+       10    1.004    0.100    4.805    0.480 qmmm\gmx2qmmm\operations\generate_top.py:74(molfinder)
+        4    0.840    0.210    3.742    0.935 qmmm\gmx2qmmm\operations\qmmm_job.py:70(read_pcf_self)
+  7975932    3.515    0.000    3.515    0.000 {built-in method _codecs.charmap_encode}
+  1683778    3.409    0.000    3.409    0.000 {method 'format' of 'str' objects}
+ 16694263    3.393    0.000    3.393    0.000 {method 'group' of 're.Match' objects}
+   628601    0.898    0.000    3.392    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\re\__init__.py:208(findall)
+        4    2.528    0.632    3.329    0.832 qmmm\gmx2qmmm\operations\qmmm_job.py:1906(get_mmforces_au)
+        4    1.172    0.293    3.145    0.786 qmmm\gmx2qmmm\operations\qmmm_job.py:1229(write_output)
+  3627715    1.509    0.000    2.777    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\abc.py:117(__instancecheck__)
+ 24311666    2.705    0.000    2.705    0.000 {method 'append' of 'list' objects}
+   263759    0.332    0.000    2.340    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\encodings\cp1252.py:22(decode)
+ 15027430    2.108    0.000    2.108    0.000 {method 'get' of 'dict' objects}
+   263783    2.008    0.000    2.008    0.000 {built-in method _codecs.charmap_decode}
+ 13483254    1.931    0.000    1.931    0.000 {method 'upper' of 'str' objects}
+   628602    1.726    0.000    1.726    0.000 {method 'findall' of 're.Pattern' objects}
+17697809/17697229    1.494    0.000    1.494    0.000 {built-in method builtins.len}
+        1    1.248    1.248    1.459    1.459 qmmm\gmx2qmmm\operations\generate_top.py:182(clean_exclusions)
+  1225988    1.142    0.000    1.434    0.000 c:\Users\Alina\anaconda3\envs\habitat\Lib\copy.py:243(_keep_alive)
+
+
