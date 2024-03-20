@@ -1,3 +1,6 @@
+# PRIO PARAMETERS
+includeprio=0
+
 # PATH PARAMETERS
 gaussianexepath=
 gromacsexepath=

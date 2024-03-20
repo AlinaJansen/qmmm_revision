@@ -112,7 +112,7 @@ class FileReader():
                     #   Check, If A Value Was Set
                     if str_pair_parameter.strip().split('=')[1] != '':
                         
-                        #   If Value Was Set, it Has To Be The File Path + Name (Absolute Path) Of The File To Be Included
+                        #   If Value Was Set, It Has To Be The File Path + Name (Absolute Path) Of The File To Be Included
                         file_parameters_include = str_pair_parameter.strip().split('=')[1]
 
                         with open(os.path.abspath(file_parameters_include)) as file_parameters_superior:
@@ -121,7 +121,7 @@ class FileReader():
 
                             file_parameters_superior.close()
                         
-                        #   Iterate Over The List Of Superioir Parameters
+                        #   Iterate Over The List Of Superior Parameters
                         for str_pair_parameter_superior in list_content_file_include:
                             
                             #   Check, If For Each parameter A Value Has Been Set
@@ -182,8 +182,11 @@ class FileReader():
             print\
                 (
                     '\n\nAn error occured when trying to read the parameter file - \n' + \
-                    'Make sure that the file exists and try running gmx2qmmm again.\n\n'
+                    'Make sure that the file exists and try again, running the command\n\n' + \
+                    '\"python gmx2qmmm.py -p <ParameterFile>\"\n\n'
                 )
+            
+            sys.exit(1)
             
         except ValueError:
 
@@ -194,7 +197,6 @@ class FileReader():
                         'An error occured when trying to read the parameter file - \n' + \
                         'We encountered a value mismatch. Please check the correctness of your input types!'
                 )
-
 
 class Asserter:
 
@@ -250,25 +252,26 @@ class Asserter:
                 'gaussianpath',
                 'gromacspath',
             ]
-#gaussianexepath=
-#gromacsexepath=
-#gromacscoordinatespath=
-#gromacstopologypath=
-#jobtype=nma
-###pccores=3
-###pcmemory=
-#qmprogram=gaussian
-###qmbasisset=
-###qmmethod=
-#qmatomslist=[1, 2, 3, 4]
-###systemcharge=
-###systemmultiplicity=
-#activeatomslist=[1, 2, 3, 4, 5, 6, 7, 8, 9]
-#useinnerouter=False
-##inneratomslist=[]
-##outeratomslist=[]
+        #gaussianexepath=
+        #gromacsexepath=
+        #gromacscoordinatespath=
+        #gromacstopologypath=
+        #jobtype=nma
+        ###pccores=3
+        ###pcmemory=
+        #qmprogram=gaussian
+        ###qmbasisset=
+        ###qmmethod=
+        #qmatomslist=[1, 2, 3, 4]
+        ###systemcharge=
+        ###systemmultiplicity=
+        #activeatomslist=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+        #useinnerouter=False
+        ##inneratomslist=[]
+        ##outeratomslist=[]
         #   TODO: Assertion HERE
         bool_parameters_required_exisitng = True
+
         if bool_parameters_required_exisitng:
 
             pass
@@ -276,3 +279,10 @@ class Asserter:
         else:
 
             raise AssertionError
+        
+if __name__ == '__main__':
+
+    #   TODO: Unit Testing Should Follow Below!
+
+    pass
+

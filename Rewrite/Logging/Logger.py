@@ -115,3 +115,10 @@ class Logger():
             
             file_log_overwrite.close()
 
+if __name__ == '__main__':
+
+    #   TODO: Unit Testing Should Follow Below!
+    
+    pass
+
+    

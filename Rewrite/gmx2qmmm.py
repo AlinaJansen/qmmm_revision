@@ -27,6 +27,8 @@ from HandlingInput.HandlerInput import FileReader
 #   // TODOS & NOTES //
 #   TODO: This Is An Example To Do
 #   NOTE: This Is An Example Note
+#   TODO: Read And Include GROMACS / VMD Style Index Files; Extractable From Different Programs(?)
+#   TODO: Include Prio For Library / Parameter Files
 
 #   // CLASS & METHOD DEFINITIONS //
 class GMX2QMMM():
@@ -81,7 +83,7 @@ class GMX2QMMM():
         #   Additional Files
         self.gmx2qmmm_parser.add_argument\
             (
-                "-log",
+                "-l",
                 "--logfile",
                 help="logfile(.log)",
                 type=str,
@@ -90,7 +92,7 @@ class GMX2QMMM():
 
         self.gmx2qmmm_parser.add_argument\
             (
-                "-par",
+                "-p",
                 "--parameterFile",
                 help="Parameter File(.txt)",
                 type=str,
@@ -220,3 +222,8 @@ if __name__ == "__main__":
 
     # // INSTANTIATION //
     gmx2qmmm_main = GMX2QMMM()
+
+    #   Print The Defaultdict (Comment Out, Not Needed!)
+    #print('defaultdict:\n\n{0}'.format(gmx2qmmm_main.defaultdict_parameters_input))
+
+    #   TODO: Unit Test?
