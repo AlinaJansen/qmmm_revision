@@ -602,8 +602,7 @@ def make_gmx_inp(qmmmInputs):
             "no",
         ]
     )
-    print('Remove mdout.mdp')
-    subprocess.call(["rm", "mdout.mdp"])
+    # subprocess.call(["rm", "mdout.mdp"])
     return tprname
 
 def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout):
@@ -707,10 +706,11 @@ def propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, step
     #                 maxcoord = j
 
     # AJ
-    force_norms = np.linalg.norm(clean_force, axis = 1)
-    maxatom = np.argmax(force_norms)
-    maxforce = force_norms[maxatom]
-    maxcoord = 1 # for testing, remove later if working
+    max_abs_value_index  = np.argmax(np.abs((np.array(clean_force)).flatten()))
+    maxforce = (np.array(clean_force)).flatten()[max_abs_value_index]
+    maxatom = max_abs_value_index // 3
+    maxcoord = max_abs_value_index % 3
+
 
     logger(
         logfile,
@@ -1183,7 +1183,7 @@ def run_gmx(mmfile, qmmmInputs):
             "no",
         ]
     )
-    os.remove(outname)
+    # os.remove(outname)
 
     return edrname
 
