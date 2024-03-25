@@ -1,0 +1,58 @@
+------------------------------------------------------------
+2024-03-25 13:12:32
+
+Initialisation of gmx2qmmm completed; Renamed an older log file!
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:02
+
+Asserting basic correctness of inputs
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:02
+
+Basic correctness check COMPLETE
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:02
+
+Listing the parameters given as input for this run of gmx2qmmm:
+
+includeprio:              0
+gaussianexepath:          
+gromacsexepath:           
+gromacscoordinatespath:   
+gromacstopologypath:      
+jobtype:                  nma
+!INCLUDE:                 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmparams.dat
+pccores:                  3
+pcmemory:                 
+qmprogram:                gaussian
+qmbasisset:               
+qmmethod:                 
+qmextratext:              
+qmatomslist:              [1, 2, 3, 4]
+systemcharge:             
+systemmultiplicity:       
+activeatomslist:          [1, 2, 3, 4, 5, 6, 7, 8, 9]
+useinnerouter:            False
+inneratomslist:           []
+outeratomslist:           []
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:05
+
+Assessing job type
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:05
+
+Starting requested job: nma
+------------------------------------------------------------
+

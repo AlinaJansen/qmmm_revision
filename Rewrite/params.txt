@@ -1,5 +1,5 @@
 # PRIO PARAMETERS
-includeprio=0
+includeprio=1
 
 # PATH PARAMETERS
 gaussianexepath=
@@ -14,8 +14,8 @@ jobtype=nma
 
 
 # QM PARAMETERS
-!INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmparams.dat
-!INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmatoms.ndx
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmparams.dat
+# !INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmatoms.ndx
 pccores=3
 pcmemory=
 qmprogram=gaussian

@@ -125,10 +125,16 @@ class FileReader():
                         for str_pair_parameter_superior in list_content_file_include:
                             
                             #   Check, If For Each parameter A Value Has Been Set
-                            if str_pair_parameter_superior.split('=')[1] != '':
-                                
-                                #   Override The Respective Parameter In The Defaultdict With The Value To be Used
-                                defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] = str_pair_parameter_superior.strip().split('=')[1]
+                            #   XX AJ added strip to remove '\n'
+                            if str_pair_parameter_superior.strip().split('=')[1] != '':
+
+                                #   Use Parameter Only If Not Defined Before Or With Priotity Parameter
+                                #   XX AJ
+
+                                if int(defaultdict_parameters_input['includeprio']) or defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] == '' or defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] is None:
+
+                                    #   Overwrite The Respective Parameter In The Defaultdict With The Value To be Used
+                                    defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] = str_pair_parameter_superior.strip().split('=')[1]
 
             #   Check, If The Inputs In The Defaultdict Are:
             #   1) Complete For All Required Inputs,
@@ -245,7 +251,7 @@ class Asserter:
         '''
 
         #   TODO: Expand Assertion Functionality!
-        bool_parameters_required_exisitng = False
+        bool_parameters_required_existing = False
 
         list_parameters_input_required =\
             [
@@ -270,9 +276,9 @@ class Asserter:
         ##inneratomslist=[]
         ##outeratomslist=[]
         #   TODO: Assertion HERE
-        bool_parameters_required_exisitng = True
+        bool_parameters_required_existing = True
 
-        if bool_parameters_required_exisitng:
+        if bool_parameters_required_existing:
 
             pass
 

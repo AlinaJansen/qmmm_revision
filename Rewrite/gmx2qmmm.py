@@ -96,7 +96,8 @@ class GMX2QMMM():
                 "--parameterFile",
                 help="Parameter File(.txt)",
                 type=str,
-                default="path.dat"
+                # default="path.dat"
+                default="params.txt"    # XX Florian
             )
 
         #   Parse And Create Input File Member

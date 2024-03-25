@@ -1,13 +1,58 @@
 ------------------------------------------------------------
-2024-02-22 12:00:12
+2024-03-25 13:13:20
 
-Initialisation of gmx2qmmm completed!
+Initialisation of gmx2qmmm completed; Renamed an older log file!
 ------------------------------------------------------------
 
 ------------------------------------------------------------
-2024-02-22 12:00:12
+2024-03-25 13:13:25
 
-An error occured when trying to read the parameter file - 
-Make sure that the file exists and try running gmx2qmmm again.
+Asserting basic correctness of inputs
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:25
+
+Basic correctness check COMPLETE
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:25
+
+Listing the parameters given as input for this run of gmx2qmmm:
+
+includeprio:              1
+gaussianexepath:          
+gromacsexepath:           
+gromacscoordinatespath:   
+gromacstopologypath:      
+jobtype:                  nma
+!INCLUDE:                 C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmparams.dat
+pccores:                  5
+pcmemory:                 
+qmprogram:                gaussian
+qmbasisset:               
+qmmethod:                 
+qmextratext:              
+qmatomslist:              [1, 2, 3, 4]
+systemcharge:             
+systemmultiplicity:       
+activeatomslist:          [1, 2, 3, 4, 5, 6, 7, 8, 9]
+useinnerouter:            False
+inneratomslist:           []
+outeratomslist:           []
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:25
+
+Assessing job type
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-25 13:13:25
+
+Starting requested job: nma
 ------------------------------------------------------------
 
