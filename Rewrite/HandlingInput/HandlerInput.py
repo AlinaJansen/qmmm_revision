@@ -90,7 +90,12 @@ class FileReader():
                 #   Ignore Empty Lines;
                 #   Ignore Lines Beginning With A Hashtag Symbol (#) From The List Of Parameters;
                 #   For Now, Ignore Lines Beginning With Exclamation Mark (!); This Is Used For Include Statements, Which We Handle Later
-                if str_pair_parameter == '\n' or str_pair_parameter == '' or str_pair_parameter.startswith('#'):
+                if str_pair_parameter == '\n' or str_pair_parameter == '' or str_pair_parameter.startswith('#') or str_pair_parameter.startswith('!'):
+
+                    continue
+
+                # XX Florian not adding empty parameters to the list
+                elif str_pair_parameter.strip().split('=')[1] == '':
 
                     continue
 
@@ -124,17 +129,48 @@ class FileReader():
                         #   Iterate Over The List Of Superior Parameters
                         for str_pair_parameter_superior in list_content_file_include:
                             
-                            #   Check, If For Each parameter A Value Has Been Set
-                            #   XX AJ added strip to remove '\n'
-                            if str_pair_parameter_superior.strip().split('=')[1] != '':
+                            #   XX AJ again checking for empty line etc., otherwise we're getting an index error later
+                            #   Ignore Newline Characters ('\n');
+                            #   Ignore Empty Lines;
+                            #   Ignore Lines Beginning With A Hashtag Symbol (#) From The List Of Parameters;
+                            #   For Now, Ignore Lines Beginning With Exclamation Mark (!); This Is Used For Include Statements, Which We Handle Later
+                            if str_pair_parameter_superior == '\n' or str_pair_parameter_superior == '' or str_pair_parameter_superior.startswith('#'):
 
-                                #   Use Parameter Only If Not Defined Before Or With Priotity Parameter
-                                #   XX AJ
+                                continue
 
-                                if int(defaultdict_parameters_input['includeprio']) or defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] == '' or defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] is None:
+                            elif str_pair_parameter_superior.strip().split('=')[1] == '':
 
-                                    #   Overwrite The Respective Parameter In The Defaultdict With The Value To be Used
-                                    defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] = str_pair_parameter_superior.strip().split('=')[1]
+                                continue
+                            
+                            else:
+                                #   Check, If For Each parameter A Value Has Been Set
+                                #   XX AJ added strip to remove '\n', otherwise '\n' as value in dict
+                                if str_pair_parameter_superior.strip().split('=')[1] != '':
+
+                                    #   Use Parameter Only If Not Defined Before Or With Priority Parameter
+
+                                    if int(defaultdict_parameters_input['includeprio']) or str_pair_parameter_superior.strip().split('=')[0] not in defaultdict_parameters_input:
+
+                                        #   Overwrite The Respective Parameter In The Defaultdict With The Value To be Used
+                                        defaultdict_parameters_input[str_pair_parameter_superior.strip().split('=')[0]] = str_pair_parameter_superior.strip().split('=')[1]
+
+            # clean the dictionary
+            for key, value in defaultdict_parameters_input.items():
+                if value.startswith('[') and value.endswith(']'):
+                    # If the value is enclosed in square brackets, it's already a list
+                    # Remove the brackets and split the contents into a list
+                    value = value[1:-1]
+                    if value:
+                        value = value.split(',')
+                    else:
+                        defaultdict_parameters_input[key] = []
+                else:
+                    # Try converting to integer
+                    try:
+                        defaultdict_parameters_input[key] = int(value)
+                    except ValueError:
+                        # If conversion fails, keep the value as is
+                        pass
 
             #   Check, If The Inputs In The Defaultdict Are:
             #   1) Complete For All Required Inputs,

@@ -1,35 +1,24 @@
 # PRIO PARAMETERS
-includeprio=1
+includeprio=0
 
-# PATH PARAMETERS
-gaussianexepath=
-gromacsexepath=
-gromacscoordinatespath=
-gromacstopologypath=
+# PARAMETERS
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\mm.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\path.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qm.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmmm.dat
+jobtype=SP
+jobname=test
 
-# JOB PARAMETERS
-jobtype=nma
+# atomlists
+qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmatoms.ndx
+activeatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\act.ndx
 
-# MM PARAMETERS
-
-
-# QM PARAMETERS
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmparams.dat
-# !INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmatoms.ndx
-pccores=3
-pcmemory=
-qmprogram=gaussian
-qmbasisset=
-qmmethod=
-qmextratext=
-qmatomslist=[1, 2, 3, 4]
-systemcharge=
-systemmultiplicity=
-
-# QMMM PARAMETERS
-activeatomslist=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+# coordinatefile
+coordinatefile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\conf.g96
+topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\topol.top
 
 # INNER / OUTER PARAMETERS
-useinnerouter=False
+# XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool
+useinnerouter=0
 inneratomslist=[]
 outeratomslist=[]

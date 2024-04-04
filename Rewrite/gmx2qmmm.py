@@ -19,6 +19,8 @@ import textwrap
 from collections import defaultdict
 
 #   Imports Of Custom Libraries
+import stuff2sort.System as System
+import Generators.GeneratorTopologies as Top
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
@@ -157,6 +159,12 @@ class GMX2QMMM():
                 str_info_to_log= 'Listing the parameters given as input for this run of gmx2qmmm:\n\n' + str_parameters_input_log
             )
 
+        # Initializing The System
+        self.initalize_system()
+
+        # Writing new topology
+        self.write_topology()
+
         #   // JOB SPAWNING //
         #   Assess Job Type
         self.assess_job()
@@ -164,6 +172,44 @@ class GMX2QMMM():
         #   Start Job According To Inputs
         self.start_job()
 
+    def initalize_system(self) -> None:
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        self.system = System.SystemInfo(self.defaultdict_parameters_input)
+
+    def write_topology(self) -> None:
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        # XX AJ Is there a nicer way to pass class variables to another class? 
+        topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.system, self.directory_base)
 
     def assess_job(self) -> None:
 

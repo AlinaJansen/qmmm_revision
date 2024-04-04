@@ -1,0 +1,26 @@
+# This file was created Wed Feb 14 17:52:36 2024
+# Created by:
+#                       :-) GROMACS - gmx energy, 2022 (-:
+# 
+# Executable:   /home/janjoswig/local/gromacs-2022/bin/gmx22
+# Data prefix:  /home/janjoswig/local/gromacs-2022
+# Working dir:  /home/jansea92/mnt/Curta_home/qmmm_revision/gro_input_output
+# Command line:
+#   gmx22 energy -f testopt.edr -o testopt.edr.xvg -backup no
+# gmx energy is part of G R O M A C S:
+#
+# Good ROcking Metal Altar for Chronical Sinners
+#
+@    title "GROMACS Energies"
+@    xaxis  label "Time (ps)"
+@    yaxis  label "(kJ/mol)"
+@TYPE xy
+@ view 0.15, 0.15, 0.75, 0.85
+@ legend on
+@ legend box on
+@ legend loctype view
+@ legend 0.78, 0.8
+@ legend length 2
+@ s0 legend "Total Energy"
+    0.000000  310.560364
+    0.001000  306.784149

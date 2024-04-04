@@ -1,0 +1,62 @@
+2024-03-05 15:50:46.019261 Reading input parameters...
+2024-03-05 15:50:46.027273 Done.
+2024-03-05 15:50:46.027273 Initializing dependencies...
+2024-03-05 15:50:46.028239 complete.
+2024-03-05 15:50:46.028239 Trying to understand your MM files.
+2024-03-05 15:50:46.028239 List of molecules...
+2024-03-05 15:50:46.031258 Done.
+2024-03-05 15:50:46.031258 Reading charges...
+2024-03-05 15:50:46.035815 Done.
+2024-03-05 15:50:46.035815 Reading geometry (.g96)...
+2024-03-05 15:50:46.039095 Done.
+2024-03-05 15:50:46.040103 Reading connectivity matrix...
+2024-03-05 15:50:46.050513 Done.
+2024-03-05 15:50:46.051521 Trying to understand your QM, MM and QM/MM parameters.
+2024-03-05 15:50:46.051521 Reading QM atom list...
+2024-03-05 15:50:46.052640 Done.
+2024-03-05 15:50:46.080902 Setting up a calculation named "testjob" of type "SINGLEPOINT".
+2024-03-05 15:50:46.081938 Starting the preparation of the point charge field used in the calculation.
+2024-03-05 15:50:46.081938 Creating the full xyzq Matrix...
+2024-03-05 15:50:46.082897 Done.
+2024-03-05 15:50:46.083895 Preparing the point charge field for a numerically optimized charge shift...
+2024-03-05 15:50:46.084892 Done.
+2024-03-05 15:50:46.085891 Setting up link atoms...
+2024-03-05 15:50:46.089876 Done.
+2024-03-05 15:50:46.089876 NOTE: Shifting omitted due to testjob.pointcharges being an existing file!
+2024-03-05 15:50:46.090875 Done.
+2024-03-05 15:50:46.091914 Preparing the QM/MM top file...
+2024-03-05 15:50:46.117837 Did not find an ffnonbonded file. Check your masses in the qmmm.top file!
+2024-03-05 15:50:46.121830 Cleaning exclusion list...
+2024-03-05 15:50:46.122789 Cleaning done.
+2024-03-05 15:50:46.122789 Formatting exclusion list...
+2024-03-05 15:50:46.123786 Formatting done.
+2024-03-05 15:50:46.124027 Done.
+2024-03-05 15:50:46.124027 Performing an single point calculation.
+2024-03-05 15:50:46.125037 Computing a single point.
+2024-03-05 15:50:46.125037 Preparing QM and MM inputs:
+2024-03-05 15:50:46.127054 moleculetype section was identified
+2024-03-05 15:50:46.128019 atoms section was identified
+2024-03-05 15:50:46.133035 Gaussian input file, testjob.gjf, is ready.
+2024-03-05 15:50:46.134005 NOTE: Using existing G16 files, skipping calculation for this step.
+2024-03-05 15:50:46.136000 Finding a larger .gro box size to avoid problems with .mdp input...
+2024-03-05 15:50:46.138025 Done.
+2024-03-05 15:50:46.139019 Gromacs input file, testjob.tpr, is ready.
+2024-03-05 15:50:46.139019 Running Gromacs file.
+2024-03-05 15:50:46.140016 Reading energies.
+2024-03-05 15:50:46.140016 Extracting QM energy.
+2024-03-05 15:50:46.173905 Obtaining charge self-interaction...
+2024-03-05 15:50:46.177899 Done:        -0.6947009102 a.u.
+2024-03-05 15:50:46.185878 QM energy is -95.0745747709 a.u..
+2024-03-05 15:50:46.186866 Extracting MM energy.
+2024-03-05 15:50:46.188867 MM energy is 0.11828619417307631 a.u..
+2024-03-05 15:50:46.195842 Unexisted method in correction database, changing to default correction method...
+2024-03-05 15:50:46.196876 Single point energy done. QM/MM energy is       -95.1751263833 (QM, link atom corrected BP86/STO-3G) +         0.1182861942 (MM) =       -95.0568401892 (a.u.)
+2024-03-05 15:50:46.197840 Reading forces.
+2024-03-05 15:50:46.198833 Reading QM forces using file: testjob.gjf.log and testjob.fort.7
+2024-03-05 15:50:46.215824 QM forces read.
+2024-03-05 15:50:46.215824 Reading MM forces using file: testjob.trr/.tpr/.tpr
+2024-03-05 15:50:46.216784 MM forces read.
+2024-03-05 15:50:46.221807 Unexisted method in correction database, changing to default correction method...
+2024-03-05 15:50:46.222768 Forces for link atom correction read.
+2024-03-05 15:50:46.222768 Total forces obtained.
+2024-03-05 15:50:46.223765 Writing SP output.
