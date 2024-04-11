@@ -106,13 +106,11 @@ class SystemInfo():
             self.xyzq = geometry.make_xyzq(self.initial_geometry, self.charge_vector)
 
         #   Read linkatoms and next order atoms
-        self.m1list = self.identify_m1(self.qmatomslist, self.connectivity_list)
-        self.m2list = self.identify_m2(self.qmatomslist, self.m1list, self.connectivity_list)
+        self.m1list = self.identify_m1()
+        self.m2list = self.identify_m2()
 
         self.linkatoms = get_linkatoms_ang(self.xyzq, self.qmatomslist, self.m1list, self.connectivity_list, [])
-        self.linkcorrlist, self.q1list, self.q2list, self.q3list, self.m3list = self.get_linkcorrlist(
-            self.linkatoms, self.qmatomslist, self.m1list, self.m2list, self.connectivity_list
-        )
+        self.linkcorrlist, self.q1list, self.q2list, self.q3list, self.m3list = self.get_linkcorrlist()
 
         #   Make a list of all topology files
         self.topology_list = self.getincludelist(self.input_dict['topologyfile'])
@@ -609,7 +607,7 @@ class SystemInfo():
 
         m1list = []
         for element in self.qmatomslist:
-            bondlist = self.get_bondpartners(self.connectivity_list, element)
+            bondlist = self.get_bondpartners(element)
             for entry in bondlist:
                 if (int(entry) not in np.array(self.qmatomslist).astype(int)) and (
                     int(entry) not in np.array(m1list).astype(int)
@@ -675,7 +673,7 @@ class SystemInfo():
         m2list = []
         for element in self.m1list:
             m2line = []
-            bondlist = self.get_bondpartners(self.connectivity_list, element)
+            bondlist = self.get_bondpartners(element)
             for entry in bondlist:
                 if int(entry) not in np.array(self.qmatomslist).astype(int):
                     m2line.append(entry)
