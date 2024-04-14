@@ -1,0 +1,24 @@
+# PRIO PARAMETERS
+includeprio=0
+
+# PARAMETERS
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\mm.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\path.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qm.dat
+!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmmm.dat
+jobtype=SP
+jobname=test
+
+# atomlists
+qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
+activeatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+
+# coordinatefile
+coordinatefile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
+topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
+
+# INNER / OUTER PARAMETERS
+# XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool
+useinnerouter=0
+inneratomslist=[]
+outeratomslist=[]

@@ -1,0 +1,58 @@
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Initialisation of gmx2qmmm completed; Renamed an older log file!
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Asserting basic correctness of inputs
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Basic correctness check COMPLETE
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Listing the parameters given as input for this run of gmx2qmmm:
+
+includeprio:              0
+gaussianexepath:          
+gromacsexepath:           
+gromacscoordinatespath:   
+gromacstopologypath:      
+jobtype:                  nma
+!INCLUDE:                 C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmatoms.ndx
+pccores:                  5
+pcmemory:                 
+qmprogram:                gaussian
+qmbasisset:               
+qmmethod:                 
+qmextratext:              
+qmatomslist:              [1, 2, 3, 4, 5]
+systemcharge:             
+systemmultiplicity:       
+activeatomslist:          [1, 2, 3, 4, 5, 6, 7, 8, 9]
+useinnerouter:            False
+inneratomslist:           []
+outeratomslist:           []
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Assessing job type
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-03-15 10:35:52
+
+Starting requested job: nma
+------------------------------------------------------------
+

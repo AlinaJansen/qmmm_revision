@@ -23,26 +23,20 @@ __date__ = "$15-May-2018 17:02:17$"  # during a rain storm
 import re
 import os
 import os.path
-import sys
 import numpy as np
 
 #   Imports From Existing Libraries 
 
 #   Imports Of Custom Libraries
-import Generators.GeneratorGeometries as geometry
-import Generators.GeneratorTopologies as topology
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
 from Generators import generate_pcf_from_top as make_pcf
 from Generators import prepare_pcf_for_shift as prep_pcf
-from Generators import generate_charge_shift as final_pcf
-from Generators._helper import _flatten, logger, stepper, create_dict
-from Generators._helper import get_linkatoms_ang, make_xyzq, make_xyzq_io
 
 #   // TODOS & NOTES //
 #   TODO: 
-#   NOTE: This Is An Example Note
+#   NOTE: 
 
 #   // CLASS & METHOD DEFINITIONS //
 class GenerateTopology():
@@ -57,7 +51,7 @@ class GenerateTopology():
         ------------------------------ \\
         EFFECT: \\
         --------------- \\
-        NONE \\
+        Coordinates The Writing Of The New Large Topology File \\
         ------------------------------ \\
         INPUT: \\
         --------------- \\
@@ -68,6 +62,7 @@ class GenerateTopology():
         NONE \\
         ------------------------------ \\
         '''
+
         self.system = system
         self.input_dict = input_dict
         self.basedir = basedir
@@ -75,25 +70,41 @@ class GenerateTopology():
         self.qmmmtop = str(input_dict['jobname'] + ".qmmm.top")    
         self.generate_top_listsonly()
 
-    def find_ffnonbonded(self, includedata):
+    def find_ffnonbonded(self, includedata): 
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Looks For ffnonbonded Files \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        ffnonbonded: str -> Name Of ffnonbonded File \\
+        ------------------------------ \\
+        '''
         
-        ffnb = ""
+        ffnonbonded = ""
         for element in includedata:
             match = re.search("ffnonbonded\.itp", element, flags=re.MULTILINE)
             if match:
                 if os.path.isfile(element):
-                    ffnb = element
+                    ffnonbonded = element
                     break
             else:
                 curr_dir = ""
                 curr_dir_list = re.findall("\S+/", element)
                 for entry in curr_dir_list:
                     curr_dir += entry
-                new_ffnb = str(curr_dir + "ffnonbonded.itp")
-                if os.path.isfile(new_ffnb):
-                    ffnb = new_ffnb
+                new_ffnonbonded = str(curr_dir + "ffnonbonded.itp")
+                if os.path.isfile(new_ffnonbonded):
+                    ffnonbonded = new_ffnonbonded
                     break
-        if ffnb == "":
+        if ffnonbonded == "":
             pass
             # logger(
             #     logfile,
@@ -101,25 +112,60 @@ class GenerateTopology():
             #         "Did not find an ffnonbonded file. Check your masses in the qmmm.top file!\n"
             #     ),
             # )
-        return ffnb
+        return ffnonbonded
 
 
-    def get_mass(self, atomtype, ffnb):
+    def get_mass(self, atomtype, ffnonbonded):
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX AJ I'm not quite sure what this function is doing, it's not being called for my current example, check later \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        atomtype: str -> \\
+        ffnonbonded: str -> Name Of ffnonbonded File \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        minimal_mass: float -> XX? \\
+        ------------------------------ \\
+        '''
+        
         matchstring = r"^\s*" + re.escape(atomtype) + "\s+\d+\s+(\d+\.\d+)"
         mass = []
-        with open(ffnb) as ifile:
+        with open(ffnonbonded) as ifile:
             for line in ifile:
                 match = re.search(matchstring, line, flags=re.MULTILINE)
                 if match:
                     mass.append(float(match.group(1)))
-        return min(mass)
+        minimal_mass = min(mass)
+
+        return minimal_mass
 
 
-    def molfinder(self, top, includelist, molname):
-        import re
+    def get_molecule_topology(self, molecule_name):
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Reads The Topology Or ITP File For One Molecule \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        molecule_name: str -> Name Of The Molecule \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        molecule_topologies: list -> List Of Sublists With Molecules And Their Topology Or ITP Files \\
+        ------------------------------ \\
+        '''
 
         foundtop = ""
-        toplist = [top] + includelist
+        toplist = [self.input_dict['topologyfile']] + self.system.topology_list
         for element in toplist:
             with open(element) as ifile:
                 for line in ifile:
@@ -133,7 +179,7 @@ class GenerateTopology():
                             if match:
                                 continue
                             else:
-                                matchstring = r"^\s*" + re.escape(molname)
+                                matchstring = r"^\s*" + re.escape(molecule_name)
                                 match = re.search(matchstring, line, flags=re.MULTILINE)
                                 if match:
                                     foundtop = str(element)
@@ -146,40 +192,60 @@ class GenerateTopology():
             if foundtop != "":
                 break
         if foundtop == "":
-            print("Molecule " + str(molname) + " was not found in any top. Exiting.")
+            print("Molecule " + str(molecule_name) + " was not found in any top. Exiting.")
             exit(1)
         return foundtop
 
 
-    def get_molfindlist(self, mollist, top, includelist):
-        molfindlist = []
-        for element in mollist:
-            topfound = self.molfinder(top, includelist, element[0])
-            moltopline = [element[0], topfound]
-            molfindlist.append(moltopline)
-        return molfindlist
+    def get_all_molecule_topologies(self):
+        # previous name "get_molfindlist"
+      
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Reads The Topology Or ITP File For Every Molecule \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        molecule_topologies: list -> List Of Sublists With Molecules And Their Topology Or ITP Files \\
+        ------------------------------ \\
+        '''
+
+        molecule_topologies = []
+
+        for element in self.system.list_of_molecules:
+            molecule_topology = self.get_molecule_topology(element[0])
+            moltopline = [element[0], molecule_topology]
+            molecule_topologies.append(moltopline)
+
+        return molecule_topologies
 
 
-    def get_full_include_list(self, top, includelist):
-        import re
+    def get_mollength(self): 
 
-        toplist = [top] + includelist
-        full_include_list = [str(top)]
-        for element in toplist:
-            with open(element) as ifile:
-                for line in ifile:
-                    match = re.search(r"^#include\s+\"(\S+)\"", line, flags=re.MULTILINE)
-                    if match:
-                        if str(match.group(1)) not in full_include_list and (
-                            str(match.group(1)) == "posre.itp"
-                        ):
-                            full_include_list.append(str(match.group(1)))
-        return full_include_list
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Reads The Amount Of Atoms For Each Molecule Type \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
 
-
-    def get_mollength(self, molfindlist):
         mollength = []
-        for element in molfindlist:
+        for element in self.molfindlist:
             curr_length = 0
             with open(element[1]) as ifile:
                 for line in ifile:
@@ -221,10 +287,28 @@ class GenerateTopology():
         return mollength
 
 
-    def clean_exclusions(self, excludedata, n_a):
+    def clean_exclusions(self, excludedata, number_of_atoms): 
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Cleans And Sorts The List For Exclucion Of Non-Bonded Interactions (XX AJ but I don't quite understand how) \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        excludedata: list -> List Of Atom Indices For Exclusion (XX?) \\
+        number_of_atoms: int -> ? \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        final_excludedata: list -> List Of Atom Indices For Exclusion Sorted \\
+        ------------------------------ \\
+        '''
+
         # logger(logfile, str("Cleaning exclusion list...\n"))
         new_excludedata = []
-        for i in range(1, n_a + 1):
+        for i in range(1, number_of_atoms + 1):
             new_excludeline = [int(i)]
             new_excludedata.append(new_excludeline)
         for element in excludedata:
@@ -242,10 +326,28 @@ class GenerateTopology():
             if len(element) > 1:
                 final_excludedata.append(element)
         # logger(logfile, str("Cleaning done.\n"))
+
         return final_excludedata
 
 
-    def cleanagain_exclusions(self, excludedata):
+    def cleanagain_exclusions(self, excludedata): # used
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Cleans And Sorts The List For Exclucion Of Non-Bonded Interactions (XX AJ but I don't quite understand how, see clean_exclusions) \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        excludedata: list -> List Of Atom Indices For Exclusion (XX?) \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        new_excludedata: list -> List Of Atom Indices For Exclusion Sorted \\
+        ------------------------------ \\
+        '''
+
         # logger(logfile, str("Formatting exclusion list...\n"))
         new_excludedata = []
         for element in excludedata:
@@ -255,8 +357,25 @@ class GenerateTopology():
         return new_excludedata
 
 
-    def make_large_top(self):
-        mollength = self.get_mollength(self.molfindlist)
+    def make_large_top(self): 
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Writes The Information From All Topology Files To One Large Topology \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+
+        mollength = self.get_mollength()
         red_molfindlist = []
         for entry in self.molfindlist:
             red_molfindlist.append(entry[1])
@@ -309,7 +428,7 @@ class GenerateTopology():
                         if match:
                             includedata.append(match.group(1))
                             continue
-            for molecule in self.system.mollist:
+            for molecule in self.system.list_of_molecules:
                 curr_topfile = ""
                 for entry in self.molfindlist:
                     if molecule[0] == entry[0]:
@@ -994,7 +1113,7 @@ class GenerateTopology():
                     ofile.write(" {:>10s}".format(str(element[7])))
                 else:
                     ofile.write(
-                        " {:>10s}".format(str(get_mass(str(element[1]), ffnb, logfile)))
+                        " {:>10s}".format(str(self.get_mass(str(element[1]), ffnb)))
                     )
                 ofile.write("\n")
             ofile.write("\n[ bonds ]\n")
@@ -1066,8 +1185,11 @@ class GenerateTopology():
                 for j in range(0, len(self.system.m3list[i])):
                     for k in range(0, len(self.system.m3list[i][j])):
                         excludedata.append([int(self.system.m3list[i][j][k]), int(self.system.q1list[i])])
+
+            # XX AJ maybe combine these two functions? I don't quite understand how they work though
             excludedata = self.clean_exclusions(excludedata, offset)
             excludedata = self.cleanagain_exclusions(excludedata)
+
             ofile.write("\n[ exclusions ]\n")
             for element in excludedata:
                 for entry in element:
@@ -1075,65 +1197,28 @@ class GenerateTopology():
                 ofile.write("\n")
             ofile.write("\n[ system ]\nProtein\n\n[ molecules ]\nQMMM_model 1")
 
-
-    def make_new_top(
-        self, top, molfindlist, mollist, mollength, qmatomlist, includelist, outname
-    ):
-        new_mollist = mollist
-        molcount = 0
-        curr_offset = 0
-        extra_count = 0
-        for molecule in mollist:
-            curr_topname = molfindlist[molcount][1]
-            if int(molecule[1]) != 1:
-                non_qm_mols = 0
-                for j in range(0, int(molecule[1])):
-                    for atom in qmatomlist:
-                        if int(curr_offset) + int(mollength[molcount]) >= int(atom) and int(
-                            atom
-                        ) > int(curr_offset):
-                            # The molecule contains QM atoms and is not unique
-                            new_topname = molfindlist[molcount][1]
-                            newnew_topname = new_topname + str(extra_count)
-                            found = True
-                            while found == True:
-                                found = False
-                                for i in range(0, len(molfindlist)):
-                                    if molfindlist[i][1] == newnew_topname:
-                                        extra_count += 1
-                                        newnew_topname = new_topname + str(extra_count)
-                                        found = True
-                                        break
-                            new_mollist.append(
-                                write_new_itp(
-                                    curr_topname,
-                                    newnew_topname,
-                                    qmatomlist,
-                                    curr_offset,
-                                    mollength[molcount],
-                                    includelist,
-                                    mollist,
-                                )
-                            )
-                        else:
-                            non_qm_mols += 1
-                    curr_offset += int(mollength[molcount])
-            else:
-                # the molecule is unique
-                for atom in qmatomlist:
-                    if int(curr_offset) + int(mollength[molcount]) >= int(atom) and int(
-                        atom
-                    ) > int(curr_offset):
-                        # the unique molecule contains a qm atom
-                        print("Ding")
-                    else:
-                        print("Dong")
-            for i in range(0, int(molecule[1])):
-                curr_offset += mollength[molcount]
-            molcount += 1
+        return None
 
 
-    def make_exclude_index(self):
+    def make_gmx_index_file(self):
+        # previous name "make_exclude_index"
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Creates An Index File For Gromacs With The Different Atom Groups \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+
         outname = str(self.qmmmtop) + ".ndx"
         with open(outname, "w") as ofile:
             count = 0
@@ -1167,27 +1252,47 @@ class GenerateTopology():
                                 count=0
                 ofile.write("\n")
 
+        return None
 
-    def generate_top_listsonly(self):
-        
-        self.includelist = make_pcf.getincludelist(self.input_dict['topologyfile'], self.input_dict['gmxtop_path'])
-        self.molfindlist = self.get_molfindlist(self.system.mollist, self.input_dict['topologyfile'], self.includelist)
-        self.make_exclude_index()
+
+    def generate_top_listsonly(self): 
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Coordinates Functions To Write The Index File For Gromacs And The Topology File \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+
+        self.molfindlist = self.get_all_molecule_topologies()
+        self.make_gmx_index_file()
         self.make_large_top()
 
+        return None
 
-    def generate_top(self, sysargs):
-        basedir = os.path.dirname(os.path.abspath(__file__))
-        top = sysargs[1]
-        qmatoms = sysargs[2]
-        outname = sysargs[3]
-        flaglist = sysargs[4]
-        m1list = sysargs[5]
-        qmatomlist = prep_pcf.read_qmatom_list(qmatoms)
-        mollist = make_pcf.readmols(top)
-        includelist = make_pcf.getincludelist(top, pathinfo)
-        molfindlist = get_molfindlist(mollist, top, includelist)
-        make_large_top()
+
+    # def generate_top(self, sysargs):
+    #     # XX AJ this function is only called when file is called as main, adapt this function later
+    #     basedir = os.path.dirname(os.path.abspath(__file__))
+    #     top = sysargs[1]
+    #     qmatoms = sysargs[2]
+    #     outname = sysargs[3]
+    #     flaglist = sysargs[4]
+    #     m1list = sysargs[5]
+    #     qmatomlist = prep_pcf.read_qmatom_list(qmatoms)
+    #     mollist = make_pcf.readmols(top)
+    #     includelist = make_pcf.getincludelist(top, pathinfo)
+    #     molfindlist = get_molfindlist(mollist, top, includelist)
+    #     make_large_top()
 
     
 
@@ -1195,4 +1300,4 @@ class GenerateTopology():
     if __name__ == "__main__":
         import sys
 
-        generate_top(sys.argv)
+        # generate_top(sys.argv)

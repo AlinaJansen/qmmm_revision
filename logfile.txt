@@ -1,33 +1,33 @@
 ------------------------------------------------------------
-2024-04-11 11:56:03
+2024-04-13 12:59:10
 
 Initialisation of gmx2qmmm completed; Renamed an older log file!
 ------------------------------------------------------------
 
 ------------------------------------------------------------
-2024-04-11 11:56:03
+2024-04-13 12:59:10
 
 Asserting basic correctness of inputs
 ------------------------------------------------------------
 
 ------------------------------------------------------------
-2024-04-11 11:56:03
+2024-04-13 12:59:10
 
 Basic correctness check COMPLETE
 ------------------------------------------------------------
 
 ------------------------------------------------------------
-2024-04-11 11:56:03
+2024-04-13 12:59:10
 
 Listing the parameters given as input for this run of gmx2qmmm:
 
 includeprio:              0
 jobtype:                  SP
 jobname:                  test
-qmatomslist:              C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\qmatoms.ndx
-activeatomslist:          C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\act.ndx
-coordinatefile:           C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\conf.g96
-topologyfile:             C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\Rewrite\LibFiles\topol.top
+qmatomslist:              C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
+activeatomslist:          C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+coordinatefile:           C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
+topologyfile:             C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
 useinnerouter:            0
 inneratomslist:           []
 outeratomslist:           []

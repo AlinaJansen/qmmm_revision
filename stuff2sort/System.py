@@ -569,7 +569,7 @@ class SystemInfo():
                         for line in ifile:
                                 match=re.search(r'^([\s\d]{5})(.{5})(.{5})([\s\d]{5})\s*([-]*\d+\.\d*)\s*([-]*\d+\.\d*)\s*([-]*\d+\.\d*)', line,flags=re.MULTILINE)
                                 if not match:
-                                        logger(logfile,str("Successfully wrote " +  str(int(counter)) + " atoms to internal precision format file.\n"))
+                                        # logger(logfile,str("Successfully wrote " +  str(int(counter)) + " atoms to internal precision format file.\n"))
                                         finalline=line
                                         break
                                 else:
@@ -601,7 +601,7 @@ class SystemInfo():
         ------------------------------ \\
         RETURN: \\
         --------------- \\
-        m1list: list of m1 atom indices \\
+        m1list: list -> List Of M1 Atom Indices \\
         ------------------------------ \\
         '''
 
