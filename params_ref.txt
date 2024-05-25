@@ -1,0 +1,40 @@
+# XX !!! AJ: I think we have to keep the old parameter names (unfortunately), if we want old jobs to run with the new version
+# PRIO PARAMETERS
+includeprio=0
+
+# PATH PARAMETERS
+# gaussianexepath=
+# gromacsexepath=
+# gromacscoordinatespath=
+# gromacstopologypath=
+gmxtop_path=/top/
+gmxcmd=gmx
+gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
+g16cmd=g16
+
+# JOB PARAMETERS
+jobtype=nma
+
+# MM PARAMETERS
+
+
+# QM PARAMETERS
+!INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmparams.dat
+!INCLUDE=C:\Users\flori\Desktop\Work\py3_gmx2qmmm\Rewrite\LibFiles\qmatoms.ndx
+pccores=3
+pcmemory=
+qmprogram=gaussian
+qmbasisset=
+qmmethod=
+qmextratext=
+qmatomslist=[1, 2, 3, 4]
+systemcharge=
+systemmultiplicity=
+
+# QMMM PARAMETERS
+activeatomslist=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# INNER / OUTER PARAMETERS
+useinnerouter=False
+inneratomslist=[]
+outeratomslist=[]
