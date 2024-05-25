@@ -6,7 +6,7 @@ includeprio=0
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\path.dat
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qm.dat
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmmm.dat
-jobtype=SP
+jobtype=SINGLEPOINT
 jobname=test
 
 # atomlists
@@ -22,3 +22,15 @@ topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol
 useinnerouter=0
 inneratomslist=[]
 outeratomslist=[]
+
+# default parameters?
+cores=1
+program=G16
+method=BP86
+basis=STO-3G
+multiplicity=1
+memory=1000
+extra=NONE
+rvdw=2.0
+databasefit=morse
+print_level=normal

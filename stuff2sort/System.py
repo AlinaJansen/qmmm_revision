@@ -13,6 +13,7 @@ __date__ = '2024-03-25'
 #   Imports Of Existing Libraries
 import re
 import os 
+import math
 import numpy as np
 
 #   Imports From Existing Libraries
@@ -58,6 +59,9 @@ class SystemInfo():
 
         self.input_dict = input_dict
 
+        #   Make a list of all topology files
+        self.topology_list = self.getincludelist(self.input_dict['topologyfile'])
+
         # Read The Different Types Of Molecules In The System
         self.list_of_molecules = self.read_molecules()
 
@@ -78,18 +82,19 @@ class SystemInfo():
             self.inneratomslist = []
             self.outeratomslist = []
 
-        #   Read connectivity
+        #   Read Connectivity
         self.connectivity_list = self.read_connectity_from_topology(self.input_dict['topologyfile'])
 
-        #   Read initial geometry
+        #   Read Initial Geometry
         #   XX AJ I would prefer only one function here independent of the file type and only make that distinction within the function. I'll get back to that later when I'm writing GeneratorGeometries.py
         if self.input_dict['coordinatefile'][-4:] == ".gro":
             #logger(logfile, "Reading geometry (.gro)...\n")
+            # XX AJ if we rewrite gro files to g96 files, the following function can be deleted and we can read the g96 file with geometry.readg96 afterwards
             self.initial_geometry = geometry.readgeo(self.input_dict['coordinatefile'])
             # Writing high-precision coordinate file
             # logger(logfile, "Writing high-precision coordinate file...")
-            self.write_highprec(self.input_dict['coordinatefile'], self.input_dict['topologyfile']) # XX temp removed logfile until logfile decision of Florian AJ
-            self.input_dict['coordinatefile'] = self.qmmmparams.jobname + ".g96"
+            self.write_highprec(self.input_dict['coordinatefile']) # XX temp removed logfile until logfile decision of Florian AJ
+            self.input_dict['coordinatefile'] = self.input_dict['jobname'] + ".g96"
             # logger(logfile, "Done.\n")
         elif self.input_dict['coordinatefile'][-4:] == ".g96":
             #logger(logfile, "Reading geometry (.g96)...\n")
@@ -112,8 +117,7 @@ class SystemInfo():
         self.linkatoms = get_linkatoms_ang(self.xyzq, self.qmatomslist, self.m1list, self.connectivity_list, [])
         self.linkcorrlist, self.q1list, self.q2list, self.q3list, self.m3list = self.get_linkcorrlist()
 
-        #   Make a list of all topology files
-        self.topology_list = self.getincludelist(self.input_dict['topologyfile'])
+
 
 
     def read_atoms_list(self, atoms_input):
@@ -943,6 +947,202 @@ class SystemInfo():
 
                     toplist.extend(self.getincludelist(foundname))
         return toplist
+    
+    def get_atoms(self, qmmm_topology):
+        atoms = []
+        mass_map = {
+            "H": "1.008",
+            "He": "4.0026",
+            "Li": "6.94",
+            "Be": "9.0122",
+            "B": "10.81",
+            "C": "12.011",
+            "N": "14.007",
+            "O": "15.999",
+            "F": "18.998",
+            "Ne": "20.180",
+            "Na": "22.990",
+            "Mg": "24.305",
+            "Al": "26.982",
+            "Si": "28.085",
+            "P": "30.974",
+            "S": "32.06",
+            "Cl": "35.45",
+            "Ar": "39.948",
+            "K": "39.098",
+            "Ca": "40.0784",
+            "Sc": "44.956",
+            "Ti": "47.867",
+            "V": "50.942",
+            "Cr": "51.996",
+            "Mn": "54.938",
+            "Fe": "55.8452",
+            "Co": "58.933",
+            "Ni": "58.693",
+            "Cu": "63.5463",
+            "Zn": "65.382",
+            "Ga": "69.723",
+            "Ge": "72.6308",
+            "As": "74.922",
+            "Se": "78.9718",
+            "Br": "79.904",
+            "Kr": "83.7982",
+            "Rb": "85.468",
+            "Sr": "87.62",
+            "Y": "88.906",
+            "Zr": "91.2242",
+            "Nb": "92.906",
+            "Mo": "95.95",
+            "Tc": "98.906254721",
+            "Ru": "101.072",
+            "Rh": "102.91",
+            "Pd": "106.42",
+            "Ag": "107.87",
+            "Cd": "112.41",
+            "In": "114.82",
+            "Sn": "118.71",
+            "Sb": "121.76",
+            "Te": "127.603",
+            "I": "126.90",
+            "Xe": "131.29",
+            "Cs": "132.91",
+            "Ba": "137.33",
+            "La": "138.91",
+            "Ce": "140.12",
+            "Pr": "140.91",
+            "Nd": "144.24",
+            "Pm": "144.9127493",
+            "Sm": "150.362",
+            "Eu": "151.96",
+            "Gd": "157.253",
+            "Tb": "158.93",
+            "Dy": "162.50",
+            "Ho": "164.93",
+            "Er": "167.26",
+            "Tm": "168.93",
+            "Yb": "173.05",
+            "Lu": "174.97",
+            "Hf": "178.492",
+            "Ta": "180.95",
+            "W": "183.84",
+            "Re": "186.21",
+            "Os": "190.233",
+            "Ir": "192.22",
+            "Pt": "195.08",
+            "Au": "196.97",
+            "Hg": "200.59",
+            "Tl": "204.38",
+            "Pb": "207.2",
+            "Bi": "208.98",
+            "Po": "208.982430420",
+            "At": "209.9871488",
+            "Rn": "222.017577725",
+            "Fr": "223.019735926",
+            "Ra": "226.025409825",
+            "Ac": "227.027752126",
+            "Th": "232.04",
+            "Pa": "231.04",
+            "U": "238.03",
+            "Np": "237.04817342",
+            "Pu": "244.0642045",
+            "Am": "243.061381125",
+            "Cm": "247.0703545",
+            "Bk": "247.0703076",
+            "Cf": "251.0795875",
+            "Es": "252.082985",
+            "Fm": "257.0951067",
+            "Md": "258.0984315",
+            "No": "259.1010311",
+            "Lr": "266.1198356",
+            "Rf": "267.1217962",
+            "Db": "268.1256757",
+            "Sg": "269.1286339",
+            "Bh": "270.1333631",
+            "Hs": "277.1519058",
+            "Mt": "278.1563168",
+            "Ds": "281.1645159",
+            "Rg": "282.1691272",
+            "Cn": "285.177126",
+            "Nh": "286.1822172",
+            "Fl": "289.190426",
+            "Mc": "289.1936389",
+            "Lv": "293.204496",
+            "Ts": "294.2104674",
+            "Og": "295.2162469",
+        }
+        name_map = {value: key for key, value in mass_map.items()}
+
+        with open(qmmm_topology) as qmmm_topology_file:
+            for line in qmmm_topology_file:
+                match = re.search(r"\[\s+moleculetype\s*\]", line, flags=re.MULTILINE)
+                if match:
+                    # logger(logfile, "moleculetype section was identified\n")
+                    break
+            for line in qmmm_topology_file:
+                match = re.search(r"\[\s+atoms\s*\]", line, flags=re.MULTILINE)
+                if match:
+                    # logger(logfile, "atoms section was identified\n")
+                    break
+            for line in qmmm_topology_file:
+                match = re.search(r"^\s*\[", line, flags=re.MULTILINE)
+                if match:
+                    break
+                match = re.search(
+                    r"^\s*(\d+)\s+(\S+)\s+(\d+)\s+(\S+)\s+(\S+)\s+(\d+)\s+([-]*\d+[\.]*[\d+]*)\s+(\d+[\.]*[\d+]*)",
+                    line,
+                    flags=re.MULTILINE,
+                )
+                if match:
+                    atomtype = str(match.group(2))
+                    atommass = float(match.group(8))
+                    foundname = ""
+                    # find atom type based on mass
+                    for key in name_map.items():
+                        foundmass = key[0]
+                        massdiff = math.sqrt(
+                            (float(atommass) - float(foundmass))
+                            * (float(atommass) - float(foundmass))
+                        )
+                        if massdiff < 0.05:
+                            foundname = name_map[foundmass]
+                            break
+                    if foundname != "":
+                        testmass = mass_map[foundname]
+                        massdiff = math.sqrt(
+                            (float(atommass) - float(foundmass))
+                            * (float(atommass) - float(foundmass))
+                        )
+                        # if massdiff > 0.01:
+                        #     logger(
+                        #         logfile,
+                        #         str(
+                        #             "Found a mass of "
+                        #             + str(atommass)
+                        #             + " for atom type "
+                        #             + str(atomtype)
+                        #             + ' (identified as atom name "'
+                        #             + str(foundname)
+                        #             + '"), which is more than 0.01 different from the expected mass of '
+                        #             + str(testmass)
+                        #             + ". Atom index was "
+                        #             + str(match.group(1))
+                        #             + ". This has no effect except unless the atom was identified wrongly or dynamics are intended. Clean your ffnonbonded.itp to avoid these messages!\n"
+                        #         ),
+                        #     )
+                        atoms.append(foundname)
+                    else:
+                        # logger(
+                        #     logfile,
+                        #     str(
+                        #         "Atom type "
+                        #         + str(atomtype)
+                        #         + " could not be translated to a regular atom name. Exiting. Last line:\n"
+                        #     ),
+                        # )
+                        # logger(logfile, line)
+                        exit(1)
+        return atoms
+
 
 if __name__ == '__main__':
 

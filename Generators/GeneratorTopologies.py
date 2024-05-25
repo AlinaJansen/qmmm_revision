@@ -67,7 +67,7 @@ class GenerateTopology():
         self.input_dict = input_dict
         self.basedir = basedir
         self.mmflaglist = [] # figure out what that variable exactly is later (empty list in example)
-        self.qmmmtop = str(input_dict['jobname'] + ".qmmm.top")    
+        self.qmmm_topology = str(input_dict['jobname'] + ".qmmm.top")    
         self.generate_top_listsonly()
 
     def find_ffnonbonded(self, includedata): 
@@ -385,7 +385,7 @@ class GenerateTopology():
         real_last_cg = 0
         curr_cg = 0
         count = 0
-        with open(self.qmmmtop, "w") as ofile:
+        with open(self.qmmm_topology, "w") as ofile:
             includedata = []
             atomdata = []
             bonddata = []
@@ -1219,7 +1219,7 @@ class GenerateTopology():
         ------------------------------ \\
         '''
 
-        outname = str(self.qmmmtop) + ".ndx"
+        outname = str(self.qmmm_topology) + ".ndx"
         with open(outname, "w") as ofile:
             count = 0
             ofile.write("[ QM ]\n")

@@ -44,62 +44,7 @@ def stepper(filename, step):
                 buffer = i
         new_filename = str(filename[:buffer] + "." + str(step) + filename[buffer:])
         return new_filename
-'''
-Simon changed the make_xyzq functions to improve the velocity:
-    for a system with 149976 atoms the old function took:   927.161 s
-    while the new takes:                                      0.035 s
-    it is 26383 times faster.
 
-def make_xyzq(geo, chargevec):
-    xyzq = []
-    count = 0
-    for element in chargevec:
-      try:
-         xyzq.append(
-            [
-                float(geo[count * 3 + 0]),
-                float(geo[count * 3 + 1]),
-                float(geo[count * 3 + 2]),
-                float(element),
-            ]
-         )
-         count += 1
-      except:
-         print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
-    return xyzq
-
-def make_xyzq_io(geo, chargevec, outerlist):
-    xyzq = []
-    count = 0
-    for element in chargevec:
-        if count+1 in outerlist:
-            try:
-                xyzq.append(
-                   [
-                    float(geo[count * 3 + 0]),
-                    float(geo[count * 3 + 1]),
-                    float(geo[count * 3 + 2]),
-                    float(0.0),
-                   ]
-                )
-                count += 1
-            except:
-                print("Error: Can't make XYZ-charge matrix for an outer atom. Maybe the number of atoms is different in the structure and the topology file ?!")
-        else:
-            try:
-                xyzq.append(
-                   [
-                    float(geo[count * 3 + 0]),
-                    float(geo[count * 3 + 1]),
-                    float(geo[count * 3 + 2]),
-                    float(element),
-                   ]
-                )
-                count += 1
-            except:
-                 print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
-    return xyzq
-'''
 
 def make_xyzq(geo, chargevec):
     xyzq=np.zeros((len(chargevec),4))
@@ -173,3 +118,29 @@ def get_linkatoms_ang(xyzq, qmatomlist, m1list, connlist, prev_scalefacs):
         linkatoms.append(linkcoords)
         count += 1
     return linkatoms
+
+def filter_xyzq(xyzq, atom_list, coordinates=True, charges=True):
+    # XX AJ I'm not happy with how this function works (combining lists and arrays) but that's because of different inputs
+    python_atom_list = [index - 1 for index in atom_list]
+    if isinstance(xyzq, np.ndarray):
+        xyzq = xyzq.tolist()
+    filtered_xyzq = [xyzq[index] for index in python_atom_list]
+    begin = 0 if coordinates else 3
+    end = 4 if charges else 3
+    filtered_information = np.array(filtered_xyzq)[:, begin:end]
+    return filtered_information
+
+def normalized_vector(vec):
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    normalizing a vector \\
+    --------------- \\
+    INPUT: \\
+    vec: np.array
+    ------------------------------ \\
+    RETURN: \\
+    np.array -> normalized vector \\
+    --------------- \\
+    '''
+    return np.array(vec) / np.linalg.norm(np.array(vec))
