@@ -70,7 +70,7 @@ def make_xyzq_io(geo, chargevec, outerlist):
         print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
     return xyzq
 
-def get_linkatoms_ang(xyzq, qmatomlist, m1list, connlist, prev_scalefacs):
+def get_linkatoms_angstrom(xyzq, qmatomlist, m1list, connlist, prev_scalefacs):
     """Move to more appropriate module"""
     linkatoms = []
     pairlist = []

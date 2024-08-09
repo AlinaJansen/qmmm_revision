@@ -24,7 +24,7 @@ import Generators.GeneratorGeometries as geometry
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
 from Generators import generate_pcf_from_top as make_pcf
-from Generators._helper import _flatten, get_linkatoms_ang
+from Generators._helper import _flatten, get_linkatoms_angstrom
 
 #   // TODOS & NOTES //
 #   TODO:
@@ -39,7 +39,7 @@ class SystemInfo():
     This Class Reads And Stores Information About The System
     '''
 
-    def __init__(self, input_dict) -> None:
+    def __init__(self, dict_input_userparameters) -> None:
 
         '''
         ------------------------------ \\
@@ -57,70 +57,71 @@ class SystemInfo():
         ------------------------------ \\
         '''
 
-        self.input_dict = input_dict
+        self.dict_input_userparameters = dict_input_userparameters
 
         #   Make a list of all topology files
-        self.topology_list = self.getincludelist(self.input_dict['topologyfile'])
+        self.list_topology = self.get_list_topologies(self.dict_input_userparameters['topologyfile'])
 
         # Read The Different Types Of Molecules In The System
-        self.list_of_molecules = self.read_molecules()
+        self.list_molecules = self.read_molecules()
 
         # Read The Charges For All Atoms
-        self.charge_vector = []
-        for element in self.list_of_molecules:
-            self.charge_vector.extend(self.readcharges(element))
+        self.list_charges = []
+        for molecule in self.list_molecules:
+            self.list_charges.extend(self.readcharges(molecule))
 
         #   Read All Atom Lists
         #   XX AJ currently I'm assuming we're always having separate files for atom indices, only remove this comment when we finally decided so or add the possibility for lists
-        self.qmatomslist = self.read_atoms_list(self.input_dict['qmatomslist'])
-        self.activeatomslist = self.read_atoms_list(self.input_dict['activeatomslist'])
-        if input_dict['useinnerouter']:
-            self.inneratomslist = self.read_atoms_list(self.input_dict['inneratomslist'])
-            self.outeratomslist = self.read_atoms_list(self.input_dict['outeratomslist'])
+        self.list_atoms_qm = self.read_atoms_list(self.dict_input_userparameters['qmatomslist'])
+        self.list_atoms_active = self.read_atoms_list(self.dict_input_userparameters['activeatomslist'])
+        if dict_input_userparameters['useinnerouter']:
+            self.list_atoms_inner = self.read_atoms_list(self.dict_input_userparameters['inneratomslist'])
+            self.list_atoms_outer = self.read_atoms_list(self.dict_input_userparameters['outeratomslist'])
         #   If we're not using inner/outer we're keeping the lists empty (currently necessary for some functions but that might change later)
         else:
-            self.inneratomslist = []
-            self.outeratomslist = []
+            self.list_atoms_inner = []
+            self.list_atoms_outer = []
 
         #   Read Connectivity
-        self.connectivity_list = self.read_connectity_from_topology(self.input_dict['topologyfile'])
+        self.list_connectivity_topology = self.read_connectity_topology(self.dict_input_userparameters['topologyfile'])
 
         #   Read Initial Geometry
         #   XX AJ I would prefer only one function here independent of the file type and only make that distinction within the function. I'll get back to that later when I'm writing GeneratorGeometries.py
-        if self.input_dict['coordinatefile'][-4:] == ".gro":
+        if self.dict_input_userparameters['coordinatefile'][-4:] == ".gro":
             #logger(logfile, "Reading geometry (.gro)...\n")
             # XX AJ if we rewrite gro files to g96 files, the following function can be deleted and we can read the g96 file with geometry.readg96 afterwards
-            self.initial_geometry = geometry.readgeo(self.input_dict['coordinatefile'])
+            self.list_geometry_initial = geometry.readgeo(self.dict_input_userparameters['coordinatefile'])
             # Writing high-precision coordinate file
             # logger(logfile, "Writing high-precision coordinate file...")
-            self.write_highprec(self.input_dict['coordinatefile']) # XX temp removed logfile until logfile decision of Florian AJ
-            self.input_dict['coordinatefile'] = self.input_dict['jobname'] + ".g96"
+            self.write_file_gromacs_highprec(self.dict_input_userparameters['coordinatefile']) # XX temp removed logfile until logfile decision of Florian AJ
+            self.dict_input_userparameters['coordinatefile'] = self.dict_input_userparameters['jobname'] + ".g96"
             # logger(logfile, "Done.\n")
-        elif self.input_dict['coordinatefile'][-4:] == ".g96":
+        elif self.dict_input_userparameters['coordinatefile'][-4:] == ".g96":
             #logger(logfile, "Reading geometry (.g96)...\n")
-            self.initial_geometry = geometry.readg96(self.input_dict['coordinatefile'])
+            self.list_geometry_initial = geometry.readg96(self.dict_input_userparameters['coordinatefile'])
 
-        self.number_of_atoms = int(len(self.initial_geometry)/3)
+        self.int_number_atoms = int(len(self.list_geometry_initial)/3)
 
         #   Create xyzq (Coordinates And Charges) For The Whole System
         #   XX AJ same here, I'll make one function of it
         #   XX AJ technically, I would prefer this xyzq function not in this class, but it's used in the get_linkatoms_ang, so I'll keep it here
-        if input_dict['useinnerouter']:
-            self.xyzq = geometry.make_xyzq_io(self.initial_geometry, self.charge_vector, self.outeratomslist)
+        if dict_input_userparameters['useinnerouter']:
+            self.array_xyzq = geometry.make_xyzq_io(self.list_geometry_initial, self.list_charges, self.list_atoms_outer)
         else:
-            self.xyzq = geometry.make_xyzq(self.initial_geometry, self.charge_vector)
+            self.array_xyzq = geometry.make_xyzq(self.list_geometry_initial, self.list_charges)
 
-        #   Read linkatoms and next order atoms
-        self.m1list = self.identify_m1()
-        self.m2list = self.identify_m2()
+        #   Read linkatoms and next order atoms in mm region
+        self.list_atoms_m1 = self.get_list_atoms_m1()
+        self.list_atoms_m2 = self.get_list_atoms_m2()
 
-        self.linkatoms = get_linkatoms_ang(self.xyzq, self.qmatomslist, self.m1list, self.connectivity_list, [])
-        self.linkcorrlist, self.q1list, self.q2list, self.q3list, self.m3list = self.get_linkcorrlist()
+        #   Read coordinates of linkatoms in angstrom
+        self.list_coordinates_linkatoms = get_linkatoms_angstrom(self.array_xyzq, self.list_atoms_qm, self.list_atoms_m1, self.list_connectivity_topology, [])
+        self.linkcorrlist, self.list_atoms_q1, self.list_atoms_q2, self.list_atoms_q3, self.list_atoms_m3 = self.get_list_atoms_link()
+        pass
 
 
 
-
-    def read_atoms_list(self, atoms_input):
+    def read_atoms_list(self, file_input_atoms) -> list:
 
         '''
         ------------------------------ \\
@@ -130,26 +131,29 @@ class SystemInfo():
         ------------------------------ \\
         INPUT: \\
         --------------- \\
-        atoms_input: str -> Index File \\
+        file_input_atoms: str -> Index File \\
         ------------------------------ \\
         RETURN: \\
         --------------- \\
-        atom_list: list -> List Of Atom Indices \\
+        list_atoms: list -> List Of Atom Indices \\
         ------------------------------ \\
         '''
 
-        atom_list = []
-        with open(atoms_input) as atom_file:
+        list_atoms = []
+        with open(file_input_atoms, 'r') as atom_file:
             for line in atom_file:
+
+                # Skip Index Group Name
                 if "[" in line or "]" in line:
                     continue
+                
                 atom_index_list = re.findall("\d+", line)
                 if atom_index_list:
-                    atom_list.extend(map(int, atom_index_list))
-        atom_list = sorted(np.array(atom_list).astype(int))
-        return atom_list
+                    list_atoms.extend(map(int, atom_index_list))
+        list_atoms = sorted(np.array(list_atoms).astype(int))
+        return list_atoms
 
-    def read_molecules(self):
+    def read_molecules(self) -> list:
 
         '''
         ------------------------------ \\
@@ -163,39 +167,42 @@ class SystemInfo():
         ------------------------------ \\
         RETURN: \\
         --------------- \\
-        molecule_list: list -> List Of Molecules And Their Amount In The System \\
+        list_molecule: list -> List Of Molecules And Their Amount In The System \\
         ------------------------------ \\
         '''
 
-        molecule_list = []
-        with open(self.input_dict['topologyfile']) as ifile:
-            found = False
-            for line in ifile:
+        list_molecule = []
+        with open(self.dict_input_userparameters['topologyfile'], 'r') as file_input:
+            bool_match = False
+            for line in file_input:
                 match = re.search(r"^\[ molecules \]", line, flags=re.MULTILINE)
                 if match:
-                    found = True
+                    bool_match = True
                     break
-            if not found:
+            if not bool_match:
                 #   XX AJ turn into Logging
                 print('No "molecules" entry in ' + str(self.top) + " found. Exiting.")
                 exit(1)
-            for line in ifile:
+            for line in file_input:
+                # Skip All Comment Lines
                 match = re.search(r"^;", line, flags=re.MULTILINE)
                 if match:
                     continue
+                # Find All Molecule Types And Their Amount
                 else:
+                    # Extract Lines With A String (Molecule Type, Group 1) And A Number (Molecule Amount, Group 2) Seperated By Whitespace
                     match = re.search(r"^(\S+)\s+(\d+)", line, flags=re.MULTILINE)
                     if match:
-                        molecule_list.append([match.group(1), match.group(2)])
+                        list_molecule.append([match.group(1), match.group(2)])
                     else:
                         #   XX AJ turn into Logging
                         print("Found an incomprehensible line in molecules list. Exiting.")
                         print("Last line was:")
                         print(line)
                         exit(1)
-        return molecule_list
+        return list_molecule
 
-    def readcharges(self, molecule_entry):
+    def readcharges(self, list_molecule_entry) -> list:
         '''
         ------------------------------ \\
         EFFECT: \\
@@ -204,23 +211,23 @@ class SystemInfo():
         ------------------------------ \\
         INPUT: \\
         --------------- \\
-        molvecentry: list -> List With Molecule Name And Amount Of This Molecule \\
+        list_molecule_entry: list -> List With Molecule Name And Amount Of This Molecule \\
         ------------------------------ \\
         RETURN: \\
         --------------- \\
-        charge_vector: list -> List Of Charges For Every Atom In This Molecule Types \\
+        list_charges: list -> List Of Charges For Every Atom In This Molecule Types \\
         ------------------------------ \\
         '''
 
-        charge_vector = []
-        current_topology = self.input_dict['topologyfile']
-        molecule_name = molecule_entry[0]
-        molecule_count = int(molecule_entry[1])
-        found = self.checkformol(molecule_name, self.input_dict['topologyfile'])
+        list_charges = []
+        current_topology = self.dict_input_userparameters['topologyfile']
+        molecule_name = list_molecule_entry[0]
+        molecule_count = int(list_molecule_entry[1])
+        found = self.check_occurence_topology_molecule(molecule_name, self.dict_input_userparameters['topologyfile'])
 
         if not found:
-            for element in self.topology_list:
-                found = self.checkformol(molecule_name, element)
+            for element in self.list_topology:
+                found = self.check_occurence_topology_molecule(molecule_name, element)
                 if found:
                     current_topology = element
                     break
@@ -268,13 +275,13 @@ class SystemInfo():
                     flags=re.MULTILINE,
                 )
                 if match:
-                    charge_vector.append(float(match.group(1)))
+                    list_charges.append(float(match.group(1)))
 
-        charge_vector *= molecule_count
+        list_charges *= molecule_count
 
-        return charge_vector
+        return list_charges
 
-    def checkformol(self, molecule_name, topology_file):
+    def check_occurence_topology_molecule(self, molecule_name, topology_file) -> bool:
 
         '''
         ------------------------------ \\
@@ -289,12 +296,12 @@ class SystemInfo():
         ------------------------------ \\
         RETURN: \\
         --------------- \\
-        correct: bool \\
+        bool_occurence_molecule: bool \\
         ------------------------------ \\
         '''
 
         with open(topology_file) as ifile:
-            correct = False
+            bool_occurence_molecule = False
             for line in ifile:
                 match = re.search(r"^;", line, flags=re.MULTILINE)
                 if match:
@@ -308,14 +315,14 @@ class SystemInfo():
                             matchstring = r"^\s*" + re.escape(molecule_name)
                             match = re.search(matchstring, line, flags=re.MULTILINE)
                             if match:
-                                correct = True
+                                bool_occurence_molecule = True
                             break
-                if correct:
+                if bool_occurence_molecule:
                     break
 
-        return correct
+        return bool_occurence_molecule
 
-    def read_connectity_from_topology(self, topology_file):
+    def read_connectity_topology(self, topology_file) -> list:
 
         '''
         ------------------------------ \\
@@ -334,19 +341,19 @@ class SystemInfo():
         ------------------------------ \\
         '''
 
-        count = 0
+        int_count_ = 0
         connectivity_list = []
-        for element in self.list_of_molecules:
-            current_topology = self.get_current_topology(element[0], topology_file)
-            for i in range(0, int(element[1])):
-                mollength = self.get_mollength_direct(element[0], current_topology)
-                connset = self.get_connlist(count, element[0], current_topology)
+        for molecule in self.list_molecules:
+            current_topology = self.get_current_topology(molecule[0], topology_file)
+            for i in range(0, int(molecule[1])):
+                mollength = self.get_mollength_direct(molecule[0], current_topology)
+                connset = self.get_list_connectivity(int_count_, molecule[0], current_topology)
                 connectivity_list += connset
-                count += int(mollength)
+                int_count_ += int(mollength)
 
         return connectivity_list
 
-    def get_current_topology(self, molecule_name, topology_file):
+    def get_current_topology(self, molecule_name, topology_file) -> list:
 
         '''
         ------------------------------ \\
@@ -365,23 +372,23 @@ class SystemInfo():
         ------------------------------ \\
         '''
 
-        current_topology = topology_file
-        found = make_pcf.checkformol(molecule_name, topology_file)
+        str_current_topology = topology_file
+        bool_occurence_molecule = make_pcf.checkformol(molecule_name, topology_file)
 
-        if not found:
-            for element in self.topology_list:
-                found = make_pcf.checkformol(molecule_name, element)
-                if found:
-                    current_topology = element
+        if not bool_occurence_molecule:
+            for element in self.list_topology:
+                bool_occurence_molecule = make_pcf.checkformol(molecule_name, element)
+                if bool_occurence_molecule:
+                    str_current_topology = element
                     break
-        if not found:
+        if not bool_occurence_molecule:
             # XX AJ replace with logger
             print("No charges found for " + str(molecule_name) + ". Exiting.")
             exit(1)
 
-        return current_topology
+        return str_current_topology
 
-    def get_mollength_direct(self, molecule_name, topology_file):
+    def get_mollength_direct(self, molecule_name, topology_file) -> list:
         
         '''
         ------------------------------ \\
@@ -449,7 +456,7 @@ class SystemInfo():
                     break
         return mollength
 
-    def get_connlist(self, offset, molecule_name, topology_file):
+    def get_list_connectivity(self, offset, molecule_name, topology_file) -> list:
 
         '''
         ------------------------------ \\
@@ -539,7 +546,7 @@ class SystemInfo():
                     break
         return connectivity_list
 
-    def write_highprec(self, gro_file):
+    def write_file_gromacs_highprec(self, gro_file) -> str:
 
         '''
         ------------------------------ \\
@@ -558,8 +565,8 @@ class SystemInfo():
         ------------------------------ \\
         '''
 
-        # not tested yet, bc I didn't use a gro file AJ
-        filename=str(self.input_dict['jobname'] + ".g96")
+        #  XX not tested yet, bc I didn't use a gro file AJ
+        filename=str(self.dict_input_userparameters['jobname'] + ".g96")
         with open(filename,"w") as ofile:
                 with open(gro_file) as ifile:
                         count=0
@@ -591,7 +598,7 @@ class SystemInfo():
 
         return filename
 
-    def identify_m1(self):
+    def get_list_atoms_m1(self) -> list:
 
         '''
         ------------------------------ \\
@@ -610,16 +617,16 @@ class SystemInfo():
         '''
 
         m1list = []
-        for element in self.qmatomslist:
-            bondlist = self.get_bondpartners(element)
+        for element in self.list_atoms_qm:
+            bondlist = self.get_list_atoms_m1qm(element)
             for entry in bondlist:
-                if (int(entry) not in np.array(self.qmatomslist).astype(int)) and (
+                if (int(entry) not in np.array(self.list_atoms_qm).astype(int)) and (
                     int(entry) not in np.array(m1list).astype(int)
                 ):
                     m1list.append(entry)
         return m1list
 
-    def get_bondpartners(self, target):
+    def get_list_atoms_m1qm(self, target) -> list:
 
         '''
         ------------------------------ \\
@@ -638,7 +645,7 @@ class SystemInfo():
         '''
 
         partnerlist = []
-        for entry in self.connectivity_list:
+        for entry in self.list_connectivity_topology:
             found = False
 
             for i in range(0, len(entry)):
@@ -656,7 +663,7 @@ class SystemInfo():
 
         return partnerlist
 
-    def identify_m2(self):
+    def get_list_atoms_m2(self) -> list:
 
         '''
         ------------------------------ \\
@@ -674,17 +681,17 @@ class SystemInfo():
         ------------------------------ \\
         '''
 
-        m2list = []
-        for element in self.m1list:
+        list_atoms_m2 = []
+        for element in self.list_atoms_m1:
             m2line = []
-            bondlist = self.get_bondpartners(element)
+            bondlist = self.get_list_atoms_m1qm(element)
             for entry in bondlist:
-                if int(entry) not in np.array(self.qmatomslist).astype(int):
+                if int(entry) not in np.array(self.list_atoms_qm).astype(int):
                     m2line.append(entry)
-            m2list.append(m2line)
-        return m2list
+            list_atoms_m2.append(m2line)
+        return list_atoms_m2
 
-    def get_linkcorrlist(self):
+    def get_list_atoms_link(self) -> list:
 
         '''
         ------------------------------ \\
@@ -705,7 +712,6 @@ class SystemInfo():
         m3list: list -> List Of M3 Atom Indices \\
         ------------------------------ \\
         '''
-                
         linkcorrlist = []
         m3list = []
         m4list = []
@@ -713,33 +719,33 @@ class SystemInfo():
         q2list = []
         q3list = []
         # get q1 and m2
-        for element in self.m1list:
+        for element in self.list_atoms_m1:
             q1line = []
-            for entry in self.connectivity_list:
+            for entry in self.list_connectivity_topology:
                 if int(element) in np.array(entry).astype(int):
                     if int(element) != int(entry[0]):
-                        if int(entry[0]) in np.array(self.qmatomslist).astype(int):
+                        if int(entry[0]) in np.array(self.list_atoms_qm).astype(int):
                             q1line.append(int(entry[0]))
                     else:
                         for i in range(1, len(entry)):
-                            if int(entry[i]) in np.array(self.qmatomslist).astype(int):
+                            if int(entry[i]) in np.array(self.list_atoms_qm).astype(int):
                                 q1line.append(int(entry[i]))
             q1list.append(q1line)
         # get q2
         q1list = list(_flatten(q1list))
         for element in q1list:
             q2line = []
-            for conn in self.connectivity_list:
+            for conn in self.list_connectivity_topology:
                 if int(element) in np.array(conn).astype(int):
                     if (
                         int(element) != int(conn[0])
-                        and (int(conn[0]) in np.array(self.qmatomslist).astype(int))
+                        and (int(conn[0]) in np.array(self.list_atoms_qm).astype(int))
                         and (int(conn[0]) not in np.array([int(x) for x in _flatten(q1list)]))
                     ):
                         q2line.append(int(conn[0]))
                     elif int(element) == int(conn[0]):
                         for i in range(1, len(conn)):
-                            if (int(conn[i]) in np.array(self.qmatomslist).astype(int)) and (
+                            if (int(conn[i]) in np.array(self.list_atoms_qm).astype(int)) and (
                                 int(conn[i]) not in np.array([int(x) for x in _flatten(q1list)])
                             ):
                                 q2line.append(int(conn[i]))
@@ -749,11 +755,11 @@ class SystemInfo():
             q3lineline = []
             for entry in element:
                 q3line = []
-                for conn in self.connectivity_list:
+                for conn in self.list_connectivity_topology:
                     if int(entry) in np.array(conn).astype(int):
                         if (
                             int(entry) != int(conn[0])
-                            and (int(conn[0]) in np.array(self.qmatomslist).astype(int))
+                            and (int(conn[0]) in np.array(self.list_atoms_qm).astype(int))
                             and int(conn[0]) not in np.array(q1list).astype(int)
                             and int(conn[0]) not in np.array([int(x) for x in _flatten(q1list)])
                         ):
@@ -761,7 +767,7 @@ class SystemInfo():
                         elif int(entry) == int(conn[0]):
                             for i in range(1, len(conn)):
                                 if (
-                                    int(conn[i]) in np.array(self.qmatomslist).astype(int)
+                                    int(conn[i]) in np.array(self.list_atoms_qm).astype(int)
                                     and int(conn[i]) not in np.array(q1list).astype(int)
                                     and int(conn[i]) not in np.array([int(x) for x in _flatten(q1list)])
                                 ):
@@ -769,23 +775,23 @@ class SystemInfo():
                 q3lineline.append(q3line)
             q3list.append(q3lineline)
         # get m3
-        for element in self.m2list:
+        for element in self.list_atoms_m2:
             m3lineline = []
             for entry in element:
                 m3line = []
-                for conn in self.connectivity_list:
+                for conn in self.list_connectivity_topology:
                     if int(entry) in np.array(conn).astype(int):
                         if (
                             int(entry) != int(conn[0])
-                            and (int(conn[0]) not in np.array(self.qmatomslist).astype(int))
-                            and int(conn[0]) not in np.array(self.m1list).astype(int)
+                            and (int(conn[0]) not in np.array(self.list_atoms_qm).astype(int))
+                            and int(conn[0]) not in np.array(self.list_atoms_m1).astype(int)
                         ):
                             m3line.append(int(conn[0]))
                         elif int(entry) == int(conn[0]):
                             for i in range(1, len(conn)):
-                                if int(conn[i]) not in np.array(self.qmatomslist).astype(
+                                if int(conn[i]) not in np.array(self.list_atoms_qm).astype(
                                     int
-                                ) and int(conn[i]) not in np.array(self.m1list).astype(int):
+                                ) and int(conn[i]) not in np.array(self.list_atoms_m1).astype(int):
                                     m3line.append(int(conn[i]))
                 m3lineline.append(m3line)
             m3list.append(m3lineline)
@@ -796,15 +802,15 @@ class SystemInfo():
                 m4lineline = []
                 for stuff in entry:
                     m4line = []
-                    for conn in self.connectivity_list:
+                    for conn in self.list_connectivity_topology:
                         if int(stuff) in np.array(conn).astype(int):
                             if (
                                 int(stuff) != int(conn[0])
-                                and (int(conn[0]) not in np.array(self.qmatomslist).astype(int))
-                                and int(conn[0]) not in np.array(self.m1list).astype(int)
+                                and (int(conn[0]) not in np.array(self.list_atoms_qm).astype(int))
+                                and int(conn[0]) not in np.array(self.list_atoms_m1).astype(int)
                             ):
                                 found = False
-                                for morestuff in self.m2list:
+                                for morestuff in self.list_atoms_m2:
                                     if int(conn[0]) in np.array(morestuff).astype(int):
                                         found = True
                                         break
@@ -812,11 +818,11 @@ class SystemInfo():
                                     m4line.append(int(conn[0]))
                             elif int(stuff) == int(conn[0]):
                                 for i in range(1, len(conn)):
-                                    if int(conn[i]) not in np.array(self.qmatomslist).astype(
+                                    if int(conn[i]) not in np.array(self.list_atoms_qm).astype(
                                         int
-                                    ) and int(conn[i]) not in np.array(self.m1list).astype(int):
+                                    ) and int(conn[i]) not in np.array(self.list_atoms_m1).astype(int):
                                         found = False
-                                        for morestuff in self.m2list:
+                                        for morestuff in self.list_atoms_m2:
                                             if int(conn[i]) in np.array(morestuff).astype(
                                                 int
                                             ):
@@ -829,9 +835,9 @@ class SystemInfo():
             m4list.append(m4linelineline)
         # set up link atom charge corr pairs: q1-m2, q1-m3, q2-m2, l-m2, l-m3, l-m4 - l are represented as their m1 counterparts!
         count = 0
-        for element in self.m1list:
+        for element in self.list_atoms_m1:
             linkpairline = []
-            for entry in self.m2list[count]:
+            for entry in self.list_atoms_m2[count]:
                 if int(element) < int(entry):
                     linkpairline.append([element, entry])
                 else:
@@ -851,7 +857,7 @@ class SystemInfo():
         count = 0
         for element in q1list:
             linkpairline = []
-            for stuff in self.m2list[count]:
+            for stuff in self.list_atoms_m2[count]:
                 if int(element) < int(stuff):
                     linkpairline.append([element, stuff])
                 else:
@@ -867,7 +873,7 @@ class SystemInfo():
         for element in q2list:
             for entry in element:
                 linkpairline = []
-                for stuff in self.m2list[count]:
+                for stuff in self.list_atoms_m2[count]:
                     if int(entry) < int(stuff):
                         linkpairline.append([entry, stuff])
                     else:
@@ -896,7 +902,7 @@ class SystemInfo():
             m3list,
         )
     
-    def getincludelist(self, topology_input):
+    def get_list_topologies(self, topology_input) -> list:
 
         '''
         ------------------------------ \\
@@ -938,14 +944,14 @@ class SystemInfo():
                     foundname = match.group(1)
                     check = os.path.isfile(foundname)
                     if not check:
-                        foundname = os.path.join(self.input_dict['gmxtop_path'], *foundname.strip('/').split('/'))
+                        foundname = os.path.join(self.dict_input_userparameters['gmxtop_path'], *foundname.strip('/').split('/'))
                         check = os.path.isfile(foundname)
                         if not check:
                             print("File " + foundname + " was not found. Maybe update the gmxpath variable in the script? Exiting.")
                             exit(1)
                     toplist.append(foundname)
 
-                    toplist.extend(self.getincludelist(foundname))
+                    toplist.extend(self.get_list_topologies(foundname))
         return toplist
     
     def get_atoms(self, qmmm_topology):
@@ -1112,6 +1118,7 @@ class SystemInfo():
                             (float(atommass) - float(foundmass))
                             * (float(atommass) - float(foundmass))
                         )
+                        # XX change to logger
                         # if massdiff > 0.01:
                         #     logger(
                         #         logfile,
