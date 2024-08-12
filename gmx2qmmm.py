@@ -242,7 +242,7 @@ class GMX2QMMM():
 
         if self.defaultdict_parameters_input['jobtype'] == "SINGLEPOINT":
             # logger(logfile, "Performing an single point calculation.\n")
-            # SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
+            SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
             pass
 
         # elif jobtype == "OPT":

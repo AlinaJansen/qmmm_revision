@@ -103,7 +103,7 @@ class SystemInfo():
         self.int_number_atoms = int(len(self.list_geometry_initial)/3)
 
         #   Create xyzq (Coordinates And Charges) For The Whole System
-        #   XX AJ same here, I'll make one function of it
+        #   XX AJ also prefer only one function here, I'll make one function of it
         #   XX AJ technically, I would prefer this xyzq function not in this class, but it's used in the get_linkatoms_ang, so I'll keep it here
         if dict_input_userparameters['useinnerouter']:
             self.array_xyzq = geometry.make_xyzq_io(self.list_geometry_initial, self.list_charges, self.list_atoms_outer)
@@ -117,7 +117,6 @@ class SystemInfo():
         #   Read coordinates of linkatoms in angstrom
         self.list_coordinates_linkatoms = get_linkatoms_angstrom(self.array_xyzq, self.list_atoms_qm, self.list_atoms_m1, self.list_connectivity_topology, [])
         self.linkcorrlist, self.list_atoms_q1, self.list_atoms_q2, self.list_atoms_q3, self.list_atoms_m3 = self.get_list_atoms_link()
-        pass
 
 
 
