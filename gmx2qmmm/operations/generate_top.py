@@ -117,7 +117,7 @@ def get_molfindlist(mollist, top, includelist):
 
 
 def get_full_include_list(top, includelist):
-    import re
+    # AJ did not find this function to be called anywhere 
 
     toplist = [top] + includelist
     full_include_list = [str(top)]
@@ -1052,6 +1052,7 @@ def make_large_top(
 def make_new_top(
     top, molfindlist, mollist, mollength, qmatomlist, includelist, outname
 ):
+    # AJ did not find this function to be called anywhere
     new_mollist = mollist
     molcount = 0
     curr_offset = 0

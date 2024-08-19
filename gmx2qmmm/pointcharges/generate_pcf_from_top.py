@@ -21,6 +21,7 @@ import sys
 import numpy as np
 
 def checkformol(molname, inp):
+    # -> System.py
     '''
     ------------------------------
     EFFECT: \\
@@ -60,6 +61,7 @@ def checkformol(molname, inp):
     return correct
 
 def getincludelist(inp, gmxtop_path):
+    # -> System.py
     '''
     ------------------------------
     EFFECT: \\
@@ -110,6 +112,7 @@ def getincludelist(inp, gmxtop_path):
     return toplist
 
 def readcharges(molvecentry, top, gmxtop_path):
+    # -> System.py
     '''
     ------------------------------
 \\
@@ -275,6 +278,7 @@ def readgeo(inp):
     return coords
 
 def readmols(top):
+    # -> System.py read_molecules
     '''
     ------------------------------
     EFFECT: \\

@@ -10,6 +10,7 @@ from gmx2qmmm.pointcharges import generate_charge_shift as final_pcf
 from gmx2qmmm.operations import generate_top as topprep
 
 def write_highprec(gro,jobname,logfile):
+    # -> System.py
     import re
     filename=str(jobname + ".g96")
     with open(filename,"w") as ofile:
@@ -575,16 +576,16 @@ class QMMMInputs:
             logger(logfile, "Shifting...\n")
             print(str(self.m1list))
             print(str(self.m2list))
-            final_pcf.generate_charge_shift_fieldsonly(
-                self.updated_chargelist, self.m1list, self.qmcoordlist, self.m2list, self.qmmmparams.jobname, self.basedir
-            )
-        else:
-            logger(
-                logfile,
-                "NOTE: Shifting omitted due to "
-                + self.pcffile
-                + " being an existing file!\n",
-            )
+        final_pcf.generate_charge_shift_fieldsonly(
+            self.updated_chargelist, self.m1list, self.qmcoordlist, self.m2list, self.qmmmparams.jobname, self.basedir
+        )
+        # else:
+        #     logger(
+        #         logfile,
+        #         "NOTE: Shifting omitted due to "
+        #         + self.pcffile
+        #         + " being an existing file!\n",
+        #     )
         logger(logfile, "Done.\n")
 
         logger(logfile, "Preparing the QM/MM top file...\n")
@@ -624,6 +625,8 @@ class QMMMInputs:
             )
         logger(logfile, "Done.\n")
 
+        # AJ Done with writing topology (GeneratorTopologies.py)
+        # AJ add following stuff to read input XX
         self.scan_atoms = 'R'
 
         self.nmaflag = 0
@@ -641,6 +644,7 @@ class QMMMInputs:
         self.forces = []
  
 def get_curr_top(molname, top, gmxtop_path):
+    # -> System.py get_current_topology
     curr_top = top
     found = make_pcf.checkformol(molname, top)
 
@@ -657,6 +661,7 @@ def get_curr_top(molname, top, gmxtop_path):
     return curr_top
 
 def get_mollength_direct(molname, top):
+    # System.py
     mollength = 0
     with open(top) as ifile:
         # print str(top) + " is open"
@@ -711,6 +716,7 @@ def get_mollength_direct(molname, top):
     return mollength
 
 def get_connlist(offset, molname, top):
+    # -> System.py
     connlist = []
     with open(top) as ifile:
         for line in ifile:
@@ -782,6 +788,7 @@ def get_connlist(offset, molname, top):
     return connlist
 
 def read_conn_list_from_top(top, mollist, gmxtop_path):
+    # -> System.py read_connectity_from_topology
     '''read connection of atoms from topology'''
     count = 0
     connlist = []
@@ -795,6 +802,7 @@ def read_conn_list_from_top(top, mollist, gmxtop_path):
     return connlist
 
 def get_linkcorrlist(linkatoms, qmatomlist, m1list, m2list, connlist):
+    # -> System.py
     linkcorrlist = []
     m3list = []
     m4list = []

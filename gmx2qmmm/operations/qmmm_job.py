@@ -325,7 +325,7 @@ def get_atoms(qmmmtop, logfile):
     return atoms
 
 def get_nbradius(gro):
-
+    # AJ function not used in new version
     fullcoords = np.array(get_full_coords_nm(gro))
     mindist = fullcoords[0]
     maxdist = fullcoords[1]
@@ -336,7 +336,9 @@ def get_nbradius(gro):
             if float(maxdist[i]) < float(element[i]):
                 maxdist[i] = element[i]
     maxcoords = np.array(maxdist) - np.array(mindist)
-    return np.linalg.norm(maxcoords)
+    test = np.max(np.linalg.norm(fullcoords[np.newaxis, :, :] - fullcoords[:, np.newaxis, :], axis=-1))
+    maxdist = np.linalg.norm(maxcoords)
+    return maxdist
 
 def get_full_coords_nm(gro):  # read g96
     fullcoords = []
@@ -1102,7 +1104,7 @@ def execute_g16(g16cmd, qmfile):
     subprocess.call([g16cmd, str(qmfile)])
 
 #Run program command
-def run_g16(qmfile, qmmmInputs):
+def run_g16(qmfile, qmmmInputs): # take function from old version
     jobname = qmmmInputs.qmmmparams.jobname
     g16cmd = qmmmInputs.pathparams.g16cmd
     curr_step = qmmmInputs.qmmmparams.curr_step
@@ -1490,8 +1492,7 @@ def get_qmenergy(qmfile, qmmmInputs):
     qm_corrdata = []
     if str(qmprog) == "G16":    
         with open(str(qmfile + ".log")) as ifile:
-            lines = ifile.readlines()
-            for line in lines:
+            for line in ifile:
                 
                 match = []
                 match2 = []

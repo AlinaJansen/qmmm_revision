@@ -26,6 +26,7 @@ from gmx2qmmm._helper import _flatten
 from gmx2qmmm.pointcharges import sum_pcf_tm as make_p_sum
 
 def uvec(vec):
+    # -> _helper.py
     '''
     ------------------------------ \\
     EFFECT: \\
@@ -408,6 +409,7 @@ def make_droplist(inp, m1line, m2list):
 
 
 def generate_charge_shift_fieldsonly(pcf, m1list, qmcoords, m2list, jobname, basedir):
+    # GeneratorPCF.py
     '''
     ------------------------------
     EFFECT: \\

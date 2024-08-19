@@ -60,6 +60,7 @@ def get_bondpartners(connlist, target):
 
 
 def identify_m2(qmlist, m1list, connlist):
+    # -> System.py
     '''
     ------------------------------
     EFFECT: \\
@@ -90,6 +91,7 @@ def identify_m2(qmlist, m1list, connlist):
 
 
 def identify_m1(qmlist, connlist):
+    # -> System.py
     '''
     ------------------------------
     EFFECT: \\
@@ -129,6 +131,7 @@ def read_conn_list(inp):
 
 
 def read_qmatom_list(inp):
+    # -> System.py read_atoms_list
     '''
     ------------------------------
     EFFECT: \\
@@ -158,6 +161,7 @@ def read_qmatom_list(inp):
     return sortedlist
 
 def read_inner_list(inp):
+    # -> System.py read_atoms_list
     innerlist = []
     with open(inp) as ifile:
         for line in ifile:
@@ -171,6 +175,7 @@ def read_inner_list(inp):
     return sortedlist
 
 def read_outer_list(inp):
+    # -> System.py read_atoms_list
     outerlist = []
     with open(inp) as ifile:
         for line in ifile:
@@ -282,6 +287,7 @@ def eliminate_and_shift_to_m1(qmatoms, charges, m1list, qmcharge, qmcoordsq):
 
 
 def prepare_pcf_for_shift_fieldsonly(charges, qmatomlist, qmcharge, connlist):
+    # AJ removed this function in the new version as all information already exists, eliminate_and_shit_to_m1 called alone
     '''
     ------------------------------
     EFFECT: \\
