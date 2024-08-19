@@ -66,7 +66,7 @@ class GenerateTopology():
         self.system = system
         self.input_dict = input_dict
         self.basedir = basedir
-        self.mmflaglist = [] # figure out what that variable exactly is later (empty list in example)
+        self.mmflaglist = [] # figure out what that variable exactly is later (empty list in example) XX AJ
         self.qmmm_topology = str(input_dict['jobname'] + ".qmmm.top")    
         self.generate_top_listsonly()
 
@@ -165,7 +165,7 @@ class GenerateTopology():
         '''
 
         foundtop = ""
-        toplist = [self.input_dict['topologyfile']] + self.system.topology_list
+        toplist = [self.input_dict['topologyfile']] + self.system.list_topology
         for element in toplist:
             with open(element) as ifile:
                 for line in ifile:
@@ -218,7 +218,7 @@ class GenerateTopology():
 
         molecule_topologies = []
 
-        for element in self.system.list_of_molecules:
+        for element in self.system.list_molecules:
             molecule_topology = self.get_molecule_topology(element[0])
             moltopline = [element[0], molecule_topology]
             molecule_topologies.append(moltopline)
@@ -428,7 +428,7 @@ class GenerateTopology():
                         if match:
                             includedata.append(match.group(1))
                             continue
-            for molecule in self.system.list_of_molecules:
+            for molecule in self.system.list_molecules:
                 curr_topfile = ""
                 for entry in self.molfindlist:
                     if molecule[0] == entry[0]:
@@ -1085,7 +1085,7 @@ class GenerateTopology():
             ofile.write("\n[ moleculetype ]\nQMMM_model     3\n\n[ atoms ]\n")
             ffnb = self.find_ffnonbonded(includedata)
             for element in atomdata:
-                if int(element[0]) in np.array(self.system.qmatomslist).astype(int):
+                if int(element[0]) in np.array(self.system.list_atoms_qm).astype(int):
                     ofile.write(
                         "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
                             int(element[0]),
@@ -1118,8 +1118,8 @@ class GenerateTopology():
                 ofile.write("\n")
             ofile.write("\n[ bonds ]\n")
             for element in bonddata:
-                if (int(element[0]) in np.array(self.system.qmatomslist).astype(int)) or (
-                    int(element[1]) in np.array(self.system.qmatomslist).astype(int)
+                if (int(element[0]) in np.array(self.system.list_atoms_qm).astype(int)) or (
+                    int(element[1]) in np.array(self.system.list_atoms_qm).astype(int)
                 ):
                     excludeline = [element[0], element[1]]
                     excludedata.append(excludeline)
@@ -1135,11 +1135,11 @@ class GenerateTopology():
             ofile.write("\n[ angles ]\n")
             for element in angledata:
                 if (
-                    (int(element[0]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[1]) in np.array(self.system.qmatomslist).astype(int))
+                    (int(element[0]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[1]) in np.array(self.system.list_atoms_qm).astype(int))
                 ) or (
-                    (int(element[1]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[2]) in np.array(self.system.qmatomslist).astype(int))
+                    (int(element[1]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[2]) in np.array(self.system.list_atoms_qm).astype(int))
                 ):
                     excludeline = [element[0], element[2]]
                     excludedata.append(excludeline)
@@ -1150,13 +1150,13 @@ class GenerateTopology():
             ofile.write("\n[ dihedrals ]\n")
             for element in dihedraldata:
                 if (
-                    (int(element[0]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[1]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[2]) in np.array(self.system.qmatomslist).astype(int))
+                    (int(element[0]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[1]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[2]) in np.array(self.system.list_atoms_qm).astype(int))
                 ) or (
-                    (int(element[1]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[2]) in np.array(self.system.qmatomslist).astype(int))
-                    and (int(element[3]) in np.array(self.system.qmatomslist).astype(int))
+                    (int(element[1]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[2]) in np.array(self.system.list_atoms_qm).astype(int))
+                    and (int(element[3]) in np.array(self.system.list_atoms_qm).astype(int))
                 ):
                     excludeline = [element[0], element[3]]
                     excludedata.append(excludeline)
@@ -1166,25 +1166,25 @@ class GenerateTopology():
                 ofile.write("\n")
             ofile.write("\n[ settles ]\n")
             for element in settledata:
-                if int(element[0]) in np.array(self.system.qmatomslist).astype(int):
+                if int(element[0]) in np.array(self.system.list_atoms_qm).astype(int):
                     continue
                 for entry in element:
                     ofile.write(str(entry) + " ")
                 ofile.write("\n")
             # increase exclusions for each Q-M1 atom
-            for element in self.system.m1list:
-                for entry in self.system.qmatomslist:
+            for element in self.system.list_atoms_m1:
+                for entry in self.system.list_atoms_qm:
                     excludedata.append([int(element), int(entry)])
             # add other link correction exclusions: m2-q1,2, m3-q1
-            for i in range(0, len(self.system.m2list)):
-                for j in range(0, len(self.system.m2list[i])):
-                    excludedata.append([int(self.system.m2list[i][j]), int(self.system.q1list[i])])
-                    for k in range(0, len(self.system.q2list[i])):
-                        excludedata.append([int(self.system.m2list[i][j]), int(self.system.q2list[i][k])])
-            for i in range(0, len(self.system.m3list)):
-                for j in range(0, len(self.system.m3list[i])):
-                    for k in range(0, len(self.system.m3list[i][j])):
-                        excludedata.append([int(self.system.m3list[i][j][k]), int(self.system.q1list[i])])
+            for i in range(0, len(self.system.list_atoms_m2)):
+                for j in range(0, len(self.system.list_atoms_m2[i])):
+                    excludedata.append([int(self.system.list_atoms_m2[i][j]), int(self.system.list_atoms_q1[i])])
+                    for k in range(0, len(self.system.list_atoms_q2[i])):
+                        excludedata.append([int(self.system.list_atoms_m2[i][j]), int(self.system.list_atoms_q2[i][k])])
+            for i in range(0, len(self.system.list_atoms_m3)):
+                for j in range(0, len(self.system.list_atoms_m3[i])):
+                    for k in range(0, len(self.system.list_atoms_m3[i][j])):
+                        excludedata.append([int(self.system.list_atoms_m3[i][j][k]), int(self.system.list_atoms_q1[i])])
 
             # XX AJ maybe combine these two functions? I don't quite understand how they work though
             excludedata = self.clean_exclusions(excludedata, offset)
@@ -1224,27 +1224,27 @@ class GenerateTopology():
             count = 0
             ofile.write("[ QM ]\n")
             count = 0
-            for element in self.system.qmatomslist:
+            for element in self.system.list_atoms_qm:
                 count += 1
                 ofile.write(str(int(element)) + " ")
                 if count == 15:
                     ofile.write("\n")
                     count = 0
             ofile.write("\n")
-            if not self.system.inneratomslist == []:
+            if not self.system.list_atoms_inner == []:
                 ofile.write("[ INNER ]\n")
                 count=0
-                for element in self.system.inneratomslist:
+                for element in self.system.list_atoms_inner:
                     count += 1
                     ofile.write(str(int(element)) + " ")
                     if count == 15:
                         ofile.write("\n")
                         count = 0
                 ofile.write("\n")
-            if not self.system.outeratomslist == []:
+            if not self.system.list_atoms_outer == []:
                 ofile.write("[ OUTER ]\n")
                 count=0
-                for element in self.system.outeratomslist:
+                for element in self.system.list_atoms_outer:
                         count+=1
                         ofile.write(str(int(element)) + " ")
                         if count==15:

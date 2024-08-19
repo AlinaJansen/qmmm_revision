@@ -70,54 +70,64 @@ def make_xyzq_io(geo, chargevec, outerlist):
         print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
     return xyzq
 
-def get_linkatoms_angstrom(xyzq, qmatomlist, m1list, connlist, prev_scalefacs):
-    """Move to more appropriate module"""
-    linkatoms = []
-    pairlist = []
-    for entry in m1list:
-        pair = []
-        for i in range(0, len(connlist)):
-            if int(entry) in np.array(connlist[i]).astype(int):
-                if int(entry) == int(connlist[i][0]):
-                    for j in range(0, len(connlist[i])):
-                        if int(connlist[i][j]) in np.array(qmatomlist).astype(int):
-                            pair = [int(connlist[i][j]), int(entry)]
-                            pairlist.append(pair)
+def get_coordinates_linkatoms_angstrom(array_xyzq, list_atoms_qm, list_atoms_m1, list_connectivity_topology, prev_scalefacs) -> list:
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    ---------------
+    Calculate The Coordinates Of Linkatoms \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    # XX AJ what is prev_scalefacs? \\
+    XX AJ add input variables when we decided where to keep this function
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    list_coordinates_linkatoms: list -> List Of Coordinates Of Linkatoms And Scaling Factor \\
+    ------------------------------ \\
+    '''
+
+    list_coordinates_linkatoms = []
+    list_atoms_linkpairs = []
+
+    #   Read All QM-M1 Pairs
+    for index_m1 in list_atoms_m1:
+        list_linkpair = []
+        for i in range(0, len(list_connectivity_topology)):
+            if int(index_m1) in np.array(list_connectivity_topology[i]).astype(int):
+                if int(index_m1) == int(list_connectivity_topology[i][0]):
+                    for j in range(0, len(list_connectivity_topology[i])):
+                        if int(list_connectivity_topology[i][j]) in np.array(list_atoms_qm).astype(int):
+                            list_linkpair = [int(list_connectivity_topology[i][j]), int(index_m1)]
+                            list_atoms_linkpairs.append(list_linkpair)
                             break
                     break
                 else:
-                    if int(connlist[i][0]) in np.array(qmatomlist).astype(int):
-                        pair = [int(connlist[i][0]), int(entry)]
-                        pairlist.append(pair)
-                        break
-    count = 0
-    for entry in pairlist:
-        linkcoords = []
-        q = [
-            float(xyzq[entry[0] - 1][0]),
-            float(xyzq[entry[0] - 1][1]),
-            float(xyzq[entry[0] - 1][2]),
-        ]
-        m = [
-            float(xyzq[entry[1] - 1][0]),
-            float(xyzq[entry[1] - 1][1]),
-            float(xyzq[entry[1] - 1][2]),
-        ]
-        qmvec = np.array(m) - np.array(q)
-        scalefac = 0.71290813568205  # ratio between B3LYP/6-31G* optimum of C-C in butane vs C-Link relaxed butane
+                    if int(list_connectivity_topology[i][0]) in np.array(list_atoms_qm).astype(int):
+                        list_linkpair = [int(list_connectivity_topology[i][0]), int(index_m1)]
+                        list_atoms_linkpairs.append(list_linkpair)
+                        break   # XX AJ I don't understand why we break here. What if m1 also is in another connectivity list connected to other QM atoms?
 
+    #   Calculate The Linkatom Coordinates
+    count = 0
+    for index_m1 in list_atoms_linkpairs:
+        list_coordinates_linkatom = []
+        array_coordinates_atom_qm = array_xyzq[index_m1[0]-1][:3]
+        array_coordinates_atom_m1 = array_xyzq[index_m1[1]-1][:3]
+        array_vector_m1_qm = array_coordinates_atom_m1 - array_coordinates_atom_qm
+        
+        #   Scaling The M1-QM Vector
+        scalefac = 0.71290813568205  # ratio between B3LYP/6-31G* optimum of C-C in butane vs C-Link relaxed butane
         if len(prev_scalefacs) != 0:
             scalefac = prev_scalefacs[count][3]
-        qmvec_norm_scale = np.array(qmvec) * scalefac
-        linkcoords = [
-            float(qmvec_norm_scale[0]) + float(q[0]),
-            float(qmvec_norm_scale[1]) + float(q[1]),
-            float(qmvec_norm_scale[2]) + float(q[2]),
-            float(scalefac),
-        ]
-        linkatoms.append(linkcoords)
+        array_vector_m1_qm_scaled = array_vector_m1_qm * scalefac
+        list_coordinates_linkatom = list(array_vector_m1_qm_scaled + array_coordinates_atom_qm)
+        list_coordinates_linkatom.append(scalefac)
+        list_coordinates_linkatoms.append(list_coordinates_linkatom)
         count += 1
-    return linkatoms
+
+    return list_coordinates_linkatoms
 
 def filter_xyzq(xyzq, atom_list, coordinates=True, charges=True):
     # XX AJ I'm not happy with how this function works (combining lists and arrays) but that's because of different inputs

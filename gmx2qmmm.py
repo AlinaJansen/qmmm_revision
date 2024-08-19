@@ -22,6 +22,7 @@ from collections import defaultdict
 import stuff2sort.System as System
 import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
+import Jobs.Singlepoint as SP
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
@@ -100,7 +101,7 @@ class GMX2QMMM():
                 help="Parameter File(.txt)",
                 type=str,
                 # default="path.dat"
-                default="params.txt"    # XX Florian
+                default="params.txt"    # XX AJ Do you mean params.txt?
             )
 
         #   Parse And Create Input File Member
@@ -160,8 +161,21 @@ class GMX2QMMM():
                 str_info_to_log= 'Listing the parameters given as input for this run of gmx2qmmm:\n\n' + str_parameters_input_log
             )
 
+
+
         #   Initializing The System
         self.initalize_system()
+
+        #   Generate QMMM Topology
+        self.generate_topology()
+
+        #   Add List Of Elements To System Instance
+        self.system.list_atom_elements = self.system.get_atoms(self.topology.qmmm_topology)
+
+        #   Initialize Filenames
+        # XX AJ it doesnt seem to be the best place to do that here, but I'm not sure where else to do that, change that later
+        self.system.pcffile = str(self.defaultdict_parameters_input['jobname'] + ".pointcharges")
+        # XX AJ in old gmx2qmmm stepper is used here, check later
 
         #   // JOB SPAWNING //
         #   Assess Job Type
@@ -176,7 +190,7 @@ class GMX2QMMM():
         ------------------------------ \\
         EFFECT: \\
         --------------- \\
-        
+        Initializes The System \\
         ------------------------------ \\
         INPUT: \\
         --------------- \\
@@ -189,6 +203,24 @@ class GMX2QMMM():
         '''
         self.system = System.SystemInfo(self.defaultdict_parameters_input)
         
+    def generate_topology(self) -> None:
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Writes Large QMMM Topology File \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        self.topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.system, self.directory_base)
 
     def assess_job(self) -> None:
 
@@ -242,7 +274,8 @@ class GMX2QMMM():
 
         if self.defaultdict_parameters_input['jobtype'] == "SINGLEPOINT":
             # logger(logfile, "Performing an single point calculation.\n")
-            SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
+            # SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
+            SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base)
             pass
 
         # elif jobtype == "OPT":
