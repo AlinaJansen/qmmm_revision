@@ -6,6 +6,7 @@ import pstats
 gmx2qmmm_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..'))
 integration_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(gmx2qmmm_path)
+pass
 sys.path.append(integration_path)
 
 from gmx2qmmm.operations.qmmm_job import execute_g16, execute_gmx
