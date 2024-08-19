@@ -1,5 +1,0 @@
-gmxtop_path=/top/
-gmxcmd=gmx
-gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
-g16cmd=g16
-

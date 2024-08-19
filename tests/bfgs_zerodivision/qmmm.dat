@@ -1,7 +1,0 @@
-jobname=opt
-jobtype=opt
-propagator=BFGS
-maxcycle=100
-initstep=0.1
-f_thresh=0.00001
-
