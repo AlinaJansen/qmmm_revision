@@ -1,4 +1,0 @@
-jobtype=opt
-jobname=opt
-propagator=BFGS
-maxcycle=2
