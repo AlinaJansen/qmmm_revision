@@ -62,14 +62,14 @@ class GeneratePCF():
         self.topology = topology
         self.directory_base = directory_base
         self.job = job
-        self.xyzq = self.system.xyzq
+        self.xyzq = self.system.array_xyzq_initial    # XX AJ maybe change to xyzq_current later
         if job:
             self.xyzq = self.job.xyzq
 
         self.make_pcf()
 
     def make_pcf(self):
-        self.qm_xyzq = filter_xyzq(self.xyzq, self.system.qmatomslist, coordinates=True, charges=True)
+        self.qm_xyzq = filter_xyzq(self.xyzq, self.system.list_atoms_qm, coordinates=True, charges=True)
         self.updated_chargelist = self.eliminate_and_shift_to_m1()
         self.pcf_filename, new_field = self.generate_charge_shift_fieldsonly()
         self.write_new_field_to_disk_listsonly(new_field)
@@ -99,19 +99,19 @@ class GeneratePCF():
         parentcharge = float(curr_charge) - float(self.input_dict['charge'])
         for element in self.xyzq:
             count += 1
-            if count in np.array(self.system.qmatomslist).astype(int):
+            if count in np.array(self.system.list_atoms_qm).astype(int):
                 updated_charges.append(["QM"])
             else:
                 chargeline = []
                 for entry in element:
                     chargeline.append(float(entry))
                 updated_charges.append(chargeline)
-        if len(self.system.m1list) != 0:
-            parentcharge /= float(len(self.system.m1list))
+        if len(self.system.list_atoms_m1) != 0:
+            parentcharge /= float(len(self.system.list_atoms_m1))
         count = 0
         for element in updated_charges:
             count += 1
-            if count in np.array(self.system.m1list).astype(int):
+            if count in np.array(self.system.list_atoms_m1).astype(int):
                 updated_charges[count - 1][3] = float(
                     updated_charges[count - 1][3]
                 ) + float(parentcharge)
@@ -136,7 +136,7 @@ class GeneratePCF():
         '''
 
         # XX AJ no idea yet what orgfield means, but for now it contains m1 xyzq
-        orgfield = filter_xyzq(self.updated_chargelist, self.system.m1list)
+        orgfield = filter_xyzq(self.updated_chargelist, self.system.list_atoms_m1)
 
         # XX AJ also no idea yet what target sum is
         target_sum = np.array([0.0, 0.0, 0.0])
@@ -151,8 +151,8 @@ class GeneratePCF():
         dispcharge = 0.1944  # for 0.023333333333 shifted charge on three M2 atoms; should work in any case unless distances become HUGE
         disp_charge_vec = []
         count = 0
-        for element in self.system.m2list: 
-            m1 = self.updated_chargelist[int(self.system.m1list[count]) - 1].copy()
+        for element in self.system.list_atoms_m2: 
+            m1 = self.updated_chargelist[int(self.system.list_atoms_m1[count]) - 1].copy()
             m1coordsq.append(m1)
             m2coordsqthing = self.get_m2vec_fieldsonly(element, self.updated_chargelist)
             # XX AJ removed m2coordsq from previous version as it seems unnecessary, if it causes problems, look back into it
@@ -178,10 +178,10 @@ class GeneratePCF():
             m2coordsqlist.append(m2coordsqthing)
 
         disp = 0.1 
-        disp_vec = [disp for _ in range(len(self.system.m2list)) for _ in range(len(self.system.m2list[_]))]
+        disp_vec = [disp for _ in range(len(self.system.list_atoms_m2)) for _ in range(len(self.system.list_atoms_m2[_]))]
 
         corr_charge_list = self.create_corr_charges(
-            m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, self.system.m2list
+            m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, self.system.list_atoms_m2
         )
 
         new_field = np.array(self.make_new_field(m2coordsqlist, corr_charge_list))
@@ -214,8 +214,8 @@ class GeneratePCF():
             iter_count += 1
             count = 0
             mod_disp_vec = np.array(disp_vec)
-            for i in range(0, len(self.system.m2list)):
-                for j in range(0, len(self.system.m2list[i])):
+            for i in range(0, len(self.system.list_atoms_m2)):
+                for j in range(0, len(self.system.list_atoms_m2[i])):
                     if not v_opt_tracker[count][2]:
                         change_disp[count] /= startfac
                         v_opt_tracker[count][2] = True
@@ -225,7 +225,7 @@ class GeneratePCF():
                     new_disp_vec = np.array(disp_vec)
                     new_disp_vec[count] += change_disp[count]
                     curr_corr_charge_list = self.create_corr_charges(
-                        m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.m2list
+                        m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.list_atoms_m2
                     )
                     curr_field = np.array(
                         self.make_new_field(m2coordsqlist, curr_corr_charge_list)
@@ -245,7 +245,7 @@ class GeneratePCF():
                     new_disp_vec = np.array(disp_vec)
                     new_disp_vec[count] -= change_disp[count]
                     curr_corr_charge_list = self.create_corr_charges(
-                        m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.m2list
+                        m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.list_atoms_m2
                     )
                     curr_field = np.array(
                         self.make_new_field(m2coordsqlist, curr_corr_charge_list)
@@ -288,7 +288,7 @@ class GeneratePCF():
                     max_change_disp = element
             new_disp_vec = np.array(mod_disp_vec)
             curr_corr_charge_list = self.create_corr_charges(
-                m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.m2list
+                m1coordsq, m2coordsqlist, new_disp_vec, disp_charge_vec, self.system.list_atoms_m2
             )
             curr_field = np.array(self.make_new_field(m2coordsqlist, curr_corr_charge_list))
             new_sum = np.array([0.0, 0.0, 0.0])
@@ -318,14 +318,14 @@ class GeneratePCF():
                     break
             else:
                 count = 0
-                for i in range(0, len(self.system.m2list)):
-                    for j in range(0, len(self.system.m2list[i])):
+                for i in range(0, len(self.system.list_atoms_m2)):
+                    for j in range(0, len(self.system.list_atoms_m2[i])):
                         change_disp[count] /= startfac
                         count += 1
             if max_change_disp < 0.0000001:
                 break
         corr_charge_list = self.create_corr_charges(
-            m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, self.system.m2list
+            m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, self.system.list_atoms_m2
         )
         new_field = np.array(self.make_new_field(m2coordsqlist, corr_charge_list))
         new_sum = np.array([0.0, 0.0, 0.0])
@@ -479,11 +479,11 @@ class GeneratePCF():
 
         ofile = open(self.pcf_filename, "w")
         count = 0
-        m2list = np.array(self.system.m2list).reshape(-1)
+        list_atoms_m2 = np.array(self.system.list_atoms_m2).reshape(-1)
         m2count = 0
         for element in self.updated_chargelist:
             count += 1
-            if int(count) in np.array(list(_flatten(m2list))).astype(int):
+            if int(count) in np.array(list(_flatten(list_atoms_m2))).astype(int):
                 if len(element) != 4:
                     print("Line " + str(count) + " does not contain data. Exiting.")
                     exit(1)
@@ -497,7 +497,7 @@ class GeneratePCF():
                 )
                 m2count += 1
                 continue
-            if int(count) in np.array(self.system.m1list).astype(int):
+            if int(count) in np.array(self.system.list_atoms_m1).astype(int):
                 ofile.write("QM\n")
                 continue
             else:
@@ -506,7 +506,7 @@ class GeneratePCF():
                     if i != len(element) - 1:
                         ofile.write(" ")
                 ofile.write("\n")
-        for i in range(len(list(_flatten(m2list))), len(new_field)):
+        for i in range(len(list(_flatten(list_atoms_m2))), len(new_field)):
             ofile.write(
                 "{:<.10f} {:<.10f} {:<.10f} {:<.10f}\n".format(
                     float(new_field[i][0]),

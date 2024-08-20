@@ -19,7 +19,7 @@ import textwrap
 from collections import defaultdict
 
 #   Imports Of Custom Libraries
-import stuff2sort.System as System
+import System.System as System
 import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
 import Jobs.Singlepoint as SP
@@ -172,10 +172,9 @@ class GMX2QMMM():
         #   Add List Of Elements To System Instance
         self.system.list_atom_elements = self.system.get_atoms(self.topology.qmmm_topology)
 
-        #   Initialize Filenames
-        # XX AJ it doesnt seem to be the best place to do that here, but I'm not sure where else to do that, change that later
-        self.system.pcffile = str(self.defaultdict_parameters_input['jobname'] + ".pointcharges")
-        # XX AJ in old gmx2qmmm stepper is used here, check later
+        #   Initialize Pointchargefield
+        self.generate_PCF()
+
 
         #   // JOB SPAWNING //
         #   Assess Job Type
@@ -221,6 +220,26 @@ class GMX2QMMM():
         ------------------------------ \\
         '''
         self.topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.system, self.directory_base)
+
+    def generate_PCF(self) -> None:
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Writes Large QMMM Topology File \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        # XX AJ I forgot what I used the Job keyword for, I think I will only need it later, I will get back to that
+        self.pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base, job=None)
 
     def assess_job(self) -> None:
 
@@ -275,7 +294,7 @@ class GMX2QMMM():
         if self.defaultdict_parameters_input['jobtype'] == "SINGLEPOINT":
             # logger(logfile, "Performing an single point calculation.\n")
             # SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
-            SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base)
+            SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
             pass
 
         # elif jobtype == "OPT":

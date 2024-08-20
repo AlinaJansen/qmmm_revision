@@ -32,5 +32,7 @@ multiplicity=1
 memory=1000
 extra=NONE
 rvdw=2.0
+rcoulomb=0.0
 databasefit=morse
 print_level=normal
+forcefield=amberGS

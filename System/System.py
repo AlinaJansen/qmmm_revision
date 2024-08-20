@@ -74,7 +74,10 @@ class SystemInfo():
         #   Read All Atom Lists
         #   XX AJ currently I'm assuming we're always having separate files for atom indices, only remove this comment when we finally decided so or add the possibility for lists
         self.list_atoms_qm = self.read_atoms_list(self.dict_input_userparameters['qmatomslist'])
-        self.list_atoms_active = self.read_atoms_list(self.dict_input_userparameters['activeatomslist'])
+        if self.dict_input_userparameters['jobtype'] != 'SINGLEPOINT':
+            self.list_atoms_active = self.read_atoms_list(self.dict_input_userparameters['activeatomslist'])
+        else:
+            self.list_atoms_active = []
         if dict_input_userparameters['useinnerouter']:
             self.list_atoms_inner = self.read_atoms_list(self.dict_input_userparameters['inneratomslist'])
             self.list_atoms_outer = self.read_atoms_list(self.dict_input_userparameters['outeratomslist'])
