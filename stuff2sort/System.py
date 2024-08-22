@@ -692,8 +692,8 @@ class SystemInfo():
             list_atoms_m2.append(m2line)
         return list_atoms_m2
 
-    def get_list_atoms_link(self) -> list:
-
+    def get_list_atoms_link(self) -> tuple:
+        # XX AJ evaluate return type later with Florian
         '''
         ------------------------------ \\
         EFFECT: \\
@@ -956,7 +956,7 @@ class SystemInfo():
                     toplist.extend(self.get_list_topologies(foundname))
         return toplist
     
-    def get_atoms(self):
+    def get_atoms(self) -> list:
 
         '''
         ------------------------------ \\
