@@ -6,7 +6,7 @@ includeprio=0
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\path.dat
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qm.dat
 !INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmmm.dat
-jobtype=SINGLEPOINT
+jobtype=OPT
 jobname=test
 
 # atomlists
@@ -36,3 +36,9 @@ rcoulomb=0.0
 databasefit=morse
 print_level=normal
 forcefield=amberGS
+
+# optimization
+f_thresh=0
+maxcycle=1000
+propagator=STEEP
+stepsize=1

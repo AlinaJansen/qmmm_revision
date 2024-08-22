@@ -23,6 +23,7 @@ import System.System as System
 import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
 import Jobs.Singlepoint as SP
+import Jobs.Optimization as OPT
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
@@ -239,7 +240,7 @@ class GMX2QMMM():
         ------------------------------ \\
         '''
         # XX AJ I forgot what I used the Job keyword for, I think I will only need it later, I will get back to that
-        self.pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base, job=None)
+        self.pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base)
 
     def assess_job(self) -> None:
 
@@ -297,10 +298,10 @@ class GMX2QMMM():
             SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
             pass
 
-        # elif jobtype == "OPT":
-        #     # logger(logfile, "Performing an optimization.\n")
-        #     # logger(logfile, "Getting initial energy:\n")
-        #     perform_opt(qmmmInputs)
+        elif self.defaultdict_parameters_input['jobtype'] == "OPT":
+            # logger(logfile, "Performing an optimization.\n")
+            # logger(logfile, "Getting initial energy:\n")
+            OPT.Optimization(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
 
         # elif jobtype == "NMA":
         #     jobname = stepper(qmmminfo[0], step)

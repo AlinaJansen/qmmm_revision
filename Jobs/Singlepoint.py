@@ -25,6 +25,7 @@ import numpy as np
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
 from Generators._helper import filter_xyzq, _flatten
+from Generators.GeneratorGeometries import read_gmx_structure_header, read_gmx_structure_atoms, read_gmx_box_vectors, write_g96
 
 #   // TODOS & NOTES //
 #   TODO:
@@ -65,7 +66,36 @@ class Singlepoint():
 
         #   XX AJ check how to deal with nma flag later
         self.nmaflag = 0
-        
+
+        #   Initialize Gromacs Input 
+        self.string_structure_gmx_header = read_gmx_structure_header(self.dict_input_userparameters['coordinatefile'])
+        self.list_structure_gmx_atoms = read_gmx_structure_atoms(self.dict_input_userparameters['coordinatefile'])
+        self.list_box_vectors_initial = read_gmx_box_vectors(self.dict_input_userparameters['coordinatefile'])
+        #   Calculate The Maximum Eucledian Distance Between Any Two Atoms
+        array_coordinates_all = self.system.array_xyzq_current[:,:3]
+        self.float_distance_max = np.max(np.linalg.norm(array_coordinates_all[np.newaxis, :, :] - array_coordinates_all[:, np.newaxis, :], axis=-1))
+        self.list_box_vectors_large = (np.array(self.list_box_vectors_initial) + 10.0 * self.float_distance_max).tolist()
+
+        #   Initialize Gromacs Filenames
+        self.mdpname = str(self.dict_input_userparameters['jobname'] + ".mdp")
+        self.groname = str(self.dict_input_userparameters['jobname'] + ".boxlarge.g96")
+        self.ndxname = str(self.class_topology_qmmm.qmmm_topology + ".ndx")
+        self.tprname = str(self.dict_input_userparameters['jobname'] + ".tpr")
+        self.trrname = str(self.dict_input_userparameters['jobname'] + ".trr")
+        self.xtcname = str(self.dict_input_userparameters['jobname'] + ".xtc")
+        self.outname = str(self.dict_input_userparameters['jobname'] + ".out.gro")
+        self.gmxlogname = str(self.dict_input_userparameters['jobname'] + ".gmx.log")
+        self.edrname = str(self.dict_input_userparameters['jobname'] + ".edr")
+
+        #   Run (Initial) Singlepoint Calculation
+        self.run_calculation()
+    
+
+        #   Write Output File
+        if self.dict_input_userparameters['jobtype'] == 'SINGLEPOINT':
+            self.write_output(energy_file="oenergy.txt", forces_file="oforces.txt")
+    
+    def run_calculation(self):
         # prepare QM input depending on software
         self.str_inputfile_qm = self.make_qm_input()
 
@@ -84,12 +114,8 @@ class Singlepoint():
         self.energies = (self.qmenergy, self.mmenergy, self.linkcorrenergy, self.total_energy)
 
         #   Read Forces
-        self.total_force = self.read_forces()
+        self.read_forces()
 
-        #   Write Output File
-        if self.dict_input_userparameters['jobtype'] == 'SINGLEPOINT':
-            self.write_output(energy_file="oenergy.txt", forces_file="oforces.txt")
-        
 
     def get_energy(self):
         qmenergy, qm_corrdata = self.get_qmenergy()
@@ -199,7 +225,7 @@ class Singlepoint():
             linkenergy += z1 * z2 / distance
         # now also all atoms in the corrdata list with the mod and linkcorr point charges
         # mod first. mod is charge in pcffile minus m2charge
-        # XX AJ the read_pcffile function seems unnecessary to me, can we instead just take the information from the xyzq? 
+        # XX AJ the read_pcffile function seems unnecessary to me, can we instead just take the information from the xyzq? -> no, spoke to Jan about it (:
         pcf = self.read_pcffile()
         for i in range(0, len(self.system.list_atoms_m2)):
             for j in range(0, len(self.system.list_atoms_m2[i])):
@@ -445,12 +471,11 @@ class Singlepoint():
         else:
             linkcorrforces = 0.0
         # logger(logfile, str("Forces for link atom correction read.\n"))
-        total_force = np.array(qmforces) + np.array(mmforces) - np.array(linkcorrforces)
+        self.total_force = np.array(qmforces) + np.array(mmforces) - np.array(linkcorrforces)
         # logger(logfile, str("Total forces obtained.\n"))
         if (self.dict_input_userparameters['jobtype'] != "SINGLEPOINT") and (len(self.system.list_atoms_active) != 0):
-            total_force=self.remove_inactive(total_force) #in SP case I don't have inactive atoms
+            self.total_force=self.remove_inactive() #in SP case I don't have inactive atoms
             # logger(logfile, str("Deleted forces of inactive atoms.\n"))
-        return total_force
     
     def get_qmforces_au(self):
 
@@ -958,24 +983,12 @@ class Singlepoint():
             # )
 
     def make_gmx_inp(self):
+
+        write_g96(self.groname, self.string_structure_gmx_header, self.list_structure_gmx_atoms, self.system.array_xyzq_current, self.list_box_vectors_large)
+
         self.prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
 
-        insert = ""
-        if int(self.system.int_step_current) > 0:
-            insert = str("." + str(int(self.system.int_step_current)))
-
-        self.mdpname = str(self.dict_input_userparameters['jobname'] + ".mdp")
-        self.groname = str(self.dict_input_userparameters['jobname'] + ".boxlarge.g96")
-        self.ndxname = str(self.class_topology_qmmm.qmmm_topology + ".ndx")
-        self.tprname = str(self.dict_input_userparameters['jobname'] + insert + ".tpr")
-
-        #   Calculate The Maximum Eucledian Distance Between Any Two Atoms
-        array_coordinates_all = self.system.array_xyzq_current[:,:3]
-        self.float_distance_max = np.max(np.linalg.norm(array_coordinates_all[np.newaxis, :, :] - array_coordinates_all[:, np.newaxis, :], axis=-1))
-
-
         self.write_mdp()
-        self.update_gro_box()
 
         # XX AJ commented out until testing 
         # subprocess.call(
@@ -1025,62 +1038,10 @@ class Singlepoint():
                     "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
                     )
 
-    def update_gro_box(self):
-        with open(self.groname, "w") as ofile:
-            with open(self.dict_input_userparameters['coordinatefile']) as ifile:
-                # logger(
-                #     logfile,
-                #     str(
-                #         "Finding a larger .gro box size to avoid problems with .mdp input...\n"
-                #     ),
-                # )
-                for line in ifile:
-                    ofile.write(line)
-                    match = re.search(r"^BOX\s*\n", line, flags=re.MULTILINE)
-                    if match:
-                        for line in ifile:
-                            match = re.search(
-                                r"^\s*(\d*\.\d+)\s+(\d*\.\d+)\s+(\d*\.\d+)",
-                                line,
-                                flags=re.MULTILINE,
-                            )
-                            if not match:
-                                # logger(
-                                #     logfile,
-                                #     "\n\nError: In "
-                                #     + str(gro)
-                                #     + " box vectors were expected but not found. Exiting. Line was:\n",
-                                # )
-                                # logger(logfile, line)
-                                exit(1)
-                            else:
-                                bv = [
-                                    float(match.group(1)) + 10.0 * self.float_distance_max,
-                                    float(match.group(2)) + 10.0 * self.float_distance_max,
-                                    float(match.group(3)) + 10.0 * self.float_distance_max,
-                                ]
-                                ofile.write(
-                                    " {:>15.9f} {:>15.9f} {:>15.9f}\nEND\n".format(
-                                        float(bv[0]), float(bv[1]), float(bv[2])
-                                    )
-                                )
-                            break
-                        break
-        # logger(logfile, str("Done.\n"))
-
     def run_gmx(self):
-
-        insert = ""
-        if int(self.system.int_step_current) != 0:
-            insert = str("." + str(int(self.system.int_step_current)))
-
+        pass
         # logger(logfile, "Running Gromacs file.\n")
-        self.trrname = str(self.dict_input_userparameters['jobname'] + insert + ".trr")
-        self.xtcname = str(self.dict_input_userparameters['jobname'] + insert + ".xtc")
-        self.outname = str(self.dict_input_userparameters['jobname'] + insert + ".out.gro")
-        self.gmxlogname = str(self.dict_input_userparameters['jobname'] + insert + ".gmx.log")
-        self.edrname = str(self.dict_input_userparameters['jobname'] + insert + ".edr")
-
+       
         # XX AJ commented out until testing 
         # subprocess.call(
         # [
@@ -1218,3 +1179,12 @@ class Singlepoint():
             )
         oforce.write("\n")
         oforce.close()
+
+    def remove_inactive(self): # mask xx
+        new_total_force = []
+        for i in range(0, len(self.total_force)):
+            if (i + 1) in np.array(self.system.list_atoms_active).astype(int):
+                new_total_force.append(self.total_force[i])
+            else:
+                new_total_force.append([0.0, 0.0, 0.0])
+        return new_total_force

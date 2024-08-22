@@ -39,7 +39,7 @@ class GeneratePCF():
     XX
     '''
 
-    def __init__(self, input_dict, system, topology, directory_base, job=None) -> None:
+    def __init__(self, input_dict, system, topology, directory_base) -> None:
 
         '''
         ------------------------------ \\
@@ -61,17 +61,16 @@ class GeneratePCF():
         self.system = system
         self.topology = topology
         self.directory_base = directory_base
-        self.job = job
-        self.xyzq = self.system.array_xyzq_initial    # XX AJ maybe change to xyzq_current later
-        if job:
-            self.xyzq = self.job.xyzq
+
+        self.pcf_filename = self.input_dict['jobname'] + ".pointcharges"
+
 
         self.make_pcf()
 
     def make_pcf(self):
-        self.qm_xyzq = filter_xyzq(self.xyzq, self.system.list_atoms_qm, coordinates=True, charges=True)
+        self.qm_xyzq = filter_xyzq(self.system.array_xyzq_current, self.system.list_atoms_qm, coordinates=True, charges=True)
         self.updated_chargelist = self.eliminate_and_shift_to_m1()
-        self.pcf_filename, new_field = self.generate_charge_shift_fieldsonly()
+        new_field = self.generate_charge_shift_fieldsonly()
         self.write_new_field_to_disk_listsonly(new_field)
 
     def eliminate_and_shift_to_m1(self):
@@ -97,7 +96,7 @@ class GeneratePCF():
             curr_charge += float(element[3])
         count = 0
         parentcharge = float(curr_charge) - float(self.input_dict['charge'])
-        for element in self.xyzq:
+        for element in self.system.array_xyzq_current:
             count += 1
             if count in np.array(self.system.list_atoms_qm).astype(int):
                 updated_charges.append(["QM"])
@@ -338,9 +337,8 @@ class GeneratePCF():
             + (new_sum[1] - target_sum[1]) * (new_sum[1] - target_sum[1])
             + (new_sum[2] - target_sum[2]) * (new_sum[2] - target_sum[2])
         )
-        outname = self.input_dict['jobname'] + ".pointcharges"
 
-        return outname, new_field
+        return new_field
 
     def sum_pcf_tm_nofile(self, inp, x, y, z):
         base = [float(x), float(y), float(z)]
