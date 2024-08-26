@@ -1,0 +1,63 @@
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Initialisation of gmx2qmmm completed!
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Asserting basic correctness of inputs
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Basic correctness check COMPLETE
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Listing the parameters given as input for this run of gmx2qmmm:
+
+includeprio:              0
+jobtype:                  SINGLEPOINT
+jobname:                  test
+qmatomslist:              C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
+activeatomslist:          C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+coordinatefile:           C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
+topologyfile:             C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
+useinnerouter:            0
+inneratomslist:           []
+outeratomslist:           []
+cores:                    1
+program:                  G16
+method:                   BP86
+basis:                    STO-3G
+multiplicity:             1
+memory:                   1000
+extra:                    NONE
+rvdw:                     2.0
+databasefit:              morse
+print_level:              normal
+gmxtop_path:              C:\Users\Alina\Documents\Uni\AG_goetze\top
+gmxcmd:                   gmx
+gmxpath:                  /scratch/spetry/Gromacs_bin/bin/
+g16cmd:                   g16
+charge:                   1
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Assessing job type
+------------------------------------------------------------
+
+------------------------------------------------------------
+2024-08-20 14:23:37
+
+Starting requested job: SINGLEPOINT
+------------------------------------------------------------
+
