@@ -960,7 +960,7 @@ class Singlepoint():
             logname = self.str_inputfile_qm[:-3]
             logname += "log"
             # os.rename(logname, str(self.dict_input_userparameters['jobname'] + insert + ".gjf.log"))
-            os.rename("fort.7", str(self.dict_input_userparameters['jobname'] + insert + ".fort.7"))
+            # os.rename("fort.7", str(self.dict_input_userparameters['jobname'] + insert + ".fort.7"))
             # logger(logfile, "G16 Done.\n")
         else:
             # logger(

@@ -106,12 +106,12 @@ class Optimization():
 
             #   Prepare New Input
             self.singlepoint.groname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".g96")
-            self.singlepoint.tprname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".tpr")
-            self.singlepoint.trrname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".trr")
-            self.singlepoint.xtcname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".xtc")
-            self.singlepoint.outname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".out.gro")
-            self.singlepoint.gmxlogname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".gmx.log")
-            self.singlepoint.edrname = str(self.dict_input_userparameters['jobname'] + str(self.system.int_step_current) + ".edr")
+            self.singlepoint.tprname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".tpr")
+            self.singlepoint.trrname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".trr")
+            self.singlepoint.xtcname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".xtc")
+            self.singlepoint.outname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".out.gro")
+            self.singlepoint.gmxlogname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".gmx.log")
+            self.singlepoint.edrname = str(self.dict_input_userparameters['jobname'] + "." + str(self.system.int_step_current) + ".edr")
             
             # gaufile = str(jobname + insert + ".gjf")
             # chkfile = str(jobname + insert + ".chk")
