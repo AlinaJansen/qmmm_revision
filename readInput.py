@@ -8,6 +8,99 @@ from gmx2qmmm.pointcharges import generate_pcf_from_top as make_pcf
 from gmx2qmmm.pointcharges import prepare_pcf_for_shift as prep_pcf
 from gmx2qmmm.pointcharges import generate_charge_shift as final_pcf
 from gmx2qmmm.operations import generate_top as topprep
+from gmx2qmmm.operations import generate_top_independent as topprepin# Added by Nicola
+from gmx2qmmm.operations import reindexing # Added by Nicola
+
+def remove_outer_from_gro(gro, outeratomlist): # Added by Nicola
+    import os
+    outeratomlist = set([int(i) for i in outeratomlist])
+    temp_gro = gro + ".tmp"
+    grodata = []
+    with open(gro, 'r') as ifile:
+        lines = ifile.readlines()
+        grodata += [[lines[0]]] + [[lines[1]]] + [[lines[2]]] + [[lines[3]]]
+        for line in lines[4:len(lines) - 4]:
+            data = line.strip().split()
+            if int(data[3]) in outeratomlist:
+                continue
+            else:
+                grodata += [data + ["\n"]]
+        grodata += [[lines[-4]]] + [[lines[-3]]] + [[lines[-2]]] + [[lines[-1]]]
+
+    atom_map = {}
+    residue_map = {}
+    curr = 1
+    curr2 = int(grodata[4][0])
+
+    for i in range(4, len(grodata) - 4, 1):
+        if int(grodata[i][3]) not in atom_map:
+            atom_map[int(grodata[i][3])] = int(curr)
+            curr += 1
+        if int(grodata[i][0]) not in residue_map:
+            residue_map[int(grodata[i][0])] = int(curr2)
+            curr2 += 1
+
+    for i in range(4, len(grodata) - 4, 1):
+        grodata[i][3] = str(atom_map[int(grodata[i][3])])
+        grodata[i][0] = str(residue_map[int(grodata[i][0])])
+
+    with open(temp_gro, 'w') as ofile:
+   
+        for line in grodata[:4]:
+            ofile.write(line[0])
+
+        for line in grodata[4:len(grodata) -4]:
+            ofile.write(f"{int(line[0]):5d} {line[1]:<5} {line[2]:<5} {int(line[3]):5d} {float(line[4]):15.9f} {float(line[5]):15.9f} {float(line[6]):15.9f}\n")
+
+        for line in grodata[len(grodata)-4:]:
+            ofile.write(line[0])
+
+
+    os.replace(temp_gro, gro)
+
+
+def remove_outer_from_pointcharges(pointcharges, outeratomlist): # Added by Nicola
+    import os
+    outeratomlist = set([int(i) for i in outeratomlist])
+    temp_pointcharges = pointcharges + ".tmp"
+    with open(pointcharges, 'r') as ifile, open(temp_pointcharges, 'w') as ofile:
+        lines = ifile.readlines()
+        for i in range(len(lines)):
+            if (i + 1) in outeratomlist:
+                continue
+            else:
+                ofile.write(lines[i])
+    
+    os.replace(temp_pointcharges, pointcharges)
+
+def remove_outer_from_chargevec(chargevec, outeratomlist): # Added by Nicola
+    outeratomlist = set([int(i) for i in outeratomlist])
+    new_chargevec = []
+    for i in range(len(chargevec)):
+        if (i + 1) in outeratomlist:
+            continue
+        else:
+            new_chargevec.append(chargevec[i])
+    
+    chargevec = new_chargevec
+
+def remove_outer_from_geo(geo, outeratomlist):
+    outeratomlist = set([int(i) for i in outeratomlist])
+    new_geo = []
+    for i in range(len(geo) // 3):
+        atom_index = i + 1
+        if atom_index not in outeratomlist:
+            new_geo.extend(geo[i*3:(i+1)*3])
+    return new_geo
+
+def connlist_remove_outer(connlist, outeratomlist):
+    outeratomlist = set([int(i) for i in outeratomlist])
+    filtered_connlist = []
+
+    for element in connlist:
+        if not any(int(i) in outeratomlist for i in element):
+            filtered_connlist.append(element)
+    return filtered_connlist
 
 def write_highprec(gro,jobname,logfile):
     import re
@@ -82,12 +175,26 @@ def read_qmparams(inp):
             match = re.search(r"^extra\s*=\s*(.+)$", line, flags=re.MULTILINE)
             if match:
                 info[7] = match.group(1)
+    if info[0] == "SERENITY":
+        label.append('generalmethod')
+        label.append('maxcyc')
+        info.append("dft")
+        info.append("900")
+        with open(inp) as ifile:
+            for line in ifile:
+                match = re.search(r"^generalmethod\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                if match:
+                    info[8] = match.group(1)
+                
+                match = re.search(r"^maxcyc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                if match:
+                    info[9] = match.group(1)
 
     return create_dict(label, info)
 
 def read_mmparams(inp):
-    label = ['fField', 'rcoulomb', 'rvdw', 'flaglist']
-    info = ["amberGS", 0, 0, ""]
+    label = ['fField', 'rcoulomb', 'rvdw', 'gmxplus', 'flaglist']
+    info = ["amberGS", 0, 0, 1, ""]
     #flaglist = []
     with open(inp) as ifile:
         for line in ifile:
@@ -103,16 +210,20 @@ def read_mmparams(inp):
             if match:
                 info[2] = float(match.group(1))
                 continue
+            match = re.search(r"^gmxplus\s*=\s*(\d*)", line, flags=re.MULTILINE)
+            if match:
+                info[3] = int(match.group(1))
+                continue
             match = re.search(r"\-D(\S*)", line, flags=re.MULTILINE)
             if match:
-                info[3] = (match.group(1)).upper()
+                info[4] = (match.group(1)).upper()
 
     return create_dict(label, info)
 
 def read_pathparams(inp):
     # software path
     label = ['g16path', 'tmpath', 'orcapath', 'gmxpath', 
-             'g16cmd', 'tmcmd', 'orcacmd', 'gmxcmd', 'gmxtop']
+             'g16cmd', 'tmcmd', 'orcacmd', 'gmxcmd', 'gmxtop', 'serenitypath', 'serenitycmd']
     # Gaussain,Turbomole,ORCA, GROMACS, gaussianCMD, TMCMD, orcaCMD, gmxCMD, gmxTop
     info = [
         "",
@@ -124,6 +235,8 @@ def read_pathparams(inp):
         "",
         "gmx19",
         "gromacs-2019.1/share/gromacs/top/",
+        "",
+        ""
     ]
     with open(inp) as ifile:
         for line in ifile:
@@ -162,6 +275,14 @@ def read_pathparams(inp):
             match = re.search(r"^gmxtop_path\s*=\s*(\S+)", line, flags=re.MULTILINE)
             if match:
                 info[8] = str(match.group(1))
+            
+            match = re.search(r"^serenitypath\s*=\s*(\S+)", line, flags=re.MULTILINE)
+            if match:
+                info[9] = str(match.group(1))
+            
+            match = re.search(r"^serenitycmd\s*=\s*(\S+)", line, flags=re.MULTILINE)
+            if match:
+                info[10] = str(match.group(1))
     return create_dict(label, info)
 
 def read_qmmmparams(inp):
@@ -211,11 +332,19 @@ def read_qmmmparams(inp):
 def make_inp_dict(inputFiles, qmdict, mmdict, pathdict, qmmmdict):
     return 0
 
-class QMParams:
+class QMParams2:
     def __init__(self, inp):
         self.inp = inp
         (self.program, self.method, self.basis, self.charge, 
-            self.multi, self.cores, self.memory, self.extra) = self.read_qmparams(inp)
+            self.multi, self.cores, self.memory, self.extra, *extra_params) = self.read_qmparams(inp)
+        
+        if self.program == "SERENITY":
+            self.generalmethod = extra_params[0]
+            self.maxcyc = extra_params[1]
+        else:
+            self.generalmethod = None
+            self.maxcyc = None
+
     
     def read_qmparams(self, inp):
         info = [
@@ -254,17 +383,209 @@ class QMParams:
                 match = re.search(r"^extra\s*=\s*(.+)$", line, flags=re.MULTILINE)
                 if match:
                     info[7] = match.group(1)
+        
+        if info[0] == "SERENITY":
+            info.append("dft")  # Default value for generalmethod
+            info.append("900")  # Default value for maxcyc
+            with open(inp) as ifile:
+                for line in ifile:
+                    match = re.search(r"^generalmethod\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[8] = match.group(1)
+
+                    match = re.search(r"^maxcyc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[9] = match.group(1)
+                    
         return info
+
+class QMParams:
+    def __init__(self, inp):
+        self.inp = inp
+        (self.program, self.method, self.basis, self.charge, 
+            self.multi, self.cores, self.memory, self.extra, *extra_params) = self.read_qmparams(inp)
+        
+        if self.program == "SERENITY":
+            self.generalmethod = extra_params[0]
+            self.maxcyc = extra_params[1]
+            self.fde = extra_params[2]
+            if self.fde == 1:
+                self.naddxcfunc = extra_params[3]
+                self.naddkinfunc = extra_params[4]
+                self.numactsys = extra_params[5]
+                self.numenvsys = extra_params[6]
+                index1 = 0
+                for i in range(int(self.numactsys)):
+                    setattr(self, f"endactsys{i}", extra_params[6 + index1 + 1])
+                    setattr(self, f"generalmethod{i}", extra_params[6 + index1 + 2])
+                    setattr(self, f"maxcyc{i}", extra_params[6 + index1 + 3])
+                    setattr(self, f"method{i}", extra_params[6 + index1 + 4])
+                    setattr(self, f"basis{i}", extra_params[6 + index1 + 5])
+                    setattr(self, f"charge{i}", extra_params[6 + index1 + 6])
+                    setattr(self, f"multiplicity{i}", extra_params[6 + index1 + 7])
+                    index1 += 7
+                index2 = index1
+                for i in range(int(self.numenvsys)):
+                    setattr(self, f"endenvsys{i}", extra_params[6 + index2 + 1])
+                    setattr(self, f"egeneralmethod{i}", extra_params[6 + index2 + 2])
+                    setattr(self, f"emaxcyc{i}", extra_params[6 + index2 + 3])
+                    setattr(self, f"emethod{i}", extra_params[6 + index2 + 4])
+                    setattr(self, f"ebasis{i}", extra_params[6 + index2 + 5])
+                    setattr(self, f"echarge{i}", extra_params[6 + index2 + 6])
+                    setattr(self, f"emultiplicity{i}", extra_params[6 + index2+ 7])
+                    index2 += 7
+
+
+        else:
+            self.generalmethod = None
+            self.maxcyc = None
+            self.fde = None
+
+    
+    def read_qmparams(self, inp):
+        info = [
+            "G16",
+            "BP86",
+            "STO-3G",
+            int(0),
+            int(1),
+            int(1),
+            int(1000),
+            "NONE",
+        ]  # program method basis charge multiplicity cores memory(MB) extraopts
+        with open(inp) as ifile:
+            for line in ifile:
+                match = re.search(r"^program\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                if match:
+                    info[0] = str(match.group(1)).upper()
+                match = re.search(r"^method\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                if match:
+                    info[1] = str(match.group(1)).upper()
+                match = re.search(r"^basis\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                if match:
+                    info[2] = str(match.group(1)).upper()
+                match = re.search(r"^charge\s*=\s*([-]*\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[3] = int(match.group(1))
+                match = re.search(r"^multiplicity\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[4] = int(match.group(1))
+                match = re.search(r"^cores\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[5] = int(match.group(1))
+                match = re.search(r"^memory\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[6] = int(match.group(1))
+                match = re.search(r"^extra\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                if match:
+                    info[7] = match.group(1)
+        
+        if info[0] == "SERENITY":
+            info.append("dft")  # Default value for generalmethod
+            info.append("900")  # Default value for maxcyc
+            info.append(0)
+            with open(inp) as ifile:
+                for line in ifile:
+                    match = re.search(r"^generalmethod\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[8] = match.group(1)
+
+                    match = re.search(r"^maxcyc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[9] = match.group(1)
+                    
+                    match = re.search(r"^fde\s*=\s*(\d*)", line, flags=re.MULTILINE)
+                    if match:
+                        info[10] = float(match.group(1))
+                    
+                    if info[10] == 1:
+                        info.append("pw91") 
+                        info.append("pw91k")
+                        match = re.search(r"^naddxcfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                        if match:
+                            info[11] = match.group(1)
+                        
+                        match = re.search(r"^naddkinfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                        if match:
+                            info[12] = match.group(1)
+                        
+                        info += self.FDE_input(inp)
+        return info
+
+    def FDE_input(self, inp):
+        info = [0,0]
+        with open(inp) as ifile:
+            for line in ifile:
+                match = re.search(r"^numactsys\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[0] = int(match.group(1))
+                match = re.search(r"^numenvsys\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                if match:
+                    info[1] = int(match.group(1))
+                for i in range(int(info[0]) + int(info[1])):
+                    info += [(0,0), "dft", "900", "BP86", "STO-3G", int(0), int(1)]
+                index1 = 0 
+                for i in range(int(info[0])):
+                    match = re.search(rf"^endactsys{i}\s*=\s*(\d+)\s*,\s*(\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[2 + index1] = (int(match.group(1)),int(match.group(2)))
+                    match = re.search(rf"^generalmethod{i}\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[3 + index1] = match.group(1)
+                    match = re.search(rf"^maxcyc{i}\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[4 + index1] = match.group(1)
+                    match = re.search(rf"^method{i}\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[5 + index1] = str(match.group(1)).upper()
+                    match = re.search(rf"^basis{i}\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[6 + index1] = str(match.group(1)).upper()
+                    match = re.search(rf"^charge{i}\s*=\s*([-]*\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[7 + index1] = int(match.group(1))
+                    match = re.search(rf"^multiplicity{i}\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[8 + index1] = int(match.group(1))
+                    index1 += 7
+                    index2 = index1
+                for i in range(int(info[1])):
+                    match = re.search(rf"^endenvsys{i}\s*=\s*(\d+)\s*,\s*(\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[2 + index2] = (int(match.group(1)),int(match.group(2)))
+                    match = re.search(rf"^egeneralmethod{i}\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[3 + index2] = match.group(1)
+                    match = re.search(rf"^emaxcyc{i}\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[4 + index2] = match.group(1)
+                    match = re.search(rf"^emethod{i}\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[5 + index2] = str(match.group(1)).upper()
+                    match = re.search(rf"^ebasis{i}\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[6 + index2] = str(match.group(1)).upper()
+                    match = re.search(rf"^echarge{i}\s*=\s*([-]*\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[7 + index2] = int(match.group(1))
+                    match = re.search(rf"^emultiplicity{i}\s*=\s*(\d+)", line, flags=re.MULTILINE)
+                    if match:
+                        info[8 + index2] = int(match.group(1))
+
+                    
+        return info
+
+
 
 class MMParams:
     def __init__(self, inp):
         self.inp = inp
         info, flaglist = self.read_mmparams(inp)
-        self.fField, self.rcoulomb, self.rvdw = info
+        self.fField, self.rcoulomb, self.rvdw, self.gmxplus = info
         self.flaglist = flaglist
         
     def read_mmparams(self, inp):
-        info = ["amberGS", 0, 0]
+        info = ["amberGS", 0, 0, 1]
         flaglist = []
         with open(inp) as ifile:
             for line in ifile:
@@ -280,6 +601,10 @@ class MMParams:
                 if match:
                     info[2] = float(match.group(1))
                     continue
+                match = re.search(r"^gmxplus\s*=\s*(\d*)", line, flags=re.MULTILINE)
+                if match:
+                    info[3] = int(match.group(1))
+                    continue
                 match = re.search(r"\-D(\S*)", line, flags=re.MULTILINE)
                 if match:
                     if match.group(1) not in flaglist:
@@ -292,7 +617,7 @@ class PathParams:
         self.inp = inp
         (self.g16path, self.tmpath, self.orcapath, self.gmxpath,
          self.g16cmd, self.tmcmd, self.orcacmd, self.gmxcmd,
-         self.gmxtop) = self.read_pathparams(inp)
+         self.gmxtop, self.serenitypath, self.serenitycmd) = self.read_pathparams(inp)
 
     def read_pathparams(self, inp):
         # software path
@@ -300,6 +625,7 @@ class PathParams:
         tmpath = ""
         orcapath = ""
         gmxpath = "gromacs-2019.1/bin/"
+        serenitypath = ""
         # Gaussain,Turbomole,ORCA, GROMACS, gaussianCMD, TMCMD, orcaCMD, gmxCMD, gmxTop
         info = [
             "",
@@ -311,6 +637,8 @@ class PathParams:
             "",
             "gmx19",
             "gromacs-2019.1/share/gromacs/top/",
+            "",
+            ""
         ]
         with open(inp) as ifile:
             for line in ifile:
@@ -338,7 +666,7 @@ class PathParams:
                 if match:
                     info[5] = str(match.group(1))
 
-                match = re.search(r"^orcacmd\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                match = re.search(r"^orcacmd\s*=\s*(\S+)", line, flags=re.MULTILINE) #r"^orcacmd\s*=\s*(\S+)"  r"^orcacmd\s*=\s*(\S+\s+\S+)"
                 if match:
                     info[6] = str(match.group(1))
 
@@ -349,6 +677,14 @@ class PathParams:
                 match = re.search(r"^gmxtop_path\s*=\s*(\S+)", line, flags=re.MULTILINE)
                 if match:
                     info[8] = str(match.group(1))
+                
+                match = re.search(r"^serenitypath\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                if match:
+                    info[9] = str(match.group(1))
+                
+                match = re.search(r"^serenitycmd\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                if match:
+                    info[10] = str(match.group(1))
         return info
 
 class QMMMParams:
@@ -455,17 +791,14 @@ class QMMMInputs:
         self.basedir = basedir
         self.logfile = inputFiles.logfile
         logfile = self.logfile
-            
+
         #Read .dat file
-        logger(logfile, "Reading input parameters...\n")
+        logger(logfile, "Reading input parameters...\n") # Added by Nicola
         self.mmparams = MMParams(inputFiles.mmFile)
         self.qmparams = QMParams(inputFiles.qmFile)
         self.pathparams = PathParams(inputFiles.pathFile)
         self.qmmmparams = QMMMParams(inputFiles.qmmmFile)
-        self.top = inputFiles.top
-        logger(logfile, "Done.\n")
 
-        
         self.gro = inputFiles.coord
         # The name of checkpoint gro file is related to jobname already, jobname is unchanged in any case
         if self.qmmmparams.curr_step > 0:
@@ -473,17 +806,97 @@ class QMMMInputs:
         
         logger(logfile, "Initializing dependencies...\n")
         logger(self.logfile, "complete.\n")
-
-
+        
         self.chargevec = []
         logger(logfile, "Trying to understand your MM files.\n")
         logger(logfile, "List of molecules...\n")
-        self.mollist = make_pcf.readmols(self.top)
+        
+        logger(logfile, "inout option is chosen. Generating inital topology\n") # Added by Nicola
+        if inputFiles.inout and self.mmparams.gmxplus == 1 and self.qmparams.program == "SERENITY":
+            if self.qmparams.fde == 1:
+                self.qmlistorig = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
+                self.innerlistorig = prep_pcf.read_inner_list(inputFiles.inner)
+                self.outerlistorig = prep_pcf.read_inner_list(inputFiles.outer)
+        
+        if inputFiles.inout and self.mmparams.gmxplus == 1: # Added by Nicola
+            self.inout=inputFiles.inout
+            logger(logfile, "You are using Inner/Outer function; Reading Inner/Outer atom list...\n")
+            self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
+            self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
+            self.qmmmtopinit = str(self.qmmmparams.jobname + ".qmmm.top.init")
+            self.top = self.qmmmtopinit
+
+            topprepin.generate_top_listsonly(
+                self.inputFiles.top,
+                self.inputFiles.qmatoms,
+                self.qmmmtopinit,
+                self.mmparams.flaglist,
+                self.basedir,
+                self.logfile,
+                self.pathparams.gmxtop,
+                inner = self.innerlist,
+                outer = self.outerlist,
+            )#self.inputFIles.inner and self.inputFiles.outer added by Nicola
+            self.mollist = make_pcf.readmols(self.qmmmtopinit)
+            logger(logfile, "Done.\n")
+            logger(logfile, "Reading charges...\n")
+            for element in self.mollist:
+                self.chargevec.extend(make_pcf.readcharges(element, self.qmmmtopinit, self.pathparams.gmxtop))
+            logger(logfile, "Done.\n")
+
+        elif inputFiles.inout and self.mmparams.gmxplus == 0:
+            self.inout = True
+            self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
+            self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
+            self.top = inputFiles.top
+            self.mollist = make_pcf.readmols(self.top)
+            logger(logfile, "Done.\n")
+            logger(logfile, "Reading charges...\n")
+            for element in self.mollist:
+                self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
+            logger(logfile, "Done.\n")
+
+        else:
+            self.inout = False
+            self.top = inputFiles.top
+            self.mollist = make_pcf.readmols(self.top)
+            logger(logfile, "Done.\n")
+            logger(logfile, "Reading charges...\n")
+            for element in self.mollist:
+                self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
+            logger(logfile, "Done.\n")
+            
         logger(logfile, "Done.\n")
-        logger(logfile, "Reading charges...\n")
-        for element in self.mollist:
-            self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
-        logger(logfile, "Done.\n")
+
+            
+        #Read .dat file
+        #logger(logfile, "Reading input parameters...\n")
+        #self.mmparams = MMParams(inputFiles.mmFile)
+        #self.qmparams = QMParams(inputFiles.qmFile)
+        #self.pathparams = PathParams(inputFiles.pathFile)
+        #self.qmmmparams = QMMMParams(inputFiles.qmmmFile)
+        #self.top = inputFiles.top
+        #logger(logfile, "Done.\n")
+
+        
+        #self.gro = inputFiles.coord
+        ## The name of checkpoint gro file is related to jobname already, jobname is unchanged in any case
+        #if self.qmmmparams.curr_step > 0:
+        #    self.gro = str(self.qmmmparams.jobname + '.' + str(self.qmmmparams.curr_step) + self.gro[-4:])
+        #
+        #logger(logfile, "Initializing dependencies...\n")
+        #logger(self.logfile, "complete.\n")
+
+
+        #self.chargevec = []
+        #logger(logfile, "Trying to understand your MM files.\n")
+        #logger(logfile, "List of molecules...\n")
+        #self.mollist = make_pcf.readmols(self.top)
+        #logger(logfile, "Done.\n")
+        #logger(logfile, "Reading charges...\n")
+        #for element in self.mollist:
+        #    self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
+        #logger(logfile, "Done.\n")
 
         #from this step, use .g96 for all coord files
         if inputFiles.coord[-4:] == ".gro":
@@ -492,31 +905,78 @@ class QMMMInputs:
         elif inputFiles.coord[-4:] == ".g96":
             logger(logfile, "Reading geometry (.g96)...\n")
             self.geo = make_pcf.readg96(inputFiles.coord)
-        self.numatoms = make_pcf.read_numatoms(inputFiles.coord)
+        if not self.inout or (self.inout and self.mmparams.gmxplus == 0):
+            self.numatoms = make_pcf.read_numatoms(inputFiles.coord)
+        else:
+            self.numatoms = make_pcf.read_numatoms(inputFiles.coord) - len(self.outerlist)
+            self.geo = remove_outer_from_geo(self.geo, self.outerlist)
+
+
         logger(logfile, "Done.\n")
 
         logger(logfile, "Reading connectivity matrix...\n")
         #1111
-        self.connlist = read_conn_list_from_top(self.top, self.mollist, self.pathparams.gmxtop)
+        self.connlist = read_conn_list_from_top(inputFiles.top, make_pcf.readmols(inputFiles.top), self.pathparams.gmxtop)
+        
+        if self.inout and self.mmparams.gmxplus == 1:
+            self.connlist = connlist_remove_outer(self.connlist, self.outerlist)
+            ref = prep_pcf.read_qmatom_list(inputFiles.qmatoms) + self.innerlist + self.outerlist
+            ref = list(set(ref))
+            memory_dict = reindexing.reindexing_memory(ref, self.outerlist)
+            for i in range(len(self.connlist)):
+                for j in range(len(self.connlist[i])):
+                    self.connlist[i][j] = memory_dict[self.connlist[i][j]]
+
+
+        #if not self.inout:
+        #    self.connlist = read_conn_list_from_top(self.top, self.mollist, self.pathparams.gmxtop)
+        #else:
+        #    self.connlist = read_conn_list_from_top(self.qmmmtopinit, self.mollist, self.pathparams.gmxtop)
+
         logger(logfile, "Done.\n")
         
         logger(logfile, "Trying to understand your QM, MM and QM/MM parameters.\n")
         logger(logfile, "Reading QM atom list...\n")
-        self.qmatomlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
-        if inputFiles.inout:
-            self.inout=inputFiles.inout
-            logger(logfile, "You are using Inner/Outer function; Reading Inner/Outer atom list...\n")
-            self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
-            self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
+        #if self.inout: # Added by Nicola
+        #    qmlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
+        #    ref = qmlist + self.innerlist + self.outerlist
+        #    ref = list(set(ref))
+        #    ref.sort()
+        #    memory_dict = reindexing_memory(ref, self.outerlist)
+        #    for i in range(len(qmlist)):
+        #        qmlist[i] = memory_dict[qmlist[i]]
+        #    self.qmatomlist = qmlist
+        #else:
+        if not self.inout or (self.inout and self.mmparams.gmxplus == 0):
+            self.qmatomlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
         else:
-            self.inout=False        #SP test
+            self.qmatomlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
+            ref = self.qmatomlist + self.innerlist + self.outerlist
+            ref = list(set(ref))
+            memory_dict = reindexing.reindexing_memory(ref, self.outerlist)
+            for i in range(len(self.qmatomlist)):
+                self.qmatomlist[i] = memory_dict[self.qmatomlist[i]]
         logger(logfile, "Done.\n")
+
+        #if inputFiles.inout:
+        #    self.inout=inputFiles.inout
+        #    logger(logfile, "You are using Inner/Outer function; Reading Inner/Outer atom list...\n")
+        #    self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
+        #    self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
+        #else:
+        #    self.inout=False        #SP test
 
         if self.gro[-4:] == ".gro":
             logger(logfile, "Writing high-precision coordinate file...")
             grohigh = write_highprec(self.gro, self.qmmmparams.jobname, logfile)
             self.gro = self.qmmmparams.jobname + ".g96"
+            if self.inout and self.mmparams.gmxplus == 1:#Added by Nicola
+                remove_outer_from_gro(self.gro, self.outerlist)
             logger(logfile, "Done.\n")
+
+        
+        
+        #self.geo = make_pcf.readg96(self.gro) # Added by Nicola
 
         logger(
             logfile,
@@ -537,12 +997,12 @@ class QMMMInputs:
             "Starting the preparation of the point charge field used in the calculation.\n",
         )
         logger(logfile, "Creating the full xyzq Matrix...\n")
-        if inputFiles.inout:
+        if self.inout and self.mmparams.gmxplus == 0:
             self.xyzq = make_xyzq_io(self.geo, self.chargevec, self.outerlist)
         else:
             self.xyzq = make_xyzq(self.geo, self.chargevec)
         logger(logfile, "Done.\n")
-        
+
         logger(
             logfile,
             "Preparing the point charge field for a numerically optimized charge shift...\n",
@@ -587,6 +1047,9 @@ class QMMMInputs:
             )
         logger(logfile, "Done.\n")
 
+        #if self.inout:#Added by Nicola
+        #    remove_outer_from_pointcharges(self.pcffile, self.outerlist)
+
         logger(logfile, "Preparing the QM/MM top file...\n")
         if not inputFiles.inout:
             topprep.generate_top_listsonly(
@@ -604,6 +1067,26 @@ class QMMMInputs:
                 self.logfile,
                 self.pathparams.gmxtop,
             )
+        elif inputFiles.inout and self.mmparams.gmxplus == 0:
+            topprep.generate_top_listsonly(
+                self.inputFiles.top,
+                self.inputFiles.qmatoms,
+                self.qmmmtop,
+                self.mmparams.flaglist,
+                self.q1list,
+                self.q2list,
+                self.q3list,
+                self.m1list,
+                self.m2list,
+                self.m3list,
+                self.basedir,
+                self.logfile,
+                self.pathparams.gmxtop,
+                inner = self.innerlist,
+                outer = self.outerlist,
+                gmxplus = False
+            )
+
         else:
             topprep.generate_top_listsonly(
                 self.inputFiles.top,
@@ -619,10 +1102,15 @@ class QMMMInputs:
                 self.basedir,
                 self.logfile,
                 self.pathparams.gmxtop,
-                inner=self.innerlist,
-                outer=self.outerlist,
-            )
+                inner = self.innerlist,
+                outer = self.outerlist,
+                gmxplus = True
+            )#self.inputFIles.inner and self.inputFiles.outer added by Nicola
         logger(logfile, "Done.\n")
+
+        #if self.inout: #Added by Nicola 
+        #    self.mollist = make_pcf.readmols(self.qmmmtop)
+        #    self.connlist = read_conn_list_from_top(self.qmmmtop, self.mollist, self.pathparams.gmxtop)
 
         self.scan_atoms = 'R'
 
@@ -634,6 +1122,13 @@ class QMMMInputs:
         if self.qmmmparams.jobtype != "SINGLEPOINT":
             logger(logfile, "Reading indices of active atoms...\n")
             self.active = prep_pcf.read_qmatom_list(inputFiles.act)
+            if self.inout and self.mmparams.gmxplus == 1:
+                ref = prep_pcf.read_qmatom_list(inputFiles.qmatoms) + prep_pcf.read_inner_list(inputFiles.inner) + self.outerlist
+                ref = list(set(ref))
+                memory_dict = reindexing.reindexing_memory(ref, self.outerlist)
+                for i in range(len(self.active)):
+                    self.active[i] = memory_dict[self.active[i]]
+
             logger(logfile, "Done.\n")
 
         #OUTPUT: energy and force

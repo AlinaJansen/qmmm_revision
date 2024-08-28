@@ -19,6 +19,7 @@ import numpy as np
 
 from gmx2qmmm.pointcharges import generate_pcf_from_top as make_pcf
 from gmx2qmmm.pointcharges import prepare_pcf_for_shift as prep_pcf
+from gmx2qmmm.operations import reindexing # Added by Nicola
 
 
 def logger(log, logstring):
@@ -212,6 +213,53 @@ def cleanagain_exclusions(excludedata, logfile):
     logger(logfile, str("Formatting done.\n"))
     return new_excludedata
 
+def Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+
+    qmatoms = qmatomlist
+    pairwise_permutation = []
+    for i in range(len(qmatoms)):
+        for j in range(i+1, len(qmatoms)):
+            pairwise_permutation.append([qmatoms[i], qmatoms[j]])
+
+    return pairwise_permutation
+
+def Permutate_Pairwise(inneratomlist, outeratomlist, gmxplus = True): #Added by Nicola
+
+    inneratoms = inneratomlist
+    outeratoms = outeratomlist
+    pairwise_permutation = []
+    for i in range(len(inneratoms)):
+        for j in range(len(outeratoms)):
+            pairwise_permutation.append([inneratoms[i], outeratoms[j]])
+
+    return pairwise_permutation
+
+def merge_sublists_by_first_element(data): #Added by Nicola
+    grouped = {}
+    
+    # Group sublists by their starting number
+    for sublist in data:
+        if sublist:  # Ensure the sublist is not empty
+            key = sublist[0]
+            if key not in grouped:
+                grouped[key] = sublist[1:]  # Create a new entry
+            else:
+                grouped[key].extend(sublist[1:])  # Extend the existing entry
+
+    # Create the merged list of sublists
+    merged = [[key] + values for key, values in grouped.items()]
+    
+    return merged
+
+def get_keys_from_value(dictionary, target_value): #Added by Nicola
+    keys = []
+    for key, value in dictionary.items():
+        if value == target_value:
+            keys.append(key)
+    return keys
+
+
+
 
 def make_large_top(
     top,
@@ -228,7 +276,10 @@ def make_large_top(
     m3list,
     flaglist,
     logfile,
-):
+    inneratomlist=[],
+    outeratomlist=[],
+    gmxplus = False 
+): #gmxplus = True inneratomslist outeratomlist Added by Nicola
     mollength = get_mollength(molfindlist)
     red_molfindlist = []
     for entry in molfindlist:
@@ -938,115 +989,517 @@ def make_large_top(
             ofile.write('#include "' + str(includedata[i]) + '"\n')
         ofile.write("\n[ moleculetype ]\nQMMM_model     3\n\n[ atoms ]\n")
         ffnb = find_ffnonbonded(includedata, logfile)
-        for element in atomdata:
-            if int(element[0]) in np.array(qmatomlist).astype(int):
-                ofile.write(
-                    "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
-                        int(element[0]),
-                        str(element[1]),
-                        int(element[2]),
-                        str(element[3]),
-                        str(element[4]),
-                        int(element[5]),
-                        float(0.0),
-                    )
-                )
+        
+        if not outeratomlist == [] and gmxplus:
+            
+                
+            outeratomlist = set([int(i) for i in outeratomlist])
+            atomdatanew = []
+            bonddatanew = []
+            pairdatanew = []
+            angledatanew = []
+            dihedraldatanew = []
+            settledatanew = []
+            excludedatanew = []
+            mem = [] #[[old index, new index]]
+            c = 0
+            #Create a memory container and update atomdata
+            for j in range(len(atomdata) - 1):
+                if int(atomdata[j][0]) in outeratomlist:
+                    mem.append([atomdata[j + 1][0], atomdata[j][0]])
+                    if mem[-1][0] != mem[-1][1]:
+                        c += 1
+                        mem[-1] = [mem[-1][1], mem[-1][0] - c]
+                    else:
+                        continue
+                else:
+                    atomdatanew.append(atomdata[j])
+                    if not mem == [] and mem[-1][0] != mem[-1][1]:
+                        mem.append([atomdata[j + 1][0], atomdata[j][0]])
+                        if mem[-1][0] != mem[-1][1]:
+                            mem[-1] = [mem[-1][1], mem[-1][0] - (c + 1)]
+        
+                        atomdatanew[-1][0] = mem[-1][1]
+                        atomdatanew[-1][5] = mem[-1][1]
+                    else:
+                        mem.append([atomdata[j][0], atomdata[j][0]])
+                        continue
+
+
+            if int(atomdata[-1][0]) not in outeratomlist:
+                if int(atomdata[-2][0]) not in outeratomlist:
+                    mem.append([int(atomdata[-1][0]), mem[-1][1] + 1])
+                else:
+                    mem.append([int(atomdata[-1][0]), mem[-1][1]])
+
+                atomdatanew.append(atomdata[-1])
+                atomdatanew[-1][0] = mem[-1][1]
+                atomdatanew[-1][5] = mem[-1][1]
             else:
-                ofile.write(
-                    "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
-                        int(element[0]),
-                        str(element[1]),
-                        int(element[2]),
-                        str(element[3]),
-                        str(element[4]),
-                        int(element[5]),
-                        float(element[6]),
+                mem.append([int(atomdata[-1][0]), mem[-1][1]])
+
+            '''if atomdatanew[-1][0] == atomdatanew[-2][0] and atomdatanew[-1][5] == atomdatanew[-2][5]:
+                atomdatanew[-1][0] += 1
+                atomdatanew[-1][5] += 1  
+                mem[-1][1] += 1  
+            for i in range(1, len(atomdatanew)):
+                if atomdatanew[i][0] <= atomdatanew[i - 1][0]:
+                    atomdatanew[i][0] = atomdatanew[i - 1][0] + 1
+                    atomdatanew[i][5] = atomdatanew[i][0]
+            for i in range(1, len(mem)):
+                if mem[i][1] <= mem[i - 1][1]:
+                    mem[i][1] = mem[i - 1][1] + 1  ''' 
+
+            c = 1
+            for i in range(len(atomdatanew)):
+                atomdatanew[i][0] = c
+                atomdatanew[i][5] = c
+                c += 1
+
+            memory = [] #[[old index, new index]]
+            for i in mem:
+                if int(i[0]) not in outeratomlist:
+                    memory.append(i)
+                else:
+                    continue
+            
+            c = 1
+            for i in range(len(memory)):
+                memory[i][1] = c
+                c += 1
+                
+            memory_dict = {item[0]: item[1] for item in memory}
+            
+            # Ensure that residue indecies in atomdatanew are incremental
+
+            residue_map = {}
+            curr = 1
+
+            for i in range(len(atomdatanew)):
+                if int(atomdatanew[i][2]) not in residue_map:
+                    residue_map[int(atomdatanew[i][2])] = int(curr)
+                    curr += 1
+
+            for i in range(len(atomdatanew)):
+                atomdatanew[i][2] = residue_map[int(atomdatanew[i][2])]
+
+            #Update bonddata
+                
+            for j in range(len(bonddata)):
+                if (int(bonddata[j][0]) in outeratomlist) or (int(bonddata[j][1]) in outeratomlist):
+                    continue
+                else:
+                    bonddatanew.append(bonddata[j])
+                    bonddatanew[-1][0] = memory_dict[bonddatanew[-1][0]]
+                    bonddatanew[-1][1] = memory_dict[bonddatanew[-1][1]]
+
+            #Update pairdata
+            for j in range(len(pairdata)):
+                if (int(pairdata[j][0]) in outeratomlist) or (int(pairdata[j][1]) in outeratomlist):
+                    continue
+                else:
+                    pairdatanew.append(pairdata[j])
+                    pairdatanew[-1][0] = memory_dict[pairdatanew[-1][0]]
+                    pairdatanew[-1][1] = memory_dict[pairdatanew[-1][1]]
+                
+            #Update angledata
+                
+            for j in range(len(angledata)):
+                if (int(angledata[j][0]) in outeratomlist) or (int(angledata[j][1]) in outeratomlist) or (int(angledata[j][2]) in outeratomlist):
+                    continue
+                else:
+                    angledatanew.append(angledata[j])
+                    angledatanew[-1][0] = memory_dict[angledatanew[-1][0]]
+                    angledatanew[-1][1] = memory_dict[angledatanew[-1][1]]
+                    angledatanew[-1][2] = memory_dict[angledatanew[-1][2]]
+            
+            #Update dihedraldata
+
+            for j in range(len(dihedraldata)):
+                if (int(dihedraldata[j][0]) in outeratomlist) or (int(dihedraldata[j][1]) in outeratomlist) or (int(dihedraldata[j][2]) in outeratomlist) or (int(dihedraldata[j][3]) in outeratomlist):
+                    continue
+                else:
+                    dihedraldatanew.append(dihedraldata[j])
+                    dihedraldatanew[-1][0] = memory_dict[dihedraldatanew[-1][0]]
+                    dihedraldatanew[-1][1] = memory_dict[dihedraldatanew[-1][1]]
+                    dihedraldatanew[-1][2] = memory_dict[dihedraldatanew[-1][2]]
+                    dihedraldatanew[-1][3] = memory_dict[dihedraldatanew[-1][3]]
+
+            #Update settledata
+
+            for j in range(len(settledata)):
+                if int(settledata[j][0]) in outeratomlist:
+                    continue
+                else:
+                    settledatanew.append(settledata[j])
+                    settledatanew[-1][0] = memory_dict[settledatanew[-1][0]]
+
+            #Update excludedata
+
+            #for j in range(len(excludedata)):
+            #    if (int(excludedata[j][0]) in outeratomlist) or (int(excludedata[j][1]) in outeratomlist) or (int(excludedata[j][2]) in outeratomlist):
+            #        continue
+            #    else:
+            #        excludedatanew.append(excludedata[j])
+            #        excludedatanew[-1][0] = memory_dict[excludedatanew[-1][0]]
+            #        excludedatanew[-1][1] = memory_dict[excludedatanew[-1][1]]
+            for excl in excludedata:
+                if any(atom in outeratomlist for atom in excl):
+                    continue
+                else:
+                    new_exclusion = [memory_dict[atom] for atom in excl]
+                    excludedatanew.append(new_exclusion)
+   
+            atomdata = atomdatanew
+            bonddata = bonddatanew
+            pairdata = pairdatanew
+            angledata = angledatanew
+            dihedraldata = dihedraldatanew
+            settledata = settledatanew
+            excludedata = excludedatanew
+
+            #Re-index the qmatomlist based on memory_dict - Unnesessary, done in make_exclude_list globally
+            #for i in range(len(qmatomlist)):
+            #    qmatomlist[i] = memory_dict[qmatomlist[i]]
+
+
+            qmatomlist = set([int(i) for i in qmatomlist])
+            for element in atomdata:
+                if int(element[0]) in qmatomlist:
+                    ofile.write(
+                        "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
+                            int(element[0]),
+                            str(element[1]),
+                            int(element[2]),
+                            str(element[3]),
+                            str(element[4]),
+                            int(element[5]),
+                            float(0.0),
+                        )
                     )
-                )
-            if len(element) > 7:
-                ofile.write(" {:>10s}".format(str(element[7])))
-            else:
-                ofile.write(
-                    " {:>10s}".format(str(get_mass(str(element[1]), ffnb, logfile)))
-                )
-            ofile.write("\n")
-        ofile.write("\n[ bonds ]\n")
-        for element in bonddata:
-            if (int(element[0]) in np.array(qmatomlist).astype(int)) or (
-                int(element[1]) in np.array(qmatomlist).astype(int)
-            ):
-                excludeline = [element[0], element[1]]
-                excludedata.append(excludeline)
-                continue
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        ofile.write("\n[ pairs ]\n")
-        for element in pairdata:
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        ofile.write("\n[ angles ]\n")
-        for element in angledata:
-            if (
-                (int(element[0]) in np.array(qmatomlist).astype(int))
-                and (int(element[1]) in np.array(qmatomlist).astype(int))
-            ) or (
-                (int(element[1]) in np.array(qmatomlist).astype(int))
-                and (int(element[2]) in np.array(qmatomlist).astype(int))
-            ):
-                excludeline = [element[0], element[2]]
-                excludedata.append(excludeline)
-                continue
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        ofile.write("\n[ dihedrals ]\n")
-        for element in dihedraldata:
-            if (
-                (int(element[0]) in np.array(qmatomlist).astype(int))
-                and (int(element[1]) in np.array(qmatomlist).astype(int))
-                and (int(element[2]) in np.array(qmatomlist).astype(int))
-            ) or (
-                (int(element[1]) in np.array(qmatomlist).astype(int))
-                and (int(element[2]) in np.array(qmatomlist).astype(int))
-                and (int(element[3]) in np.array(qmatomlist).astype(int))
-            ):
-                excludeline = [element[0], element[3]]
-                excludedata.append(excludeline)
-                continue
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        ofile.write("\n[ settles ]\n")
-        for element in settledata:
-            if int(element[0]) in np.array(qmatomlist).astype(int):
-                continue
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        # increase exclusions for each Q-M1 atom
-        for element in m1list:
-            for entry in qmatomlist:
-                excludedata.append([int(element), int(entry)])
-        # add other link correction exclusions: m2-q1,2, m3-q1
-        for i in range(0, len(m2list)):
-            for j in range(0, len(m2list[i])):
-                excludedata.append([int(m2list[i][j]), int(q1list[i])])
-                for k in range(0, len(q2list[i])):
-                    excludedata.append([int(m2list[i][j]), int(q2list[i][k])])
-        for i in range(0, len(m3list)):
-            for j in range(0, len(m3list[i])):
-                for k in range(0, len(m3list[i][j])):
-                    excludedata.append([int(m3list[i][j][k]), int(q1list[i])])
-        excludedata = clean_exclusions(excludedata, offset, logfile)
-        excludedata = cleanagain_exclusions(excludedata, logfile)
-        ofile.write("\n[ exclusions ]\n")
-        for element in excludedata:
-            for entry in element:
-                ofile.write(str(entry) + " ")
-            ofile.write("\n")
-        ofile.write("\n[ system ]\nProtein\n\n[ molecules ]\nQMMM_model 1")
+                else:
+                    ofile.write(
+                        "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
+                            int(element[0]),
+                            str(element[1]),
+                            int(element[2]),
+                            str(element[3]),
+                            str(element[4]),
+                            int(element[5]),
+                            float(element[6]),
+                        )
+                    )
+                if len(element) > 7:
+                    ofile.write(" {:>10s}".format(str(element[7])))
+                else:
+                    ofile.write(
+                        " {:>10s}".format(str(get_mass(str(element[1]), ffnb, logfile)))
+                    )
+                ofile.write("\n")
+            ofile.write("\n[ bonds ]\n")
+
+            for element in bonddata:
+                if (int(element[0]) in qmatomlist) or (
+                    int(element[1]) in qmatomlist
+                ):
+                    excludeline = [element[0], element[1]]
+                    excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            
+            
+            for element in angledata:
+                if (
+                    (int(element[0]) in qmatomlist)
+                    and (int(element[1]) in qmatomlist)
+                ) or (
+                    (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                ):
+                    excludeline = [element[0], element[2]]
+                    excludedata.append(excludeline)
+                else:
+                    continue
+            
+            for element in dihedraldata:
+                if (
+                    (int(element[0]) in qmatomlist)
+                    and (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                ) or (
+                    (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                    and (int(element[3]) in qmatomlist)
+                ):
+                    excludeline = [element[0], element[3]]
+                    excludedata.append(excludeline)
+                else:
+                    continue
+            qmatomlist = list(qmatomlist)
+            qmatomlist.sort()
+            # increase exclusions for each Q-M1 atom
+            for element in m1list:
+                for entry in qmatomlist:
+                    excludedata.append([int(element), int(entry)])
+            # add other link correction exclusions: m2-q1,2, m3-q1
+            for i in range(0, len(m2list)):
+                for j in range(0, len(m2list[i])):
+                    excludedata.append([int(m2list[i][j]), int(q1list[i])])
+                    for k in range(0, len(q2list[i])):
+                        excludedata.append([int(m2list[i][j]), int(q2list[i][k])])
+            for i in range(0, len(m3list)):
+                for j in range(0, len(m3list[i])):
+                    for k in range(0, len(m3list[i][j])):
+                        excludedata.append([int(m3list[i][j][k]), int(q1list[i])])
+            excludedata = clean_exclusions(excludedata, offset, logfile)
+            excludedata = cleanagain_exclusions(excludedata, logfile)
+            for i in Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+                if i not in excludedata and i.reverse() not in excludedata: #Added by Nicola
+                    excludedata.append(i) #Added by Nicola
+                else: #Added by Nicola
+                    continue #Added by Nicola
+            qmatomlist = set([int(i) for i in qmatomlist])
+
+            ofile.write("\n[ pairs ]\n")
+            for element in pairdata:
+                if ([element[0], element[1]] or [element[1], element[0]]) not in excludedata: #Added by Nicola
+                    for entry in element:
+                        ofile.write(str(entry) + " ")
+                else:
+                    continue
+                ofile.write("\n")
+            ofile.write("\n[ angles ]\n")
+            for element in angledata:
+                if (
+                    (int(element[0]) in qmatomlist)
+                    and (int(element[1]) in qmatomlist)
+                ) or (
+                    (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                ):
+                    #excludeline = [element[0], element[2]]
+                    #excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ dihedrals ]\n")
+            for element in dihedraldata:
+                if (
+                    (int(element[0]) in qmatomlist)
+                    and (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                ) or (
+                    (int(element[1]) in qmatomlist)
+                    and (int(element[2]) in qmatomlist)
+                    and (int(element[3]) in qmatomlist)
+                ):
+                    #excludeline = [element[0], element[3]]
+                    #excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ settles ]\n")
+            for element in settledata:
+                if int(element[0]) in qmatomlist:
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            
+            
+            ofile.write("\n[ exclusions ]\n")
+            for element in excludedata:
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ system ]\nProtein\n\n[ molecules ]\nQMMM_model 1")
+
+        else:
+            for element in atomdata:
+                if int(element[0]) in np.array(qmatomlist).astype(int):
+                    ofile.write(
+                        "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
+                            int(element[0]),
+                            str(element[1]),
+                            int(element[2]),
+                            str(element[3]),
+                            str(element[4]),
+                            int(element[5]),
+                            float(0.0),
+                        )
+                    )
+                else:
+                    ofile.write(
+                        "{:>6d} {:>10s} {:>6d} {:>6s} {:>6s} {:>6d} {:>10.4f}".format(
+                            int(element[0]),
+                            str(element[1]),
+                            int(element[2]),
+                            str(element[3]),
+                            str(element[4]),
+                            int(element[5]),
+                            float(element[6]),
+                        )
+                    )
+                if len(element) > 7:
+                    ofile.write(" {:>10s}".format(str(element[7])))
+                else:
+                    ofile.write(
+                        " {:>10s}".format(str(get_mass(str(element[1]), ffnb, logfile)))
+                    )
+                ofile.write("\n")
+            ofile.write("\n[ bonds ]\n")
+
+            for element in bonddata:
+                if (int(element[0]) in np.array(qmatomlist).astype(int)) or (
+                    int(element[1]) in np.array(qmatomlist).astype(int)
+                ):
+                    excludeline = [element[0], element[1]]
+                    excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            for element in angledata:
+                if (
+                    (int(element[0]) in np.array(qmatomlist).astype(int))
+                    and (int(element[1]) in np.array(qmatomlist).astype(int))
+                ) or (
+                    (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                ):
+                    excludeline = [element[0], element[2]]
+                    excludedata.append(excludeline)
+                else:
+                    continue
+            for element in dihedraldata:
+                if (
+                    (int(element[0]) in np.array(qmatomlist).astype(int))
+                    and (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                ) or (
+                    (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                    and (int(element[3]) in np.array(qmatomlist).astype(int))
+                ):
+                    excludeline = [element[0], element[3]]
+                    excludedata.append(excludeline)
+                else:
+                    continue
+            # increase exclusions for each Q-M1 atom
+            for element in m1list:
+                for entry in qmatomlist:
+                    excludedata.append([int(element), int(entry)])
+            # add other link correction exclusions: m2-q1,2, m3-q1
+            for i in range(0, len(m2list)):
+                for j in range(0, len(m2list[i])):
+                    excludedata.append([int(m2list[i][j]), int(q1list[i])])
+                    for k in range(0, len(q2list[i])):
+                        excludedata.append([int(m2list[i][j]), int(q2list[i][k])])
+            for i in range(0, len(m3list)):
+                for j in range(0, len(m3list[i])):
+                    for k in range(0, len(m3list[i][j])):
+                        excludedata.append([int(m3list[i][j][k]), int(q1list[i])])
+            excludedata = clean_exclusions(excludedata, offset, logfile)
+            excludedata = cleanagain_exclusions(excludedata, logfile)
+            for i in Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+                if i not in excludedata and i.reverse() not in excludedata: #Added by Nicola
+                    excludedata.append(i) #Added by Nicola
+                else: #Added by Nicola
+                    continue #Added by Nicola
+            ofile.write("\n[ pairs ]\n")
+            for element in pairdata:
+                if ([element[0], element[1]] or [element[1], element[0]]) not in excludedata: #Added by Nicola
+                    for entry in element:
+                        ofile.write(str(entry) + " ")
+                else:
+                    continue
+                ofile.write("\n")
+            ofile.write("\n[ angles ]\n")
+            for element in angledata:
+                if (
+                    (int(element[0]) in np.array(qmatomlist).astype(int))
+                    and (int(element[1]) in np.array(qmatomlist).astype(int))
+                ) or (
+                    (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                ):
+                    #excludeline = [element[0], element[2]]
+                    #excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ dihedrals ]\n")
+            for element in dihedraldata:
+                if (
+                    (int(element[0]) in np.array(qmatomlist).astype(int))
+                    and (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                ) or (
+                    (int(element[1]) in np.array(qmatomlist).astype(int))
+                    and (int(element[2]) in np.array(qmatomlist).astype(int))
+                    and (int(element[3]) in np.array(qmatomlist).astype(int))
+                ):
+                    #excludeline = [element[0], element[3]]
+                    #excludedata.append(excludeline)
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ settles ]\n")
+            for element in settledata:
+                if int(element[0]) in np.array(qmatomlist).astype(int):
+                    continue
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+        
+            
+            #    outeratomlist = set([int(i) for i in outeratomlist])
+            #if not inneratomlist == [] and not outeratomlist == []:#Added by Nicola
+            #    for i in inneratomlist:
+            #        for j in outeratomlist:
+            #            if ([i, j] or [j, i]) not in excludedata:
+            #                excludedata.append([i, j])
+            #            else:
+            #                continue
+
+            #    acc = [] #Added by Nicola
+            #    for i in Permutate_Pairwise(inneratomlist, outeratomlist, gmxplus = True):#Added by Nicola
+            #        if i not in excludedata or i.reverse() not in excludedata: #Added by Nicola
+            #            excludedata.append(i) #Added by Nicola
+            #        else: #Added by Nicola
+            #            continue #Added by Nicola
+            #    acc = merge_sublists_by_first_element(acc) #Added by Nicola
+            #    for i in acc: #Added by Nicola
+            #        excludedata.append(i) #Added by Nicola
+            #if not outeratomlist == []: #Added by Nicola
+            #    for i in outeratomlist:
+            #        for j in outeratomlist:
+            #            if [i, j] not in excludedata or [j, i] not in excludedata:
+            #                excludedata.append([i, j])
+            #            else:
+            #               continue
+            #    acc = [] #Added by Nicola
+            #    for i in Permutate_Pairwise_no_rep(outeratomlist, gmxplus = True): #Added by Nicola
+            #        if i not in excludedata or i.reverse() not in excludedata: #Added by Nicola
+            #            excludedata.append(i) #Added by Nicola
+            #        else: #Added by Nicola
+            #            continue #Added by Nicola
+            #    acc = merge_sublists_by_first_element(acc) #Added by Nicola
+            #    for i in acc: #Added by Nicola
+            #        excludedata.append(i) #Added by Nicola
+
+            ofile.write("\n[ exclusions ]\n")
+            for element in excludedata:
+                for entry in element:
+                    ofile.write(str(entry) + " ")
+                ofile.write("\n")
+            ofile.write("\n[ system ]\nProtein\n\n[ molecules ]\nQMMM_model 1")
 
 
 def make_new_top(
@@ -1106,7 +1559,16 @@ def make_new_top(
         molcount += 1
 
 
-def make_exclude_index(outname, qmatomlist, inner, outer):
+def make_exclude_index(outname, qmatomlist, inner, outer, gmxplus):
+    if outer != [] and gmxplus:
+        ref = qmatomlist + inner + outer # Added by Nicola
+        ref = list(set(ref)) # Added by Nicola
+        ref.sort() # Added by Nicola
+        memory_dict = reindexing.reindexing_memory(ref, outer)
+        for i in range(len(qmatomlist)): # Added by Nicola
+            qmatomlist[i] = memory_dict[qmatomlist[i]]
+        for i in range(len(inner)): # Added by Nicola
+            inner[i] = memory_dict[inner[i]]
     with open(outname, "w") as ofile:
         count = 0
         ofile.write("[ QM ]\n")
@@ -1128,7 +1590,7 @@ def make_exclude_index(outname, qmatomlist, inner, outer):
                     ofile.write("\n")
                     count = 0
             ofile.write("\n")
-        if not outer == []:
+        if not outer == [] and not gmxplus:
             ofile.write("[ OUTER ]\n")
             count=0
             for element in outer:
@@ -1156,13 +1618,16 @@ def generate_top_listsonly(
     pathinfo,
     inner=[],
     outer=[],
+    gmxplus = False
 ):
     
     qmatomlist = prep_pcf.read_qmatom_list(qmatoms)
+    #inneratomlist = prep_pcf.read_inner_list(inner)
+    #outeratomlist = prep_pcf.read_outer_list(outer)
     mollist = make_pcf.readmols(top)
     includelist = make_pcf.getincludelist(top, pathinfo)
     molfindlist = get_molfindlist(mollist, top, includelist)
-    make_exclude_index(str(outname) + ".ndx", qmatomlist, inner, outer)
+    make_exclude_index(str(outname) + ".ndx", qmatomlist, inner, outer, gmxplus)
     make_large_top(
         top,
         molfindlist,
@@ -1178,6 +1643,9 @@ def generate_top_listsonly(
         m3list,
         flaglist,
         logfile,
+        inner,
+        outer,
+        gmxplus
     )
 
 

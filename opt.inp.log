@@ -1,0 +1,54 @@
+
+#==============================================================================#
+#                                                                              #
+#   SSSSS                                                    #########         #
+#   SS    EEEE RRR  EEEE N   N II TTTTTT YY  YY          ####################  #
+#   SS    E    R  R E    NN  N II   TT    YYYY        ######################## #
+#   SSSSS EEEE RRR  EEEE N N N II   TT     YY      #########             ##### #
+#      SS E    R R  E    N  NN II   TT     YY   #######       OOOOOOOO         #
+#      SS EEEE R  R EEEE N   N II   TT     YY ########      OOOOOOOOOOOO       #
+#   SSSSS                                  ########        OOOOOOOOOOOOOO      #
+#                                     ###########   OOO    OOOOOOOOOOOOOO      #
+# #########                   ###############      OOOOO   OOOOOOOOOOOOOO      #
+# ######################################      OO   OOOOO    OOOOOOOOOOOO       #
+#       #########################         O   OO    OOO       OOOOOOOO         #
+#                                                                              #
+#                                                                              #
+#                                   Serenity                                   #
+#                                                                              #
+#                           A quantum chemistry code                           #
+#                developed in the group of Johannes Neugebauer                 #
+#                             at the WWU Münster.                              #
+#                                                                              #
+#==============================================================================#
+
+  Program started:
+ ------------------
+
+    Time:   2024-08-26 16:07:17
+    Version:           1.4.0
+    On:                HOSTNAME UNKNOWN
+    Cores:             32
+    Soft Memory Limit: 32814 MB for dynamically stored data.
+    By:                nicoa96
+
+
+o------------------------------------------------------------------------------o
+|                               Serenity Crashed                               |
+o------------------------------------------------------------------------------o
+
+
+  Error:
+ --------
+    ERROR: No block 'EXTCHARGES' known.
+
+  Final Timings:
+ ----------------
+
+  Program Crashed:
+ ------------------
+    Time:  2024-08-26 16:07:17
+    On:    HOSTNAME UNKNOWN
+    Time taken for the entire run: 0.063498656 s.
+    
+

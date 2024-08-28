@@ -287,7 +287,7 @@ def get_atoms(qmmmtop, logfile):
     return atoms
 
 
-def write_mdp(mdpname, nbradius, mminfo):
+def write_mdp(mdpname, nbradius, mminfo, gmxplus = True):#gmxplus = True Added by Nicola
     '''
     input: mdpname; 
            nbradius: maximum distance between two atoms in nm, for coulomb and vdw cutoff if none given;
@@ -313,15 +313,26 @@ def write_mdp(mdpname, nbradius, mminfo):
             "title               =  Yo\ncpp                 =  /usr/bin/cpp\nconstraints         =  none\nintegrator          =  md\ndt                  =  0.001 ; ps !\nnsteps              =  1\nnstcomm             =  0\nnstxout             =  1\nnstvout             =  1\nnstfout             =   1\nnstlog              =  1\nnstenergy           =  1\nnstlist             =  1\nns_type             =  grid\nrlist               =  "
         )
         ofile.write(str(float(rcoulomb)))
-        ofile.write(
-            "\ncutoff-scheme = group\ncoulombtype    =  cut-off\nrcoulomb            =  "
-        )
-        ofile.write(str(float(rcoulomb)))
-        ofile.write("\nrvdw                =  ")
-        ofile.write(str(float(rvdw)))
-        ofile.write(
-            "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
-        )
+        if not gmxplus: #Added by Nicola
+            ofile.write(
+                "\ncutoff-scheme = group\ncoulombtype    =  cut-off\nrcoulomb            =  "
+            )
+            ofile.write(str(float(rcoulomb)))
+            ofile.write("\nrvdw                =  ")
+            ofile.write(str(float(rvdw)))
+            ofile.write(
+                "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
+            )
+        else: #Added by Nicola
+            ofile.write(
+                "\ncoulombtype    =  cut-off\nrcoulomb            =  "
+            )
+            ofile.write(str(float(rcoulomb)))
+            ofile.write("\nrvdw                =  ")
+            ofile.write(str(float(rvdw)))
+            ofile.write(
+                "\nTcoupl              =  no\nPcoupl              =  no\ngen_vel             =  no\n"
+            )
 
 
 def get_nbradius(gro):
