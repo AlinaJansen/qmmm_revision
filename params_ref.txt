@@ -1,4 +1,3 @@
-# XX !!! AJ: I think we have to keep the old parameter names (unfortunately), if we want old jobs to run with the new version
 # PRIO PARAMETERS
 includeprio=0
 

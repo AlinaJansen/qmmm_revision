@@ -39,7 +39,7 @@ class Singlepoint():
     This Class Performs A Singlepoint Calculation
     '''
 
-    def __init__(self, dict_input_userparameters, class_system, class_topology, class_pcf, basedir) -> None:
+    def __init__(self, dict_input_userparameters, class_system, class_topology, class_pcf, str_directory_base) -> None:
         '''
         ------------------------------ \\
         EFFECT: \\
@@ -49,7 +49,10 @@ class Singlepoint():
         INPUT: \\
         --------------- \\
         input_dict: dict -> Dictionary Of The User Parameter Input \\
-        class_system: class -> Class Object Of The System\\
+        class_system: class -> Class Object Of The System \\
+        class_topology: class -> Class Object Of The Topology \\
+        class_pcf: class -> Class Object Of The Pointchargefield \\
+        str_directory_base: str -> Directory Path \\ 
         ------------------------------ \\
         RETURN: \\
         --------------- \\
@@ -62,7 +65,7 @@ class Singlepoint():
         self.system = class_system
         self.class_topology_qmmm = class_topology
         self.PCF = class_pcf
-        self.basedir = basedir
+        self.str_directory_base = str_directory_base
 
         #   XX AJ check how to deal with nma flag later
         self.nmaflag = 0
@@ -71,7 +74,8 @@ class Singlepoint():
         self.string_structure_gmx_header = read_gmx_structure_header(self.dict_input_userparameters['coordinatefile'])
         self.list_structure_gmx_atoms = read_gmx_structure_atoms(self.dict_input_userparameters['coordinatefile'])
         self.list_box_vectors_initial = read_gmx_box_vectors(self.dict_input_userparameters['coordinatefile'])
-        #   Calculate The Maximum Eucledian Distance Between Any Two Atoms
+
+        #   Calculate The Maximum Eucledian Distance Between Any Two Atoms And Get New Box Vectors 
         array_coordinates_all = self.system.array_xyzq_current[:,:3]
         self.float_distance_max = np.max(np.linalg.norm(array_coordinates_all[np.newaxis, :, :] - array_coordinates_all[:, np.newaxis, :], axis=-1))
         self.list_box_vectors_large = (np.array(self.list_box_vectors_initial) + 10.0 * self.float_distance_max).tolist()
@@ -90,12 +94,28 @@ class Singlepoint():
         #   Run (Initial) Singlepoint Calculation
         self.run_calculation()
     
-
         #   Write Output File
         if self.dict_input_userparameters['jobtype'] == 'SINGLEPOINT':
             self.write_output(energy_file="oenergy.txt", forces_file="oforces.txt")
     
-    def run_calculation(self):
+    def run_calculation(self) -> None:
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         # prepare QM input depending on software
         self.str_inputfile_qm = self.make_qm_input()
 
@@ -111,13 +131,29 @@ class Singlepoint():
         # XX AJ rename variables
         self.qmenergy, self.mmenergy, self.linkcorrenergy, self.qm_corrdata = self.get_energy()
         self.total_energy = self.qmenergy + self.mmenergy - self.linkcorrenergy
-        self.energies = (self.qmenergy, self.mmenergy, self.linkcorrenergy, self.total_energy)
 
         #   Read Forces
         self.read_forces()
 
 
     def get_energy(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         qmenergy, qm_corrdata = self.get_qmenergy()
         mmenergy = self.get_mmenergy()
         if self.system.linkcorrlist:
@@ -132,7 +168,23 @@ class Singlepoint():
     
     
     def get_linkenergy_au(self, qm_corrdata):
-
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         linkenergy = 0.0
         m2charges = self.get_m2charges()
         for element in self.system.linkcorrlist:
@@ -309,6 +361,23 @@ class Singlepoint():
         return linkenergy
     
     def read_pcffile(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         pcf = []
         with open(self.PCF.pcf_filename) as ifile:
             for line in ifile:
@@ -335,6 +404,23 @@ class Singlepoint():
         return pcf
 
     def get_m2charges(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         m2charges = []
         for count in range(len(self.system.list_atoms_m1)):
             m2chargeline = []
@@ -344,7 +430,23 @@ class Singlepoint():
         return m2charges
         
     def get_qmenergy(self):
-
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         # logger(logfile, "Extracting QM energy.\n")
         qmenergy = 0.0
         qm_corrdata = []
@@ -412,6 +514,23 @@ class Singlepoint():
         return qmenergy, qm_corrdata
     
     def read_pcf_self(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         pcf_self = 0.0
         with open(self.str_inputfile_qm + ".log") as ifile:
             for line in ifile:
@@ -427,6 +546,23 @@ class Singlepoint():
     
     
     def get_mmenergy(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
 
         mmenergy = 0.0
@@ -460,6 +596,23 @@ class Singlepoint():
         return mmenergy
 
     def read_forces(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         qmforces = []
         mmforces = []
         qmforces = self.get_qmforces_au()
@@ -478,7 +631,23 @@ class Singlepoint():
             # logger(logfile, str("Deleted forces of inactive atoms.\n"))
     
     def get_qmforces_au(self):
-
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         qmforces = []
         qmonlyforcelist = []
         pcf_grad = []
@@ -582,6 +751,23 @@ class Singlepoint():
 
 
     def get_mmforces_au(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
 
         mmforces = []
@@ -632,7 +818,23 @@ class Singlepoint():
 
 
     def get_linkforces_au(self):
-
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         linkforces = []
         # Force Coulomb: z1*z2*(distance along coord)/(distance between charges)**3
         for element in self.system.array_xyzq_current:  # this is just to count an entry for each atom!
@@ -835,6 +1037,23 @@ class Singlepoint():
 
 
     def make_qm_input(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         if self.dict_input_userparameters['g16cmd'] == 'g16':
             insert = ""
             oldinsert = ""
@@ -949,6 +1168,23 @@ class Singlepoint():
         return gaufile
 
     def run_g16(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         insert = ""
         if int(self.system.int_step_current) > 0:
             insert = str("." + str(int(self.system.int_step_current)))
@@ -983,7 +1219,23 @@ class Singlepoint():
             # )
 
     def make_gmx_inp(self):
-
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         write_g96(self.groname, self.string_structure_gmx_header, self.list_structure_gmx_atoms, self.system.array_xyzq_current, self.list_box_vectors_large)
 
         self.prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
@@ -1013,32 +1265,66 @@ class Singlepoint():
 
 
     def write_mdp(self):
-            if self.dict_input_userparameters['rcoulomb'] == 0:
-                self.dict_input_userparameters['rcoulomb'] = self.float_distance_max
-            if self.dict_input_userparameters['rvdw'] == 0:
-                self.dict_input_userparameters['rvdw'] = self.dict_input_userparameters['rcoulomb']
+            
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+    
+        if self.dict_input_userparameters['rcoulomb'] == 0:
+            self.dict_input_userparameters['rcoulomb'] = self.float_distance_max
+        if self.dict_input_userparameters['rvdw'] == 0:
+            self.dict_input_userparameters['rvdw'] = self.dict_input_userparameters['rcoulomb']
 
-            with open(self.mdpname, "w") as ofile:
+        with open(self.mdpname, "w") as ofile:
+            ofile.write(
+                "title               =  Yo\ncpp                 =  /usr/bin/cpp\nconstraints         =  none\nintegrator          =  md\ndt                  =  0.001 ; ps !\nnsteps              =  1\nnstcomm             =  0\nnstxout             =  1\nnstvout             =  1\nnstfout             =   1\nnstlog              =  1\nnstenergy           =  1\nnstlist             =  1\nns_type             =  grid\nrlist               =  "
+            )
+            ofile.write(str(float(self.dict_input_userparameters['rcoulomb'])))
+            ofile.write(
+                "\ncutoff-scheme = group\ncoulombtype    =  cut-off\nrcoulomb            =  "
+            )
+            ofile.write(str(float(self.dict_input_userparameters['rcoulomb'])))
+            ofile.write("\nrvdw                =  ")
+            ofile.write(str(float(self.dict_input_userparameters['rvdw'])))
+            if self.dict_input_userparameters['useinnerouter']:
                 ofile.write(
-                    "title               =  Yo\ncpp                 =  /usr/bin/cpp\nconstraints         =  none\nintegrator          =  md\ndt                  =  0.001 ; ps !\nnsteps              =  1\nnstcomm             =  0\nnstxout             =  1\nnstvout             =  1\nnstfout             =   1\nnstlog              =  1\nnstenergy           =  1\nnstlist             =  1\nns_type             =  grid\nrlist               =  "
+                "\nTcoupl              =  no\nfreezegrps          =  OUTER\nfreezedim           =  Y Y Y\nenergygrps          =  QM INNER OUTER\nenergygrp-excl = QM QM INNER OUTER OUTER OUTER\nPcoupl              =  no\ngen_vel             =  no\n"
                 )
-                ofile.write(str(float(self.dict_input_userparameters['rcoulomb'])))
+            else:
                 ofile.write(
-                    "\ncutoff-scheme = group\ncoulombtype    =  cut-off\nrcoulomb            =  "
+                "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
                 )
-                ofile.write(str(float(self.dict_input_userparameters['rcoulomb'])))
-                ofile.write("\nrvdw                =  ")
-                ofile.write(str(float(self.dict_input_userparameters['rvdw'])))
-                if self.dict_input_userparameters['useinnerouter']:
-                    ofile.write(
-                    "\nTcoupl              =  no\nfreezegrps          =  OUTER\nfreezedim           =  Y Y Y\nenergygrps          =  QM INNER OUTER\nenergygrp-excl = QM QM INNER OUTER OUTER OUTER\nPcoupl              =  no\ngen_vel             =  no\n"
-                    )
-                else:
-                    ofile.write(
-                    "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
-                    )
 
     def run_gmx(self):
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         pass
         # logger(logfile, "Running Gromacs file.\n")
        
@@ -1067,8 +1353,24 @@ class Singlepoint():
 
     def databasecorrection(self, energy_or_force, cut, distance):
         
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         # XX AJ check what this connection object is
-        conn = sqlite3.connect(self.basedir + "/correction_database/database.sqlite")
+        conn = sqlite3.connect(self.str_directory_base + "/correction_database/database.sqlite")
 
         # check if method exist in database
         method_set = conn.cursor()
@@ -1154,7 +1456,22 @@ class Singlepoint():
         return returnvalue
     
     def write_output(self, energy_file="oenergy.txt", forces_file="oforces.txt"):
-        qmenergy, mmenergy, linkcorrenergy, total_energy = self.energies
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
         
         if self.system.int_step_current == 0:
             file_flag = "w"
@@ -1164,10 +1481,10 @@ class Singlepoint():
         oenergy = open(energy_file, file_flag)
         if self.system.int_step_current == 0:
             oenergy.write("Step\tQM\t\tMM\t\tLink\t\tTotal\n")
-            oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (self.system.int_step_current, qmenergy, mmenergy, linkcorrenergy, total_energy))
+            oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (self.system.int_step_current, self.qmenergy, self.mmenergy, self.linkcorrenergy, self.total_energy))
         else:
             
-            oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (self.system.int_step_current, qmenergy, mmenergy, linkcorrenergy, total_energy))
+            oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (self.system.int_step_current, self.qmenergy, self.mmenergy, self.linkcorrenergy, self.total_energy))
         oenergy.close()
 
         oforce = open(forces_file, file_flag)
@@ -1181,6 +1498,23 @@ class Singlepoint():
         oforce.close()
 
     def remove_inactive(self): # mask xx
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        XX \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        
         new_total_force = []
         for i in range(0, len(self.total_force)):
             if (i + 1) in np.array(self.system.list_atoms_active).astype(int):

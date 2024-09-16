@@ -1201,7 +1201,7 @@ class GenerateTopology():
 
 
     def make_gmx_index_file(self):
-        # previous name "make_exclude_index"
+        # previous name "make_exclude_index" XX
         
         '''
         ------------------------------ \\

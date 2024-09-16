@@ -5,6 +5,23 @@ import numpy as np
 
 
 def _flatten(x):
+
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     """Replace deprecated ``compiler.ast.flatten``"""
     for e in x:
         if not isinstance(e, collections.abc.Iterable) or isinstance(e, str):
@@ -13,17 +30,46 @@ def _flatten(x):
             yield from _flatten(e)
 
 def create_dict(label, info):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     out_dict = {}
     for i in range(len(label)):
         out_dict[label[i]] = info[i]
     return out_dict
 
-def logger(log, logstring):
-    with open(log, "a") as ofile:
-        ofile.write(str(datetime.datetime.now()) + " " + logstring)
-
-
 def stepper(filename, step):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     """Move to more appropriate module"""
     if step == 0:
         return filename
@@ -47,25 +93,29 @@ def stepper(filename, step):
 
 
 def make_xyzq(geo, chargevec):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     xyzq=np.zeros((len(chargevec),4))
     try:
         xyzq[:,0]=geo[0::3]
         xyzq[:,1]=geo[1::3]
         xyzq[:,2]=geo[2::3]
         xyzq[:,3]=chargevec
-    except:
-        print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
-    return xyzq
-
-def make_xyzq_io(geo, chargevec, outerlist):
-    xyzq=np.zeros((len(chargevec),4))
-    try:
-        xyzq[:,0]=geo[0::3]
-        xyzq[:,1]=geo[1::3]
-        xyzq[:,2]=geo[2::3]
-        outer=np.ones(len(chargevec))
-        outer[np.array(outerlist)-1]=0          #the charge of the atoms of the outerlist is set to 0
-        xyzq[:,3]=np.array(chargevec)*outer
     except:
         print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
     return xyzq
@@ -130,6 +180,23 @@ def get_coordinates_linkatoms_angstrom(array_xyzq, list_atoms_qm, list_atoms_m1,
     return list_coordinates_linkatoms
 
 def filter_xyzq(xyzq, atom_list, coordinates=True, charges=True):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     # XX AJ I'm not happy with how this function works (combining lists and arrays) but that's because of different inputs
     python_atom_list = [index - 1 for index in atom_list]
     if isinstance(xyzq, np.ndarray):
@@ -141,6 +208,23 @@ def filter_xyzq(xyzq, atom_list, coordinates=True, charges=True):
     return filtered_information
 
 def normalized_vector(vec):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     '''
     ------------------------------ \\
     EFFECT: \\

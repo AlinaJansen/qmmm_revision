@@ -2,12 +2,14 @@
 includeprio=0
 
 # PARAMETERS
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\mm.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\path.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qm.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmmm.dat
 jobtype=OPT
 jobname=test
+
+gmxtop_path=C:\Users\Alina\Documents\Uni\AG_goetze\top
+gmxcmd=gmx
+gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
+g16cmd=g16
+charge=1
 
 # atomlists
 qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
@@ -31,6 +33,7 @@ basis=STO-3G
 multiplicity=1
 memory=1000
 extra=NONE
+
 rvdw=2.0
 rcoulomb=0.0
 databasefit=morse

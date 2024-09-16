@@ -19,7 +19,7 @@ import textwrap
 from collections import defaultdict
 
 #   Imports Of Custom Libraries
-import System.System as System
+import stuff2sort.System as System
 import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
 import Jobs.Singlepoint as SP

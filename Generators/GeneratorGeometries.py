@@ -125,7 +125,7 @@ def make_xyzq_io(geo, chargevec, outerlist):
         print("Error: Can't make XYZ-charge matrix. Maybe the number of atoms is different in the structure and the topology file ?!")
     return xyzq
 
-def propagate_dispvec(propagator, xyzq, new_xyzq, all_forces, float_force_max, stepsize, curr_step, scan_flag=False, scan_atoms=[]):
+def propagate_dispvec(propagator, xyzq, all_forces, float_force_max, stepsize, curr_step, scan_flag=False, scan_atoms=[]):
     # XX AJ xyzq is only used in scan and BFGS, I will only do that later
     dispvec = []
     total_force=all_forces[-1]
