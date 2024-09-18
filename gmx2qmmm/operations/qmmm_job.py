@@ -1250,35 +1250,6 @@ def write_test(qmmmInputs, curr_step):
     oforce.write('\n')
     oforce.close()
 
-def write_output(energies, total_force, curr_step, energy_file="oenergy.txt", forces_file="oforces.txt"):
-    qmenergy, mmenergy, linkcorrenergy, total_energy = energies
-    #energy_file = "oenergy.txt"
-    
-    if curr_step == 0:
-        file_flag = "w"
-    else:
-        file_flag = "a+"
-
-    oenergy = open(energy_file, file_flag)
-    
-    if curr_step == 0:
-        oenergy.write("Step\tQM\t\tMM\t\tLink\t\tTotal\n")
-        oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (curr_step, qmenergy, mmenergy, linkcorrenergy, total_energy))
-    else:
-        
-        oenergy.write("%d\t%f\t%f\t%f\t%f\n" % (curr_step, qmenergy, mmenergy, linkcorrenergy, total_energy))
-    oenergy.close()
-
-    oforce = open(forces_file, file_flag)
-    oforce.write("Step%d\n"%curr_step)
-    for i in range(len(total_force)):
-        oforce.write(
-            "%d %.8f %.8f %.8f\n"
-            % ((i + 1), total_force[i][0], total_force[i][1], total_force[i][2])
-        )
-    oforce.write("\n")
-    oforce.close()
-
 def write_statechar(char, curr_step):
     state_file = "ostatechar.txt"
 
@@ -2418,7 +2389,8 @@ def perform_opt(qmmmInputs):
         if jobtype == "SCAN" :
               write_output(qmmmInputs.energies, qmmmInputs.forces, curr_step, energy_file="oenergy_%s.txt"%jobname, forces_file="oforces_%s.txt"%jobname)
         else:                                                                          
-              write_output(qmmmInputs.energies, qmmmInputs.forces, curr_step)
+            #   write_output(qmmmInputs.energies, qmmmInputs.forces, curr_step)
+            pass
 
         #write_output(qmmmInputs.energies, qmmmInputs.forces, curr_step)
         #Store 1st result
@@ -2560,7 +2532,8 @@ def perform_opt(qmmmInputs):
                 if jobtype == "SCAN" :
                     write_output(qmmmInputs.energies, qmmmInputs.forces, qmmmInputs.qmmmparams.curr_step, energy_file="oenergy_%s.txt"%jobname, forces_file="oforces_%s.txt"%jobname)
                 else:
-                    write_output(qmmmInputs.energies, qmmmInputs.forces, qmmmInputs.qmmmparams.curr_step)
+                    # write_output(qmmmInputs.energies, qmmmInputs.forces, qmmmInputs.qmmmparams.curr_step)
+                    pass
                 gro = qmmmInputs.gro            #SIMON
                 logger(logfile, "Due to the decrease of the energy, the structure "+str(gro)+" will be used from now on.\n")
             else:
@@ -2779,6 +2752,14 @@ def perform_opt_root(qmmmInputs):
                 #rejected and use prvious
                 qmmmInputs.qmmmparams.curr_step -= 1
                 qmmmInputs = copy.deepcopy(old_qmmmInputs)
+                total_force = qmmmInputs.forces
+                clean_force = make_clean_force(total_force)
+                maxforce = 0.0
+                for element in _flatten(clean_force):
+                    if abs(float(element)) > abs(maxforce):
+                        maxforce = float(element)
+                logger(logfile,"Due to the rejection use maximum force: "+str(maxforce)+"\n")
+                logger(logfile,"Due to the increase of the energy, the used structure remains "+str(gro)+".\n")
 
 
         ############## end optimization loop ##############

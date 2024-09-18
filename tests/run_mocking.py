@@ -19,7 +19,7 @@ mocking = True
 Insert path to folder here:
 -----------------------------------------------------------------
 '''
-directory = os.path.join(os.path.dirname(__file__), 'sp_input')
+directory = os.path.join(os.path.dirname(__file__), 'opt_input')
 prof_file = 'profiling_bfgs_cp24.prof'
 txt_file = 'profiling_bfgs_cp24.txt'
 '''
