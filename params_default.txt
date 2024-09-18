@@ -42,7 +42,7 @@ current_step = 0    # XX AJ I have to consider that in the code!
 databasefit= morse
 print_level = normal
 
-# QMMM PARAMETERS OPTIMIZATION
+# QMMM PARAMETERS SCAN
 scan_step = 0
 scan_atoms = user_input_necessary
 scan_stepsize = 0.1 # XX AJ ?

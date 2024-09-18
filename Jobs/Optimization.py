@@ -151,6 +151,7 @@ class Optimization():
             self.list_forces_all_steps.append(self.singlepoint.total_force)
             self.list_energies_all_steps.append([self.singlepoint.qmenergy, self.singlepoint.mmenergy, self.singlepoint.linkcorrenergy, self.singlepoint.total_energy])
 
+            #   The following section needs to be adapted for different optimizers, for bfgs we accept increasing energies, for steep and conjugate we dont but we then also dont need to check for the max force
             #   Check If The Total Energy Improved
             if self.list_energies_all_steps[-1][-1] > self.list_energies_all_steps[-2][-1]:
                 self.bool_energy_improved = False
