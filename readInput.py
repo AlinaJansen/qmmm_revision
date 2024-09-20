@@ -331,7 +331,7 @@ def read_qmmmparams(inp):
 
 def make_inp_dict(inputFiles, qmdict, mmdict, pathdict, qmmmdict):
     return 0
-
+'''
 class QMParams2:
     def __init__(self, inp):
         self.inp = inp
@@ -398,7 +398,7 @@ class QMParams2:
                         info[9] = match.group(1)
                     
         return info
-
+'''
 class QMParams:
     def __init__(self, inp):
         self.inp = inp
@@ -409,30 +409,34 @@ class QMParams:
             self.generalmethod = extra_params[0]
             self.maxcyc = extra_params[1]
             self.fde = extra_params[2]
+            self.tddft = extra_params[3]
+            self.tddftstates = extra_params[4]
             if self.fde == 1:
-                self.naddxcfunc = extra_params[3]
-                self.naddkinfunc = extra_params[4]
-                self.numactsys = extra_params[5]
-                self.numenvsys = extra_params[6]
+                self.naddxcfunc = extra_params[5]
+                self.naddkinfunc = extra_params[6]
+                self.tddftnaddxcfunc = extra_params[7]
+                self.tddftnaddkinfunc = extra_params[8]
+                self.numactsys = extra_params[9]
+                self.numenvsys = extra_params[10]
                 index1 = 0
                 for i in range(int(self.numactsys)):
-                    setattr(self, f"endactsys{i}", extra_params[6 + index1 + 1])
-                    setattr(self, f"generalmethod{i}", extra_params[6 + index1 + 2])
-                    setattr(self, f"maxcyc{i}", extra_params[6 + index1 + 3])
-                    setattr(self, f"method{i}", extra_params[6 + index1 + 4])
-                    setattr(self, f"basis{i}", extra_params[6 + index1 + 5])
-                    setattr(self, f"charge{i}", extra_params[6 + index1 + 6])
-                    setattr(self, f"multiplicity{i}", extra_params[6 + index1 + 7])
+                    setattr(self, f"endactsys{i}", extra_params[10 + index1 + 1])
+                    setattr(self, f"generalmethod{i}", extra_params[10 + index1 + 2])
+                    setattr(self, f"maxcyc{i}", extra_params[10 + index1 + 3])
+                    setattr(self, f"method{i}", extra_params[10 + index1 + 4])
+                    setattr(self, f"basis{i}", extra_params[10 + index1 + 5])
+                    setattr(self, f"charge{i}", extra_params[10 + index1 + 6])
+                    setattr(self, f"multiplicity{i}", extra_params[10 + index1 + 7])
                     index1 += 7
                 index2 = index1
                 for i in range(int(self.numenvsys)):
-                    setattr(self, f"endenvsys{i}", extra_params[6 + index2 + 1])
-                    setattr(self, f"egeneralmethod{i}", extra_params[6 + index2 + 2])
-                    setattr(self, f"emaxcyc{i}", extra_params[6 + index2 + 3])
-                    setattr(self, f"emethod{i}", extra_params[6 + index2 + 4])
-                    setattr(self, f"ebasis{i}", extra_params[6 + index2 + 5])
-                    setattr(self, f"echarge{i}", extra_params[6 + index2 + 6])
-                    setattr(self, f"emultiplicity{i}", extra_params[6 + index2+ 7])
+                    setattr(self, f"endenvsys{i}", extra_params[10 + index2 + 1])
+                    setattr(self, f"egeneralmethod{i}", extra_params[10 + index2 + 2])
+                    setattr(self, f"emaxcyc{i}", extra_params[10 + index2 + 3])
+                    setattr(self, f"emethod{i}", extra_params[10 + index2 + 4])
+                    setattr(self, f"ebasis{i}", extra_params[10 + index2 + 5])
+                    setattr(self, f"echarge{i}", extra_params[10 + index2 + 6])
+                    setattr(self, f"emultiplicity{i}", extra_params[10 + index2+ 7])
                     index2 += 7
 
 
@@ -484,6 +488,8 @@ class QMParams:
             info.append("dft")  # Default value for generalmethod
             info.append("900")  # Default value for maxcyc
             info.append(0)
+            info.append(0)
+            info.append(5)
             with open(inp) as ifile:
                 for line in ifile:
                     match = re.search(r"^generalmethod\s*=\s*(.+)$", line, flags=re.MULTILINE)
@@ -497,17 +503,35 @@ class QMParams:
                     match = re.search(r"^fde\s*=\s*(\d*)", line, flags=re.MULTILINE)
                     if match:
                         info[10] = float(match.group(1))
+
+                    match = re.search(r"^tddft\s*=\s*(\d*)", line, flags=re.MULTILINE)
+                    if match:
+                        info[11] = float(match.group(1))
+                    
+                    match = re.search(r"^tddftstates\s*=\s*(\d*)", line, flags=re.MULTILINE)
+                    if match:
+                        info[12] = float(match.group(1))
                     
                     if info[10] == 1:
                         info.append("pw91") 
                         info.append("pw91k")
+                        info.append("pw91") 
+                        info.append("pw91k")
                         match = re.search(r"^naddxcfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
                         if match:
-                            info[11] = match.group(1)
+                            info[13] = match.group(1)
                         
                         match = re.search(r"^naddkinfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
                         if match:
-                            info[12] = match.group(1)
+                            info[14] = match.group(1)
+                        
+                        match = re.search(r"^tddftnaddxcfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                        if match:
+                            info[15] = match.group(1)
+                        
+                        match = re.search(r"^tddftnaddkinfunc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                        if match:
+                            info[16] = match.group(1)
                         
                         info += self.FDE_input(inp)
         return info
@@ -972,6 +996,9 @@ class QMMMInputs:
             self.gro = self.qmmmparams.jobname + ".g96"
             if self.inout and self.mmparams.gmxplus == 1:#Added by Nicola
                 remove_outer_from_gro(self.gro, self.outerlist)
+            logger(logfile, "Done.\n")
+        elif self.gro[-4:] == ".g96" and self.qmmmparams.curr_step == 0 and self.inout and self.mmparams.gmxplus == 1:#Added by Nicola
+            remove_outer_from_gro(self.gro, self.outerlist)
             logger(logfile, "Done.\n")
 
         

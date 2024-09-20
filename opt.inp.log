@@ -25,11 +25,11 @@
   Program started:
  ------------------
 
-    Time:   2024-08-26 16:07:17
+    Time:   2024-09-15 22:02:04
     Version:           1.4.0
     On:                HOSTNAME UNKNOWN
     Cores:             32
-    Soft Memory Limit: 32814 MB for dynamically stored data.
+    Soft Memory Limit: 21388 MB for dynamically stored data.
     By:                nicoa96
 
 
@@ -47,8 +47,8 @@ o------------------------------------------------------------------------------o
 
   Program Crashed:
  ------------------
-    Time:  2024-08-26 16:07:17
+    Time:  2024-09-15 22:02:04
     On:    HOSTNAME UNKNOWN
-    Time taken for the entire run: 0.063498656 s.
+    Time taken for the entire run: 0.009898383 s.
     
 

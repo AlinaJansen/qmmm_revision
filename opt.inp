@@ -1,6 +1,6 @@
 +system
-   name opt0
-   geometry ./opt0.xyz
+   name opt
+   geometry ./opt.xyz
    method dft
    +dft
        functional BP86
@@ -21,131 +21,14 @@
        initialguess EHT
    -scf
 -system
-
-+system
-   name opt1
-   geometry ./opt1.xyz
-   method dft
-   +dft
-       functional BP86
-   -dft
-   charge 0
-   spin 0.0
-   +basis
-       label STO-3G
-   -basis
-   +grid
-       accuracy 6
-       smallGridAccuracy 3
-   -grid
-   +extcharges
-       externalChargesFile pointcharges.pc
-   -extcharges
-   +scf
-       initialguess EHT
-   -scf
--system
-
-+system
-   name opt2
-   geometry ./opt2.xyz
-   method dft
-   +dft
-       functional BP86
-   -dft
-   charge 0
-   spin 0.0
-   +basis
-       label STO-3G
-   -basis
-   +grid
-       accuracy 6
-       smallGridAccuracy 3
-   -grid
-   +extcharges
-       externalChargesFile pointcharges.pc
-   -extcharges
-   +scf
-       initialguess EHT
-   -scf
--system
-
-+system
-   name opt3
-   geometry ./opt3.xyz
-   method dft
-   +dft
-       functional BP86
-   -dft
-   charge 0
-   spin 0.0
-   +basis
-       label STO-3G
-   -basis
-   +grid
-       accuracy 6
-       smallGridAccuracy 3
-   -grid
-   +extcharges
-       externalChargesFile pointcharges.pc
-   -extcharges
-   +scf
-       initialguess EHT
-   -scf
--system
-
-+system
-   name opt4
-   geometry ./opt4.xyz
-   method dft
-   +dft
-       functional BP86
-   -dft
-   charge 0
-   spin 0.0
-   +basis
-       label STO-3G
-   -basis
-   +grid
-       accuracy 6
-       smallGridAccuracy 3
-   -grid
-   +extcharges
-       externalChargesFile pointcharges.pc
-   -extcharges
-   +scf
-       initialguess EHT
-   -scf
--system
-
++lrscf
+   act opt
+   nEigen 5
+-task
 +task GradientTask
-   act opt0
-   act opt1
-   act opt2
-   act opt3
-   act opt4
-   +emb
-       naddXCFunc pw91
-       naddKinFunc pw91k
-   -emb
+   system opt
 -task
 +task pop
-   act opt0
-   algorithm Hirshfeld
--task
-+task pop
-   act opt1
-   algorithm Hirshfeld
--task
-+task pop
-   act opt2
-   algorithm Hirshfeld
--task
-+task pop
-   act opt3
-   algorithm Hirshfeld
--task
-+task pop
-   act opt4
+   act opt
    algorithm Hirshfeld
 -task

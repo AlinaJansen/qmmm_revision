@@ -442,9 +442,48 @@ def extract_qmsubsystem_from_qmlist(qmlist, a, b):
 
     return endqmlist
 
+'''
+def pipein_define_TM(jobname, inpbasisset, inpcharge, inpgeneralmethod, inpfunctional, inpmaxiter):
+    # Define the commands to be piped in
+    commands = f"""
+    define\n
+    \n
+    {jobname}\n
+    aa str\n
+    ired\n
+    *\n
+    b all {inpbasisset}\n
+    *\n
+    eht\n
+    \n 
+    {inpcharge}\n
+    \n
+    {inpgeneralmethod}\n
+    on\n
+    func {inpfunctional}\n
+    *\n
+    scf\n
+    conv\n
+    8\n
+    iter\n
+    {inpmaxiter}\n
+    \n
+    *\n
+    """
 
+    process = subprocess.Popen(
+        ['bash'],  
+        stdin=subprocess.PIPE,  
+        stdout=subprocess.PIPE,  
+        stderr=subprocess.PIPE  
+    )
 
+    stdout, stderr = process.communicate(input=commands.encode())
 
+    print(stdout.decode())
+    if stderr:
+        print(f"Error: {stderr.decode()}")
+'''
 
 
 def make_serenity_inp(qmmmInputs): # Added by Nicola
@@ -472,6 +511,8 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
     generalmethod = qmmmInputs.qmparams.generalmethod
     maxcyc = qmmmInputs.qmparams.maxcyc
     fde = qmmmInputs.qmparams.fde
+    tddft = qmmmInputs.qmparams.tddft
+    tddftstates = qmmmInputs.qmparams.tddftstates
 
     insert = ""
     oldinsert = ""
@@ -539,6 +580,11 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
             #ofile.write("+task scf" + "\n")
             #ofile.write("   system " + str(jobname + insert) + "\n")
             #ofile.write("-task" + "\n")
+            if tddft == 1:
+                ofile.write("+task lrscf" + "\n")
+                ofile.write("   act " + str(jobname + insert) + "\n")
+                ofile.write("   nEigen " + str(tddftstates) + "\n")
+                ofile.write("-task" + "\n")
 
             ofile.write("+task GradientTask" + "\n")
             ofile.write("   system " + str(jobname + insert) + "\n")
@@ -804,6 +850,8 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
             #ofile.write("\n")
             naddxcfunc = qmmmInputs.qmparams.naddxcfunc
             naddkinfunc = qmmmInputs.qmparams.naddkinfunc
+            tddftnaddxcfunc = qmmmInputs.qmparams.tddftnaddxcfunc
+            tddftnaddkinfunc = qmmmInputs.qmparams.tddftnaddkinfunc
             numactsys = qmmmInputs.qmparams.numactsys
             numenvsys = qmmmInputs.qmparams.numenvsys
             namesact = []
@@ -977,7 +1025,34 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
                 ofile.write("   -scf" + "\n")
                 ofile.write("-system" + "\n")
                 ofile.write("\n")
-            
+            if tddft == 1:
+                ofile.write("+task FaT" + "\n")
+                for i in namesact:
+                    ofile.write("   act " + i + "\n")
+                for i in namesenv:
+                    ofile.write("   env " + i + "\n")
+                ofile.write("   +emb" + "\n")
+                ofile.write("       naddXCFunc " + str(tddftnaddxcfunc) + "\n")
+                ofile.write("       naddKinFunc " + str(tddftnaddkinfunc) + "\n")
+                ofile.write("   -emb" + "\n")
+                ofile.write("-task" + "\n")
+
+                for i in namesact:
+                    ofile.write("+task lrscf" + "\n")
+                    ofile.write("   act " + i + "\n")
+                    container = namesact.copy()
+                    container.remove(i)
+                    for i in container:
+                        ofile.write("   env " + i + "\n")
+                    for i in namesenv:
+                        ofile.write("   env " + i + "\n")
+                    ofile.write("   nEigen " + str(tddftstates) + "\n")
+                    ofile.write("   +emb" + "\n")
+                    ofile.write("       naddXCFunc " + str(tddftnaddxcfunc) + "\n")
+                    ofile.write("       naddKinFunc " + str(tddftnaddkinfunc) + "\n")
+                    ofile.write("   -emb" + "\n")
+                    ofile.write("-task" + "\n")
+
             ofile.write("+task GradientTask" + "\n")
             for i in namesact:
                 ofile.write("   act " + i + "\n")
@@ -1034,6 +1109,7 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
 
     return serenityfile
 #qm & mm program ultis
+'''
 def make_serenity_inp2(qmmmInputs): # Added by Nicola
     jobname = qmmmInputs.qmmmparams.jobname
     gro = qmmmInputs.gro
@@ -1234,7 +1310,7 @@ def make_serenity_inp2(qmmmInputs): # Added by Nicola
         
 
     return serenityfile
-
+'''
 
 def make_orca_inp(qmmmInputs): # Added by Nicola
     jobname = qmmmInputs.qmmmparams.jobname
@@ -2527,6 +2603,7 @@ def get_qmenergy(qmfile, qmmmInputs):
     basedir = qmmmInputs.basedir
     if qmprog == "SERENITY":
         fde = qmmmInputs.qmparams.fde
+        tddft = qmmmInputs.qmparams.tddft
 
     logger(logfile, "Extracting QM energy.\n")
     qmenergy = 0.0
@@ -2680,18 +2757,22 @@ def get_qmenergy(qmfile, qmmmInputs):
                 lines = ifile.readlines()
                 FSR_found = False
                 hirshfeld_section_found = False
+                FaT_energies_found = False
 
                 for line in lines:
-                    if 'Final SCF Results' in line:
+                    if tddft == 1 and 'Final Freeze-and-Thaw Energies' in line:
+                        FaT_energies_found = True
+
+                    elif 'Final SCF Results' in line and (not tddft == 1):
                         FSR_found = True
 
-                    if FSR_found:
+                    if FSR_found or FaT_energies_found:
                         if 'Total Supersystem Energy (active + all env.):' in line:
                             data = line.strip().split()
                             qmenergy = float(data[-1])  # Extract the energy value, which is the last element
                             break
 
-                if FSR_found:
+                if FSR_found or FaT_energies_found:
                     for i in range(len(lines)):
                         if 'Hirshfeld Population Analysis' in lines[i]:
                             hirshfeld_section_found = True
@@ -3199,6 +3280,7 @@ def get_qmforces_au(qmmmInputs):
                 pcf_grad.append([float(data[0]) * -1.0, float(data[1]) * -1.0, float(data[2]) * -1.0])
     
     if qmprogram == "SERENITY":
+        tddft = qmmmInputs.qmparams.tddft
         insert = ""
         #2222
         if (int(curr_step) != 0): #and (qmmmInputs.qmmmparams.jobname == 'OPT'):  why should the jobname be relevant ??? #SIMON
@@ -3229,7 +3311,7 @@ def get_qmforces_au(qmmmInputs):
                         logger(logfile,'No QM forces found, Exiting')
                         print('No QM forces found, Exiting')
                         exit(1)
-                elif 'Time taken for task' in line:
+                elif 'Time taken for task' in line and pc_gradient_section_found:
                     if pcf_grad == []:
                         logger(logfile,'No PCF forces found')
                     break
@@ -3902,8 +3984,11 @@ def perform_opt(qmmmInputs):
                 g16name     = str(jobname + insert + ".gjf.log")
                 fortname    = str(jobname + insert + ".fort.7")
                 pcfname     = str(jobname + insert + ".pointcharges")
-                gjfname     = str(jobname + insert + ".gjf") 
-                subprocess.call("rm %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname), shell=True)
+                gjfname     = str(jobname + insert + ".gjf")
+                inpname     = str(jobname + insert + ".inp")
+                outname     = str(jobname + insert + ".inp.log")
+                engradname  = str(jobname + insert + ".engrad")
+                subprocess.call("rm %s %s %s %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname,inpname,outname,engradname), shell=True)
 
             else:
                 count_trash=0
