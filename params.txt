@@ -2,13 +2,13 @@
 includeprio=0
 
 # PARAMETERS
-jobtype=OPT
+jobtype=singlepoint
 jobname=test
 
 gmxtop_path=C:\Users\Alina\Documents\Uni\AG_goetze\top
 gmxcmd=gmx
 gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
-g16cmd=g16
+qmcommand=g16
 charge=1
 
 # atomlists

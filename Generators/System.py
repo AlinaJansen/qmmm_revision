@@ -962,7 +962,7 @@ class SystemInfo():
                     toplist.extend(self.get_list_topologies(foundname))
         return toplist
     
-    def get_atoms(self) -> list:
+    def get_atoms(self, str_qmmm_topology) -> list:
 
         '''
         ------------------------------ \\
@@ -972,7 +972,7 @@ class SystemInfo():
         ------------------------------ \\
         INPUT: \\
         ---------------  \\
-        None \\
+        str_qmmm_topology: str -> Name Of QMMM Topology File \\
         ------------------------------ \\
         RETURN: \\
         ---------------  \\
@@ -980,13 +980,12 @@ class SystemInfo():
         ------------------------------ \\
         '''
         atoms = []
-        with open('mass_map.json', 'r') as file:
+        str_file_mass_map = os.path.join('json_files', 'mass_map.json')
+        with open(str_file_mass_map, 'r') as file:
             mass_map = json.load(file)
           
         name_map = {value: key for key, value in mass_map.items()}
-        # XX AJ I need to change qmmm_topology in new version
-        qmmm_topology=0
-        with open(qmmm_topology) as qmmm_topology_file:
+        with open(str_qmmm_topology) as qmmm_topology_file:
             for line in qmmm_topology_file:
                 match = re.search(r"\[\s+moleculetype\s*\]", line, flags=re.MULTILINE)
                 if match:
