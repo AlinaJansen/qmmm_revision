@@ -158,15 +158,15 @@ class GeneratorQMMM():
         conn.close()
         returnvalue = 0
         if len(db_values) > 0:
-            if energy_or_force == "ENERGY":
-                if self.dict_input_userparameters['databasefit'] == "POLY":
+            if energy_or_force == "energy":
+                if self.dict_input_userparameters['databasefit'] == "poly":
                     returnvalue = (
                         db_values[5] * distance * distance * distance
                         + db_values[6] * distance * distance
                         + db_values[7] * distance
                         + db_values[8]
                     )
-                elif self.dict_input_userparameters['databasefit'] == "MORSE":
+                elif self.dict_input_userparameters['databasefit'] == "morse":
                     returnvalue = (
                         db_values[9]
                         * (
@@ -175,18 +175,18 @@ class GeneratorQMMM():
                         )
                         + db_values[12]
                     )
-                elif self.dict_input_userparameters['databasefit'] == "NO":
+                elif self.dict_input_userparameters['databasefit'] == "no":
                     returnvalue = 0
                     # logger(logfile, "No energy correction.\n")
-            elif energy_or_force == "FORCES":
-                if self.dict_input_userparameters['databasefit'] == "POLY":
+            elif energy_or_force == "forces":
+                if self.dict_input_userparameters['databasefit'] == "poly":
                     returnvalue = (
                         db_values[13] * distance * distance * distance
                         + db_values[14] * distance * distance
                         + db_values[15] * distance
                         + db_values[16]
                     )
-                elif self.dict_input_userparameters['databasefit'] == "MORSE":
+                elif self.dict_input_userparameters['databasefit'] == "morse":
                     returnvalue = (
                         db_values[17]
                         * (
@@ -195,7 +195,7 @@ class GeneratorQMMM():
                         )
                         + db_values[20]
                     )
-                elif self.dict_input_userparameters['databasefit'] == "NO":
+                elif self.dict_input_userparameters['databasefit'] == "no":
                     returnvalue = 0
                     # logger(logfile, "No force correction.\n")
         return returnvalue
@@ -388,7 +388,7 @@ class GeneratorEnergies(GeneratorQMMM):
             v12 = np.array(v2) - np.array(v1)
             dist = np.linalg.norm(v12)
         dist = dist * 0.7409471631
-        energycorr = self.databasecorrection("ENERGY", "aminoacid_CACB", dist)
+        energycorr = self.databasecorrection("energy", "aminoacid_CACB", dist)
         linkenergy -= energycorr
         # sign inverted due to correction convention (subtracting)
         return linkenergy
@@ -403,6 +403,13 @@ class GeneratorForces(GeneratorQMMM):
         self.str_directory_base = str_directory_base
         self.class_qm_job = class_qm_job
         self.class_mm_job = class_mm_job
+
+    def get_linkcorrforces(self):
+        if self.system.linkcorrlist:
+            linkcorrforces = self.get_linkforces_au()
+        else:
+            linkcorrforces = 0.0
+        return linkcorrforces
 
     def get_linkforces_au(self):
         
@@ -616,9 +623,11 @@ class GeneratorForces(GeneratorQMMM):
             dist = np.linalg.norm(v12) / 0.71290813568205
             unit_vector_v12 = v12 / np.linalg.norm(v12)
             dist = dist * 0.5282272551
-            forcecorr = self.databasecorrection("FORCES", "aminoacid_CACB", dist)
+            forcecorr = self.databasecorrection("forces", "aminoacid_CACB", dist)
             for j in range(0, 3):
                 linkforces[int(_flattened[i]) - 1][j] += -unit_vector_v12[j] * forcecorr * 0.5
                 linkforces[int(self.system.list_atoms_m1[i]) - 1][j] += unit_vector_v12[j] * forcecorr * 0.5
         return linkforces
+
+
 

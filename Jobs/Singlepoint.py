@@ -92,7 +92,7 @@ class Singlepoint():
         #   Generating Output Files
         class_output = Output()
         class_output.oenergy_append(0, self.class_qm_job.qmenergy, self.class_mm_job.mmenergy, self.linkcorrenergy, self.total_energy)
-        # OUT.oforces_append(0, self.)
+        class_output.oforces_append(0, self.total_force)
 
     
     def run_calculation(self) -> None:
@@ -124,7 +124,7 @@ class Singlepoint():
         self.class_qm_job.run_qm_job()
 
         # read output
-        self.class_qm_job.read_qm_energy()
+        self.class_qm_job.read_qm_energy()  # qm_corrdata correct
         self.class_qm_job.read_qm_forces()
 
         # prepare MM input
@@ -142,44 +142,10 @@ class Singlepoint():
         self.total_energy = self.class_qm_job.qmenergy + self.class_mm_job.mmenergy - self.linkcorrenergy
 
         #   Calculate Total Forces
-        self.linkcorrforces = self.class_qmmm_forces.get_linkforces_au()
-        pass
-
-    
-    
-    
-
+        self.linkcorrforces = self.class_qmmm_forces.get_linkcorrforces()
+        self.total_force = np.array(self.class_qm_job.qmforces) + np.array(self.class_mm_job.mmforces) - np.array(self.linkcorrforces)
         
 
-    
-    
-    
 
-    
-    
 
-    def remove_inactive(self): # mask xx
-        
-        '''
-        ------------------------------ \\
-        EFFECT: \\
-        --------------- \\
-        XX \\
-        ------------------------------ \\
-        INPUT: \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        RETURN: \\
-        --------------- \\
-        NONE \\
-        ------------------------------ \\
-        '''
-        
-        new_total_force = []
-        for i in range(0, len(self.total_force)):
-            if (i + 1) in np.array(self.system.list_atoms_active).astype(int):
-                new_total_force.append(self.total_force[i])
-            else:
-                new_total_force.append([0.0, 0.0, 0.0])
-        return new_total_force
+

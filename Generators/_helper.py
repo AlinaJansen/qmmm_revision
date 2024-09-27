@@ -212,6 +212,22 @@ def normalized_vector(vec):
     '''
     ------------------------------ \\
     EFFECT: \\
+    normalizing a vector \\
+    --------------- \\
+    INPUT: \\
+    vec: np.array
+    ------------------------------ \\
+    RETURN: \\
+    np.array -> normalized vector \\
+    --------------- \\
+    '''
+    return np.array(vec) / np.linalg.norm(np.array(vec))
+
+def mask_atoms(list_2d, list_atoms_2keep): 
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
     --------------- \\
     XX \\
     ------------------------------ \\
@@ -225,16 +241,8 @@ def normalized_vector(vec):
     ------------------------------ \\
     '''
     
-    '''
-    ------------------------------ \\
-    EFFECT: \\
-    normalizing a vector \\
-    --------------- \\
-    INPUT: \\
-    vec: np.array
-    ------------------------------ \\
-    RETURN: \\
-    np.array -> normalized vector \\
-    --------------- \\
-    '''
-    return np.array(vec) / np.linalg.norm(np.array(vec))
+    list_atoms_indices = list(np.array(list_atoms_2keep) - 1)
+    masked_list = np.zeros_like(list_2d)
+    masked_list[list_atoms_indices] = list_2d[list_atoms_indices]
+    
+    return masked_list

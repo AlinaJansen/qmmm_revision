@@ -298,7 +298,7 @@ class GMX2QMMM():
             SP_job = SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
 
 
-        elif self.defaultdict_parameters_input['jobtype'] == "OPT":
+        elif self.defaultdict_parameters_input['jobtype'] == "opt":
             # logger(logfile, "Performing an optimization.\n")
             # logger(logfile, "Getting initial energy:\n")
             OPT.Optimization(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)

@@ -27,7 +27,7 @@ import Jobs.Singlepoint as SP
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
 from Generators.GeneratorGeometries import propagate_dispvec
-from Generators._helper import filter_xyzq, _flatten
+from Generators._helper import filter_xyzq, _flatten, mask_atoms
 
 #   // TODOS & NOTES //
 #   TODO:
@@ -71,10 +71,10 @@ class Optimization():
         #   XX AJ check how to deal with nma flag later
         self.nmaflag = 0
 
-        #define done XX AJ evaluate this later
-        STEPLIMIT = 0
-        FTHRESH = 1
-        STEPSIZE = 2
+        #define done XX AJ evaluate this later (why are we not using just the strings?)
+        self.STEPLIMIT = 0
+        self.FTHRESH = 1
+        self.STEPSIZE = 2
 
         #   Perform Initial Singlepoint Calculation
         self.singlepoint = SP.Singlepoint(self.dict_input_userparameters, self.system, self.class_topology_qmmm, self.PCF, self.str_directory_base)
@@ -85,7 +85,7 @@ class Optimization():
         self.list_forces_all_steps.append(self.singlepoint.total_force)
 
         self.list_energies_all_steps = []
-        self.list_energies_all_steps.append([self.singlepoint.qmenergy, self.singlepoint.mmenergy, self.singlepoint.linkcorrenergy, self.singlepoint.total_energy])
+        self.list_energies_all_steps.append([self.singlepoint.class_qm_job.qmenergy, self.singlepoint.class_mm_job.mmenergy, self.singlepoint.linkcorrenergy, self.singlepoint.total_energy])
 
         #   Initialize xyzq List, Always Keep The Last Two xyzq In The List -> Therefore, We Start With Two Times The Initial xyzq
         self.list_xyzq_all_steps = [self.system.array_xyzq_current, self.system.array_xyzq_current]
@@ -96,7 +96,7 @@ class Optimization():
         #   Check If Maximum Force Is Below Threshold
         float_force_max = max(np.max(self.singlepoint.total_force), np.min(self.singlepoint.total_force), key=abs)
         if abs(float_force_max) < self.dict_input_userparameters['f_thresh']:
-            self.bool_opt_done = FTHRESH
+            self.bool_opt_done = self.FTHRESH
         else:
             self.bool_opt_done = False
         self.list_forces_max_all_steps.append(float_force_max)
@@ -125,9 +125,12 @@ class Optimization():
         #   Run Singlepoint Calculation
         self.singlepoint.run_calculation()
 
+        #    Remove Forces On Inactive Atoms
+        self.singlepoint.total_force = mask_atoms(self.singlepoint.total_force, self.system.list_atoms_active)
+
         #   Update Forces And Energies
         self.list_forces_all_steps.append(self.singlepoint.total_force)
-        self.list_energies_all_steps.append([self.singlepoint.qmenergy, self.singlepoint.mmenergy, self.singlepoint.linkcorrenergy, self.singlepoint.total_energy])
+        self.list_energies_all_steps.append([self.singlepoint.class_qm_job.qmenergy, self.singlepoint.class_mm_job.mmenergy, self.singlepoint.linkcorrenergy, self.singlepoint.total_energy])
 
         #   The following section needs to be adapted for different optimizers, for bfgs we accept increasing energies, for steep and conjugate we dont but we then also dont need to check for the max force
         #   XX AJ the following code works for steepest descent. I will change it later for different optimizers
@@ -138,7 +141,8 @@ class Optimization():
             self.evaluate_step_steep()
         elif self.dict_input_userparameters['propagator'] == 'conjgrad':
             self.evaluate_step_conjgrad()
-
+        elif self.dict_input_userparameters['propagator'] == 'bfgs':
+            self.evaluate_step_bfgs()
 
         # XX AJ take care of the output later
         if self.dict_input_userparameters['jobname'] == "SCAN" :
@@ -155,7 +159,7 @@ class Optimization():
 
     def evaluate_step_steep(self):
         if self.list_energies_all_steps[-1][-1] > self.list_energies_all_steps[-2][-1]:
-            self.bool_energy_improved = False
+            #   Step Gets Rejected, Decrease Stepsize
             self.dict_input_userparameters['stepsize'] *= 0.2
 
             #   Remove Files
@@ -169,7 +173,6 @@ class Optimization():
             self.list_forces_max_all_steps.pop()
 
         else:
-            self.bool_energy_improved = True
             self.dict_input_userparameters['stepsize'] *= 1.2
 
             #   Remove xyzq From Two Steps Ago
@@ -180,15 +183,22 @@ class Optimization():
 
             if abs(float_force_max) < float(self.dict_input_userparameters['f_thresh']):
                 # logger(logfile,"Max force (%f) below threshold (%f) Finishing.\n"%(maxforce,f_thresh))
-                self.bool_opt_done = FTHRESH
+                self.bool_opt_done = self.FTHRESH
 
             elif float(self.dict_input_userparameters['stepsize']) < 1e-6: #0.000001 a.u.
-                self.bool_opt_done = STEPSIZE
+                self.bool_opt_done = self.STEPSIZE
                 # logger(
                 #     logfile,
                 #         ("Step became lower than 0.000001 a.u., optimization is considered done for now. " +
                 #          "This is the best we can do unless reaching unacceptable numerical noise levels.\n"),
                 # )
+    
+    def evaluate_step_bfgs(self):
+        #   Check If Optimization Is Finished
+        if abs(self.float_force_max) < float(self.dict_input_userparameters['f_thresh']):
+            self.bool_opt_done = self.FTHRESH
+        elif float(self.dict_input_userparameters['stepsize']) < 1e-6: #0.000001 a.u.
+            self.bool_opt_done = self.STEPSIZE
 
  
     def update_input_filenames(self):
