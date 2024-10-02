@@ -24,7 +24,7 @@ def userInputs():
                                 ''')
                             )
     
-    parser.add_argument("-c", "--coord", help="coordinate(.g96 or .gro)", type=str, default='conf.gro')
+    parser.add_argument("-c", "--coord", help="coordinate(.g96 or .gro)", type=str, default='conf.g96')
     parser.add_argument("-p", "--top", help="Topology (.top)", type=str, default='topol.top')
     parser.add_argument("-n", "--qmatoms", help="QM atoms file(.ndx)", default='qmatoms.ndx')
     parser.add_argument("-qm", "--qmFile", help="QM parameters (.dat)", type=str, default='qm.dat')

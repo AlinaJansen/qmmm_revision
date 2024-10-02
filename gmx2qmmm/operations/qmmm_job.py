@@ -16,6 +16,7 @@ import copy
 import numpy as np
 import sqlite3
 import sys
+import time
 
 from gmx2qmmm._helper import logger, _flatten, stepper
 from gmx2qmmm._helper import get_linkatoms_ang, make_xyzq, make_xyzq_io
@@ -442,48 +443,192 @@ def extract_qmsubsystem_from_qmlist(qmlist, a, b):
 
     return endqmlist
 
-'''
-def pipein_define_TM(jobname, inpbasisset, inpcharge, inpgeneralmethod, inpfunctional, inpmaxiter):
-    # Define the commands to be piped in
+def pipein_define_TM(jobname, inpbasisset, inpcharge, inpgeneralmethod, inpfunctional):
+    '''commands = f"""
+    {jobname}
+    aa str
+    ired
+    *
+    b all {inpbasisset}
+    *
+    eht
+
+    {inpcharge}
+
+    {inpgeneralmethod}
+    on
+    func {inpfunctional}
+    *
+    ri
+    on
+    *
+    *
+    """'''
     commands = f"""
-    define\n
-    \n
-    {jobname}\n
-    aa str\n
-    ired\n
-    *\n
-    b all {inpbasisset}\n
-    *\n
-    eht\n
-    \n 
-    {inpcharge}\n
-    \n
-    {inpgeneralmethod}\n
-    on\n
-    func {inpfunctional}\n
-    *\n
-    scf\n
-    conv\n
-    8\n
-    iter\n
-    {inpmaxiter}\n
-    \n
-    *\n
+    {jobname}
+    aa str
+    ired
+    *
+    b all {inpbasisset}
+    *
+    eht
+
+    {inpcharge}
+
+    {inpgeneralmethod}
+    on
+    func {inpfunctional}
+    *
+    ri
+    on
+    *
+    *
     """
 
+    # Start the `define` process
     process = subprocess.Popen(
-        ['bash'],  
-        stdin=subprocess.PIPE,  
-        stdout=subprocess.PIPE,  
-        stderr=subprocess.PIPE  
+        ['define'],  # Start `define` program
+        stdin=subprocess.PIPE,  # Enable writing input to the process
+        stdout=subprocess.PIPE,  # Capture the output
+        stderr=subprocess.PIPE,  # Capture any errors
+        text=True,  # Treat input/output as text instead of bytes
     )
 
-    stdout, stderr = process.communicate(input=commands.encode())
+    # Send the commands to the `define` process
+    stdout, stderr = process.communicate(input=commands)
 
-    print(stdout.decode())
-    if stderr:
-        print(f"Error: {stderr.decode()}")
-'''
+    print(stdout)
+    #if stderr:
+    #    print(f"Error: {stderr}")
+
+def make_TM_inp(qmmmInputs): # Added by Nicola
+    jobname = qmmmInputs.qmmmparams.jobname
+    gro = qmmmInputs.gro
+    #qmmmtop = qmmmInputs.top                       SP activate next line
+    qmmmtop = qmmmInputs.qmmmtop
+    qmatomlist = qmmmInputs.qmatomlist
+    pcffile = qmmmInputs.pcffile
+    curr_step = qmmmInputs.qmmmparams.curr_step
+    linkatoms = qmmmInputs.linkatoms
+    logfile = qmmmInputs.logfile
+    nmaflag = qmmmInputs.nmaflag
+    connlist = qmmmInputs.connlist
+    xyzq = qmmmInputs.xyzq
+    m1list = qmmmInputs.m1list
+
+    method = qmmmInputs.qmparams.method
+    basis = qmmmInputs.qmparams.basis
+    charge = qmmmInputs.qmparams.charge
+    multi = qmmmInputs.qmparams.multi
+    cores = qmmmInputs.qmparams.cores
+    memory = qmmmInputs.qmparams.memory
+    extra = qmmmInputs.qmparams.extra
+    generalmethod = qmmmInputs.qmparams.generalmethod
+    maxcyc = qmmmInputs.qmparams.maxcyc
+
+    insert = ""
+    oldinsert = ""
+    if int(curr_step) > 0:
+        insert = str("." + str(int(curr_step) ))
+        if int(curr_step) > 1:
+            oldinsert = str("." + str(int(curr_step) - 1))
+    tmfile = "control"
+    mosfile = str(jobname + insert + ".mos")
+    oldmosfile = str(jobname + oldinsert + ".mos")
+
+    fullcoords = get_full_coords_angstrom(gro)
+    atoms = get_atoms(qmmmtop, logfile)
+    original_stdout = sys.stdout # Save a reference to the original standard output
+    with open('top_info.txt', 'w') as f:
+        sys.stdout = f # Change the standard output to the file we created.
+        print('QMMMTOPINFO')
+        for i in atoms:
+            print(str(i))
+        sys.stdout = original_stdout # Reset the standard output to its original value
+    with open('gro_info.txt', 'w') as f:
+        sys.stdout = f # Change the standard output to the file we created.
+        print('GROINFO')
+        for i in fullcoords:
+            print(str(i))
+        sys.stdout = original_stdout # Reset the standard output to its original value
+    with open("str", 'w') as struc:
+        struc.write("$coord\n")
+        count = 0
+        for element in fullcoords:
+            if int(count + 1) in np.array(qmatomlist).astype(int):
+                #print(str(count)+" "+str(element)+" "+str(len(atoms)))
+                struc.write(
+                    "{:<2s} {:>12.6f} {:>12.6f} {:>12.6f}\n".format(
+                        str(atoms[count]),
+                        float(element[0]),
+                        float(element[1]),
+                        float(element[2]),
+                    )
+                )
+            count += 1
+        for element in linkatoms:
+            # links are already in angstrom
+            struc.write(
+                "{:<2s} {:>12.6f} {:>12.6f} {:>12.6f}\n".format(
+                    str("H"), float(element[0]), float(element[1]), float(element[2])
+                )
+            )
+        struc.write("$end\n")
+    time.sleep(10) 
+    pipein_define_TM(str(jobname + insert), str(basis), str(charge), str(generalmethod), str(method)) 
+    time.sleep(15)  
+    if int(curr_step) != 0 or nmaflag == 1:
+        subprocess.call("rm mos", shell=True)
+    with open(tmfile, 'r') as ifile:
+        lines = ifile.readlines()
+    with open(tmfile, 'w') as cfile:
+        for line in lines:
+            if '$scfmo' in line and (int(curr_step) != 0 or nmaflag == 1):
+                cfile.write('$scfmo   file=' + oldmosfile + '\n')
+                continue
+            elif '$scfiterlimit' in line:
+                cfile.write("$scfiterlimit       " + str(maxcyc) + "\n")
+                continue
+            elif '$maxcore' in line:
+                cfile.write("$maxcor    " + str(memory) + " MiB  per_core\n")
+                continue
+            elif '$drvopt' in line:
+                cfile.write(line)
+                cfile.write("   point charges\n")
+                continue
+            elif '$grad' in line:
+                cfile.write(line)
+                cfile.write("$point_charges nocheck list\n")
+                with open(pcffile) as ifile:
+                    for line in ifile:
+                        match = re.search(
+                            r"^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)", line, flags=re.MULTILINE
+                        )
+                        if match:
+                            cfile.write(
+                                " {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}\n".format(
+                                    float(match.group(1)),
+                                    float(match.group(2)),
+                                    float(match.group(3)),
+                                    float(match.group(4)),
+                                )
+                            )
+                cfile.write("$mvd\n")
+                cfile.write("$moments\n")
+                cfile.write("$pop\n")
+                cfile.write("$esp_fit kollman\n")
+                continue
+            elif '$scfconv' in line:
+                cfile.write("$scfconv   8\n")
+                continue
+            elif '$ricore' in line:
+                cfile.write("$ricore      " + str(memory) + "\n")
+                cfile.write(str(extra) + "\n")
+                continue
+            else:
+                cfile.write(line)
+    return str(jobname + insert + ".inp")
+            
 
 
 def make_serenity_inp(qmmmInputs): # Added by Nicola
@@ -694,9 +839,10 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
                             )
             #ofile.write("\n")
         else:
-            gmxplus = qmmmInputs.mmparams.gmxplus
+            #gmxplus = qmmmInputs.mmparams.gmxplus
             inout = qmmmInputs.inout
-            if gmxplus and inout:
+            #if gmxplus and inout:
+            if inout:
                 inner = qmmmInputs.innerlistorig
                 outer = qmmmInputs.outerlistorig
                 qm = qmmmInputs.qmlistorig
@@ -864,7 +1010,8 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
                 basis = getattr(qmmmInputs.qmparams, f"basis{i}")
                 charge = getattr(qmmmInputs.qmparams, f"charge{i}")
                 multi = getattr(qmmmInputs.qmparams, f"multiplicity{i}")
-                if gmxplus and inout:
+                #if gmxplus and inout:
+                if inout:
                     qmsublist = extract_qmsubsystem_from_qmlist(qmatomlist, memory_dict[endactsys[0]], memory_dict[endactsys[1]])
                 else:
                     qmsublist = extract_qmsubsystem_from_qmlist(qmatomlist, endactsys[0], endactsys[1])
@@ -949,7 +1096,8 @@ def make_serenity_inp(qmmmInputs): # Added by Nicola
                 basis = getattr(qmmmInputs.qmparams, f"ebasis{i}")
                 charge = getattr(qmmmInputs.qmparams, f"echarge{i}")
                 multi = getattr(qmmmInputs.qmparams, f"emultiplicity{i}")
-                if gmxplus and inout:
+                #if gmxplus and inout:
+                if inout:
                     qmsublist = extract_qmsubsystem_from_qmlist(qmatomlist, memory_dict[endenvsys[0]], memory_dict[endenvsys[1]])
                 else:
                     qmsublist = extract_qmsubsystem_from_qmlist(qmatomlist, endenvsys[0], endenvsys[1])
@@ -1370,7 +1518,7 @@ def make_orca_inp(qmmmInputs): # Added by Nicola
         ofile.write("!" + str(method))
         if str(basis) != "NONE":
             ofile.write(" " + str(basis))
-        ofile.write(" ENGRAD PrintMOs Printbasis NoUseSym SCFCONV8 CHELPG" + "\n")
+        ofile.write(" AutoAux ENGRAD PrintMOs Printbasis NoUseSym SCFCONV8 CHELPG" + "\n")
         if str(extra) != "NONE":
             ofile.write(str(extra) + "\n")
         if int(curr_step) == 0:
@@ -1672,12 +1820,12 @@ def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout, gmxplus):#gmxplus = True
             )
         else:#Added by Nicola
             ofile.write(
-                "\ncoulombtype    =  cut-off\nrcoulomb            =  "
+                "\ncutoff-scheme = verlet\ncoulombtype    =  cut-off\nrcoulomb            =  "
             )
         ofile.write(str(float(rcoulomb)))
         ofile.write("\nrvdw                =  ")
         ofile.write(str(float(rvdw)))
-        if not gmxplus: #Added by Nicola
+        '''if not gmxplus: #Added by Nicola
             if inout:
                 ofile.write(
                 "\nTcoupl              =  no\nfreezegrps          =  OUTER\nfreezedim           =  Y Y Y\nenergygrps          =  QM INNER OUTER\nenergygrp-excl = QM QM INNER OUTER OUTER OUTER\nPcoupl              =  no\ngen_vel             =  no\n"
@@ -1685,16 +1833,16 @@ def write_mdp(mdpname, rcoulomb, rvdw, nbradius, inout, gmxplus):#gmxplus = True
             else:
                 ofile.write(
                 "\nTcoupl              =  no\nenergygrps          =  QM\nenergygrp-excl = QM QM\nPcoupl              =  no\ngen_vel             =  no\n"
-                )
-        else:#Added by Nicola
-            if inout:
-                ofile.write(
-                "\nTcoupl              =  no\nPcoupl              =  no\ngen_vel             =  no\n"
-                )
-            else:
-                ofile.write(
-                "\nTcoupl              =  no\nPcoupl              =  no\ngen_vel             =  no\n"
-                )
+                )'''
+        #else:#Added by Nicola
+        #    if inout:
+        ofile.write(
+        "\nTcoupl              =  no\nPcoupl              =  no\ngen_vel             =  no\n"
+        )
+        #    else:
+        #        ofile.write(
+        #        "\nTcoupl              =  no\nPcoupl              =  no\ngen_vel             =  no\n"
+        #        )
             #if inout:
             #    ofile.write(
             #    "\nTcoupl              =  no\nfreezegrps          =  OUTER\nfreezedim           =  Y Y Y\nPcoupl              =  no\ngen_vel             =  no\n"
@@ -2009,10 +2157,10 @@ def qmmm_prep(qmmmInputs):
     for element in mollist:
         chargevec.extend(make_pcf.readcharges(element, top, gmxtop))
     logger(logfile, "Done.\n")
-    if qmmmInputs.inout and qmmmInputs.mmparams.gmxplus == 0:
-        new_xyzq = make_xyzq_io(geo, chargevec, qmmmInputs.outerlist)
-    else:
-        new_xyzq = make_xyzq(geo, chargevec)
+    #if qmmmInputs.inout and qmmmInputs.mmparams.gmxplus == 0:
+    #    new_xyzq = make_xyzq_io(geo, chargevec, qmmmInputs.outerlist)
+    #else:
+    new_xyzq = make_xyzq(geo, chargevec)
     logger(logfile, str("Made new xyzq matrix.\n"))
     logger(
         logfile,
@@ -2214,6 +2362,42 @@ def check_error_in_serenitylog(log_filename):
                 return False
 
 #Run program command
+def run_TM(qmfile, qmmmInputs): # Added by Nicola
+    jobname = qmmmInputs.qmmmparams.jobname
+    curr_step = qmmmInputs.qmmmparams.curr_step
+    logfile = qmmmInputs.logfile
+    #2222
+    insert = ""
+    if int(curr_step) > 0:
+        insert = str("." + str(int(curr_step)))
+    
+    log_name = str(jobname + insert + ".inp.log")
+    #engrad_name = str(jobname + insert + ".engrad")
+    if not os.path.isfile(str(qmfile) + ".log"):
+        logger(logfile, "Running turbomole file.\n")
+        command = f" ridft > {qmfile[:-3]}log && rdgrad >> {qmfile[:-3]}log"
+        subprocess.call(command, shell=True)
+        #subprocess.call([orcacmd, str(qmfile)])
+        logname = qmfile[:-3]
+        logname += "log"
+        subprocess.call(["mv", logname, log_name])
+        subprocess.call(["mv", "control", qmfile])
+        subprocess.call(f"cat energy gradient {qmfile} >> {log_name}",shell=True)
+        subprocess.call(["mv", "basis", str(qmfile[:-3] + "basis")])
+        subprocess.call(["mv", "auxbasis", str(qmfile[:-3] + "auxbasis")])
+        subprocess.call(["mv", "coord", str(qmfile[:-3] + "coord")])
+        subprocess.call(["mv", "*mos", str(qmfile[:-3] + "mos")])
+        subprocess.call(["mv", "str", str(qmfile[:-3] + "str")])
+        subprocess.call("rm energy gradient", shell=True)
+        if os.path.isfile(log_name):
+            logger(logfile, "Turbomole done.\n")
+        else:
+            logger(logfile, "Turbomole job was not done. Exiting.\n")
+            exit(1)
+    else:
+        logger(logfile, "NOTE: Using existing serenity files, skipping calculation for this step.\n")
+
+
 def run_serenity(qmfile, qmmmInputs): # Added by Nicola
     jobname = qmmmInputs.qmmmparams.jobname
     serenitycmd = qmmmInputs.pathparams.serenitycmd
@@ -2836,13 +3020,45 @@ def get_qmenergy(qmfile, qmmmInputs):
             for i in range(len(qm_corrdata)):
                 qm_corrdata[i][0] = i+1'''
 
+    if str(qmprog) == "TM":
+        atoms = []
+        with open(str(qmfile[:-4] + ".str")) as ifile:
+            lines = ifile.readlines()
+            for line in lines:
+                data = line.strip().split()
+                if len(data) == 4:
+                    atoms.append(data[0])
+                else:
+                    continue
 
+        with open(str(qmfile + ".log")) as ifile:
+            lines = ifile.readlines()
+            for line in lines:
+                data = line.strip().split()
+                if 'total energy' in line and (len(data) == 6):
+                    qmenergy = float(data[-2])  # Extract the energy value, which is the last element
+                    break
+                else:
+                    continue
+            
+            mk_section_found = False
+            for i in range(len(lines)):
+                if 'charges resulting from fit:' in lines[i]:
+                    mk_section_found = True
 
-
-
-
-                    
-
+                if mk_section_found:
+                    count = 0
+                    for j in range(i + 4, i + 4 + len(atoms)):
+                        data = lines[j].strip().split()
+                        count += 1
+                        qm_corrdata.append([
+                            count,                # Atom number
+                            atoms[count-1],       # Atom type
+                            float(data[-1])       # Charge
+                        ])
+                    mk_section_found = False
+                else:
+                    continue
 
     logger(logfile, "QM energy is " + str(float(qmenergy)) + " a.u..\n")
     return qmenergy, qm_corrdata
@@ -3170,6 +3386,11 @@ def get_energy(qmfile, edrname, qmmmInputs):
     return qmenergy, mmenergy, linkcorrenergy, qm_corrdata
 
 #Forces
+def transform_D_to_E(num):
+    number = num.replace('D', 'E')
+    number = float(number)
+    return number
+
 def get_qmforces_au(qmmmInputs):
     qmatomlist = qmmmInputs.qmatomlist
     m1list = qmmmInputs.m1list
@@ -3352,8 +3573,59 @@ def get_qmforces_au(qmmmInputs):
                 pcf_grad.append(float(0))
             '''     
 
+    if qmprogram == "TM":
 
+        insert = ""
+        #2222
+        if (int(curr_step) != 0): #and (qmmmInputs.qmmmparams.jobname == 'OPT'):  why should the jobname be relevant ??? #SIMON
+            insert = str("." + str(curr_step))  #change curr_step-1 to curr_step   #SIMON WAR HIER AM WERK
+        
+        logger(logfile,"Reading QM forces using file: "+str(jobname + insert + ".inp.log") + "\n")
+        qmlogfile = str(jobname + insert + ".inp.log")
+        atoms = []
+        with open(str(jobname + insert + ".str")) as ifile:
+            lines = ifile.readlines()
+            for line in lines:
+                data = line.strip().split()
+                if len(data) == 4:
+                    atoms.append(data[0])
+                else:
+                    continue
 
+        with open(qmlogfile) as ifile:
+            lines = ifile.readlines()
+            cartesian_gradient_section_found = False
+            pc_gradient_section_found = False
+            for line in range(len(lines)):
+                if '$grad          cartesian gradients' in lines[line]:
+                    cartesian_gradient_section_found = True
+                    pc_gradient_section_found = False
+
+                elif '$point_charge_gradients' in lines[line]:
+                    pc_gradient_section_found = True
+                    cartesian_gradient_section_found = False
+
+                if cartesian_gradient_section_found:
+                    for i in range(line + len(atoms) + 2, len(lines)):
+                        data = lines[i].strip().split()
+                        qmonlyforcelist.append([float(data[0].replace('D', 'E')) * -1.0, float(data[1].replace('D', 'E')) * -1.0, float(data[2].replace('D', 'E')) * -1.0])
+                        if '$end' in lines[i+1]:
+                            cartesian_gradient_section_found = False
+                            break
+                        else:
+                            continue
+
+                elif pc_gradient_section_found:
+                    for i in range(line + 1, len(lines)):
+                        data = lines[i].strip().split()
+                        if len(data) == 3:
+                            pcf_grad.append([float(data[0].replace('D', 'E')) * -1.0, float(data[1].replace('D', 'E')) * -1.0, float(data[2].replace('D', 'E')) * -1.0])
+                        else:
+                            pc_gradient_section_found = False
+                            break
+                else:
+                    continue
+                        
 
 
 
@@ -3392,7 +3664,7 @@ def get_qmforces_au(qmmmInputs):
                                         ]
                                     )
                                     count += 1
-                                elif qmprogram == "ORCA" or qmprogram == "SERENITY":#Added by Nicola
+                                elif qmprogram == "ORCA" or qmprogram == "SERENITY" or qmprogram == "TM":#Added by Nicola
                                     qmforces.append(pcf_grad[count])
                                     count += 1
                             elif match and int(match.group(1)) in np.array(
@@ -3793,8 +4065,29 @@ def perform_sp(qmmmInputs):
         qmmmInputs.forces = total_force
 
     elif qmprogram == "TM":
-        logger(logfile,"Turbomole is not avalible currently.\n")
-        exit(0)
+        #qm
+        qmfile = make_TM_inp(qmmmInputs)
+        logger(logfile, "Turbomole input file, %s, is ready.\n"%qmfile)
+        print('-----Run Turbomole file:%s---------------\n'%qmfile)
+        run_TM(qmfile, qmmmInputs)
+
+        #mm
+        mmfile = make_gmx_inp(qmmmInputs)
+        logger(logfile, "Gromacs input file, %s, is ready.\n"%mmfile)      
+        edrname = run_gmx(mmfile, qmmmInputs)
+
+        logger(logfile, str("Reading energies.\n"))
+        qmenergy, mmenergy, linkcorrenergy, qm_corrdata = get_energy(qmfile, edrname, qmmmInputs)
+        total_energy = qmenergy + mmenergy - linkcorrenergy
+        energies = (qmenergy, mmenergy, linkcorrenergy, total_energy)
+
+        logger(logfile, str("Reading forces.\n"))
+        total_force = read_forces(qm_corrdata,qmmmInputs)
+
+        qmmmInputs.energies = energies
+        qmmmInputs.forces = total_force
+        #logger(logfile,"Turbomole is not avalible currently.\n")
+        #exit(0)
 
     elif qmprogram == "ORCA":#Added by Nicola
         #qm
@@ -3988,7 +4281,13 @@ def perform_opt(qmmmInputs):
                 inpname     = str(jobname + insert + ".inp")
                 outname     = str(jobname + insert + ".inp.log")
                 engradname  = str(jobname + insert + ".engrad")
-                subprocess.call("rm %s %s %s %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname,inpname,outname,engradname), shell=True)
+                xyzname     = str(jobname + insert + "*" + ".xyz")
+                basisname   = str(jobname + insert + ".basis")
+                auxbasisname= str(jobname + insert + ".auxbasis")
+                strname     = str(jobname + insert + ".str")
+                coordname   = str(jobname + insert + ".coord")
+                #mosname     = str(jobname + insert + ".mos")
+                subprocess.call("rm %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s"%(trrname,tprname,gmxlogname,edrname,xvgname,g16name,fortname,pcfname,gjfname,inpname,outname,engradname,xyzname,basisname,auxbasisname,coordname,strname), shell=True)
 
             else:
                 count_trash=0

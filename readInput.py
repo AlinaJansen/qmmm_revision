@@ -462,12 +462,18 @@ class QMParams:
                 match = re.search(r"^program\s*=\s*(\S+)", line, flags=re.MULTILINE)
                 if match:
                     info[0] = str(match.group(1)).upper()
-                match = re.search(r"^method\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                match = re.search(r"^method\s*=\s*(.+)", line, flags=re.MULTILINE)
                 if match:
-                    info[1] = str(match.group(1)).upper()
-                match = re.search(r"^basis\s*=\s*(\S+)", line, flags=re.MULTILINE)
+                    if not info[0] == "TM":
+                        info[1] = str(match.group(1)).upper()
+                    else:
+                        info[1] = str(match.group(1)).lower()
+                match = re.search(r"^basis\s*=\s*(.+)", line, flags=re.MULTILINE)
                 if match:
-                    info[2] = str(match.group(1)).upper()
+                    if not info[0] == "TM":
+                        info[2] = str(match.group(1)).upper()
+                    else:
+                        info[2] = str(match.group(1)).lower()
                 match = re.search(r"^charge\s*=\s*([-]*\d+)", line, flags=re.MULTILINE)
                 if match:
                     info[3] = int(match.group(1))
@@ -483,7 +489,19 @@ class QMParams:
                 match = re.search(r"^extra\s*=\s*(.+)$", line, flags=re.MULTILINE)
                 if match:
                     info[7] = match.group(1)
-        
+        if info[0] == "TM":
+            info.append("dft")  # Default value for generalmethod
+            info.append("900")  # Default value for maxcyc
+            with open(inp) as ifile:
+                for line in ifile:
+                    match = re.search(r"^generalmethod\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[8] = match.group(1)
+
+                    match = re.search(r"^maxcyc\s*=\s*(.+)$", line, flags=re.MULTILINE)
+                    if match:
+                        info[9] = match.group(1)
+                        
         if info[0] == "SERENITY":
             info.append("dft")  # Default value for generalmethod
             info.append("900")  # Default value for maxcyc
@@ -836,13 +854,13 @@ class QMMMInputs:
         logger(logfile, "List of molecules...\n")
         
         logger(logfile, "inout option is chosen. Generating inital topology\n") # Added by Nicola
-        if inputFiles.inout and self.mmparams.gmxplus == 1 and self.qmparams.program == "SERENITY":
+        if inputFiles.inout and self.qmparams.program == "SERENITY": #and self.mmparams.gmxplus == 1 
             if self.qmparams.fde == 1:
                 self.qmlistorig = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
                 self.innerlistorig = prep_pcf.read_inner_list(inputFiles.inner)
                 self.outerlistorig = prep_pcf.read_inner_list(inputFiles.outer)
         
-        if inputFiles.inout and self.mmparams.gmxplus == 1: # Added by Nicola
+        if inputFiles.inout: # and self.mmparams.gmxplus == 1 # Added by Nicola
             self.inout=inputFiles.inout
             logger(logfile, "You are using Inner/Outer function; Reading Inner/Outer atom list...\n")
             self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
@@ -867,19 +885,6 @@ class QMMMInputs:
             for element in self.mollist:
                 self.chargevec.extend(make_pcf.readcharges(element, self.qmmmtopinit, self.pathparams.gmxtop))
             logger(logfile, "Done.\n")
-
-        elif inputFiles.inout and self.mmparams.gmxplus == 0:
-            self.inout = True
-            self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
-            self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
-            self.top = inputFiles.top
-            self.mollist = make_pcf.readmols(self.top)
-            logger(logfile, "Done.\n")
-            logger(logfile, "Reading charges...\n")
-            for element in self.mollist:
-                self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
-            logger(logfile, "Done.\n")
-
         else:
             self.inout = False
             self.top = inputFiles.top
@@ -889,6 +894,20 @@ class QMMMInputs:
             for element in self.mollist:
                 self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
             logger(logfile, "Done.\n")
+        
+        '''elif inputFiles.inout and self.mmparams.gmxplus == 0:
+            self.inout = True
+            self.innerlist = prep_pcf.read_inner_list(inputFiles.inner)
+            self.outerlist = prep_pcf.read_outer_list(inputFiles.outer)
+            self.top = inputFiles.top
+            self.mollist = make_pcf.readmols(self.top)
+            logger(logfile, "Done.\n")
+            logger(logfile, "Reading charges...\n")
+            for element in self.mollist:
+                self.chargevec.extend(make_pcf.readcharges(element, inputFiles.top, self.pathparams.gmxtop))
+            logger(logfile, "Done.\n")'''
+        
+
             
         logger(logfile, "Done.\n")
 
@@ -929,7 +948,7 @@ class QMMMInputs:
         elif inputFiles.coord[-4:] == ".g96":
             logger(logfile, "Reading geometry (.g96)...\n")
             self.geo = make_pcf.readg96(inputFiles.coord)
-        if not self.inout or (self.inout and self.mmparams.gmxplus == 0):
+        if not self.inout: # or (self.inout and self.mmparams.gmxplus == 0)
             self.numatoms = make_pcf.read_numatoms(inputFiles.coord)
         else:
             self.numatoms = make_pcf.read_numatoms(inputFiles.coord) - len(self.outerlist)
@@ -942,7 +961,7 @@ class QMMMInputs:
         #1111
         self.connlist = read_conn_list_from_top(inputFiles.top, make_pcf.readmols(inputFiles.top), self.pathparams.gmxtop)
         
-        if self.inout and self.mmparams.gmxplus == 1:
+        if self.inout:# and self.mmparams.gmxplus == 1
             self.connlist = connlist_remove_outer(self.connlist, self.outerlist)
             ref = prep_pcf.read_qmatom_list(inputFiles.qmatoms) + self.innerlist + self.outerlist
             ref = list(set(ref))
@@ -971,7 +990,7 @@ class QMMMInputs:
         #        qmlist[i] = memory_dict[qmlist[i]]
         #    self.qmatomlist = qmlist
         #else:
-        if not self.inout or (self.inout and self.mmparams.gmxplus == 0):
+        if not self.inout: # or (self.inout and self.mmparams.gmxplus == 0)
             self.qmatomlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
         else:
             self.qmatomlist = prep_pcf.read_qmatom_list(inputFiles.qmatoms)
@@ -994,10 +1013,10 @@ class QMMMInputs:
             logger(logfile, "Writing high-precision coordinate file...")
             grohigh = write_highprec(self.gro, self.qmmmparams.jobname, logfile)
             self.gro = self.qmmmparams.jobname + ".g96"
-            if self.inout and self.mmparams.gmxplus == 1:#Added by Nicola
+            if self.inout:#  and self.mmparams.gmxplus == 1, Added by Nicola
                 remove_outer_from_gro(self.gro, self.outerlist)
             logger(logfile, "Done.\n")
-        elif self.gro[-4:] == ".g96" and self.qmmmparams.curr_step == 0 and self.inout and self.mmparams.gmxplus == 1:#Added by Nicola
+        elif self.gro[-4:] == ".g96" and self.qmmmparams.curr_step == 0 and self.inout:# and self.mmparams.gmxplus == 1 ,Added by Nicola
             remove_outer_from_gro(self.gro, self.outerlist)
             logger(logfile, "Done.\n")
 
@@ -1024,10 +1043,10 @@ class QMMMInputs:
             "Starting the preparation of the point charge field used in the calculation.\n",
         )
         logger(logfile, "Creating the full xyzq Matrix...\n")
-        if self.inout and self.mmparams.gmxplus == 0:
-            self.xyzq = make_xyzq_io(self.geo, self.chargevec, self.outerlist)
-        else:
-            self.xyzq = make_xyzq(self.geo, self.chargevec)
+        #if self.inout and self.mmparams.gmxplus == 0:
+        #    self.xyzq = make_xyzq_io(self.geo, self.chargevec, self.outerlist)
+        #else:
+        self.xyzq = make_xyzq(self.geo, self.chargevec)
         logger(logfile, "Done.\n")
 
         logger(
@@ -1094,6 +1113,7 @@ class QMMMInputs:
                 self.logfile,
                 self.pathparams.gmxtop,
             )
+            '''
         elif inputFiles.inout and self.mmparams.gmxplus == 0:
             topprep.generate_top_listsonly(
                 self.inputFiles.top,
@@ -1112,7 +1132,7 @@ class QMMMInputs:
                 inner = self.innerlist,
                 outer = self.outerlist,
                 gmxplus = False
-            )
+            )'''
 
         else:
             topprep.generate_top_listsonly(
@@ -1149,7 +1169,7 @@ class QMMMInputs:
         if self.qmmmparams.jobtype != "SINGLEPOINT":
             logger(logfile, "Reading indices of active atoms...\n")
             self.active = prep_pcf.read_qmatom_list(inputFiles.act)
-            if self.inout and self.mmparams.gmxplus == 1:
+            if self.inout: # and self.mmparams.gmxplus == 1:
                 ref = prep_pcf.read_qmatom_list(inputFiles.qmatoms) + prep_pcf.read_inner_list(inputFiles.inner) + self.outerlist
                 ref = list(set(ref))
                 memory_dict = reindexing.reindexing_memory(ref, self.outerlist)

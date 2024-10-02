@@ -213,7 +213,7 @@ def cleanagain_exclusions(excludedata, logfile):
     logger(logfile, str("Formatting done.\n"))
     return new_excludedata
 
-def Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+def Permutate_Pairwise_no_rep(qmatomlist): #Added by Nicola
 
     qmatoms = qmatomlist
     pairwise_permutation = []
@@ -223,7 +223,7 @@ def Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
 
     return pairwise_permutation
 
-def Permutate_Pairwise(inneratomlist, outeratomlist, gmxplus = True): #Added by Nicola
+def Permutate_Pairwise(inneratomlist, outeratomlist): #Added by Nicola
 
     inneratoms = inneratomlist
     outeratoms = outeratomlist
@@ -990,7 +990,7 @@ def make_large_top(
         ofile.write("\n[ moleculetype ]\nQMMM_model     3\n\n[ atoms ]\n")
         ffnb = find_ffnonbonded(includedata, logfile)
         
-        if not outeratomlist == [] and gmxplus:
+        if not outeratomlist == []:
             
                 
             outeratomlist = set([int(i) for i in outeratomlist])
@@ -1255,7 +1255,7 @@ def make_large_top(
                         excludedata.append([int(m3list[i][j][k]), int(q1list[i])])
             excludedata = clean_exclusions(excludedata, offset, logfile)
             excludedata = cleanagain_exclusions(excludedata, logfile)
-            for i in Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+            for i in Permutate_Pairwise_no_rep(qmatomlist): #Added by Nicola
                 if i not in excludedata and i.reverse() not in excludedata: #Added by Nicola
                     excludedata.append(i) #Added by Nicola
                 else: #Added by Nicola
@@ -1405,7 +1405,7 @@ def make_large_top(
                         excludedata.append([int(m3list[i][j][k]), int(q1list[i])])
             excludedata = clean_exclusions(excludedata, offset, logfile)
             excludedata = cleanagain_exclusions(excludedata, logfile)
-            for i in Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+            for i in Permutate_Pairwise_no_rep(qmatomlist): #Added by Nicola
                 if i not in excludedata and i.reverse() not in excludedata: #Added by Nicola
                     excludedata.append(i) #Added by Nicola
                 else: #Added by Nicola
@@ -1560,7 +1560,7 @@ def make_new_top(
 
 
 def make_exclude_index(outname, qmatomlist, inner, outer, gmxplus):
-    if outer != [] and gmxplus:
+    if outer != []: # and gmxplus:
         ref = qmatomlist + inner + outer # Added by Nicola
         ref = list(set(ref)) # Added by Nicola
         ref.sort() # Added by Nicola
@@ -1590,7 +1590,7 @@ def make_exclude_index(outname, qmatomlist, inner, outer, gmxplus):
                     ofile.write("\n")
                     count = 0
             ofile.write("\n")
-        if not outer == [] and not gmxplus:
+        '''if not outer == [] and not gmxplus:
             ofile.write("[ OUTER ]\n")
             count=0
             for element in outer:
@@ -1599,7 +1599,7 @@ def make_exclude_index(outname, qmatomlist, inner, outer, gmxplus):
                     if count==15:
                             ofile.write("\n")
                             count=0
-            ofile.write("\n")
+            ofile.write("\n")'''
 
 
 def generate_top_listsonly(

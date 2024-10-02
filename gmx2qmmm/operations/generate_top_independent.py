@@ -213,7 +213,7 @@ def cleanagain_exclusions(excludedata, logfile):
     logger(logfile, str("Formatting done.\n"))
     return new_excludedata
 
-def Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
+def Permutate_Pairwise_no_rep(qmatomlist): #Added by Nicola
 
     qmatoms = qmatomlist
     pairwise_permutation = []
@@ -223,7 +223,7 @@ def Permutate_Pairwise_no_rep(qmatomlist, gmxplus = True): #Added by Nicola
 
     return pairwise_permutation
 
-def Permutate_Pairwise(inneratomlist, outeratomlist, gmxplus = True): #Added by Nicola
+def Permutate_Pairwise(inneratomlist, outeratomlist): #Added by Nicola
 
     inneratoms = inneratomlist
     outeratoms = outeratomlist
