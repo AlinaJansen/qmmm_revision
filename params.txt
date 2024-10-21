@@ -2,7 +2,7 @@
 includeprio=0
 
 # PARAMETERS
-jobtype=opt
+jobtype=scan
 jobname=test
 
 gmxtop_path=C:\Users\Alina\Documents\Uni\AG_goetze\top
@@ -45,3 +45,10 @@ f_thresh=0
 maxcycle=1000
 propagator=STEEP
 stepsize=1
+
+# scan
+scantype=r
+scanstep=0
+scanatomslist=1,2
+scanstepstotal=3
+scanstepsize=0.1

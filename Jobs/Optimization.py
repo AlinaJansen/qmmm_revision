@@ -26,7 +26,7 @@ import Jobs.Singlepoint as SP
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
-from Generators.GeneratorGeometries import propagate_dispvec
+from Generators.GeneratorGeometries import generate_displacement_vector
 from Generators._helper import filter_xyzq, _flatten, mask_atoms
 
 #   // TODOS & NOTES //
@@ -215,7 +215,7 @@ class Optimization():
             pass # XX AJ add scan later
             # dispvec = propagate_dispvec(propagator, xyzq, new_xyzq, total_force, last_forces, stepsize, self.system.int_step_current, True, qmmmInputs.scan_atoms)
         else :
-            dispvec = propagate_dispvec(self.dict_input_userparameters['propagator'], self.list_xyzq_all_steps, self.list_forces_all_steps, self.list_forces_max_all_steps[-1], self.dict_input_userparameters['stepsize'], self.system.int_step_current)
+            dispvec = generate_displacement_vector(self.dict_input_userparameters['propagator'], self.list_xyzq_all_steps, self.list_forces_all_steps, self.list_forces_max_all_steps[-1], self.dict_input_userparameters['stepsize'], self.system.int_step_current)
         #    write_dispvec(dispvec, curr_step, count_trash) Simon implemented this to check if the dispvec is correct!
 
         #   Apply Displacement

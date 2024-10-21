@@ -24,6 +24,7 @@ import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
 import Jobs.Singlepoint as SP
 import Jobs.Optimization as OPT
+import Jobs.Scan as SCAN
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
@@ -162,7 +163,8 @@ class GMX2QMMM():
                 str_info_to_log= 'Listing the parameters given as input for this run of gmx2qmmm:\n\n' + str_parameters_input_log
             )
 
-
+        #   Assess Job Type
+        self.assess_job()
 
         #   Initializing The System
         self.initalize_system()
@@ -171,16 +173,13 @@ class GMX2QMMM():
         self.generate_topology()
 
         #   Add List Of Elements To System Instance
-        self.system.list_atom_elements = self.system.get_atoms(self.topology.qmmm_topology)
+        self.class_system.list_atom_elements = self.class_system.get_atoms(self.class_topology.qmmm_topology)
 
         #   Initialize Pointchargefield
         self.generate_PCF()
 
 
         #   // JOB SPAWNING //
-        #   Assess Job Type
-        self.assess_job()
-
         #   Start Job According To Inputs
         self.start_job()
 
@@ -201,7 +200,7 @@ class GMX2QMMM():
         NONE \\
         ------------------------------ \\
         '''
-        self.system = System.SystemInfo(self.defaultdict_parameters_input)
+        self.class_system = System.SystemInfo(self.defaultdict_parameters_input)
         
     def generate_topology(self) -> None:
 
@@ -220,7 +219,7 @@ class GMX2QMMM():
         NONE \\
         ------------------------------ \\
         '''
-        self.topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.system, self.directory_base)
+        self.class_topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.class_system, self.directory_base)
 
     def generate_PCF(self) -> None:
         
@@ -240,7 +239,7 @@ class GMX2QMMM():
         ------------------------------ \\
         '''
         # XX AJ I forgot what I used the Job keyword for, I think I will only need it later, I will get back to that
-        self.pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base)
+        self.class_pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.class_system, self.class_topology, self.directory_base)
 
     def assess_job(self) -> None:
 
@@ -295,21 +294,21 @@ class GMX2QMMM():
         if self.defaultdict_parameters_input['jobtype'] == "singlepoint":
             # logger(logfile, "Performing an single point calculation.\n")
             # SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
-            SP_job = SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
+            SP_job = SP.Singlepoint(self.defaultdict_parameters_input, self.class_system, self.class_topology, self.class_pointchargefield, self.directory_base)
 
 
         elif self.defaultdict_parameters_input['jobtype'] == "opt":
             # logger(logfile, "Performing an optimization.\n")
             # logger(logfile, "Getting initial energy:\n")
-            OPT.Optimization(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
+            OPT.Optimization(self.defaultdict_parameters_input, self.class_system, self.class_topology, self.class_pointchargefield, self.directory_base)
 
         # elif jobtype == "NMA":
         #     jobname = stepper(qmmminfo[0], step)
         #     perform_nma(qmmmInputs)
 
-        # elif jobtype == "SCAN":
-        #     # logger(logfile, "Performing scan calculations.\n")
-        #     perform_scan(qmmmInputs)
+        elif self.defaultdict_parameters_input['jobtype'] == "scan":
+            # logger(logfile, "Performing scan calculations.\n")
+            SCAN.Scan_bondlength(self.defaultdict_parameters_input, self.class_system, self.class_topology, self.class_pointchargefield, self.directory_base)
 
         # elif jobtype == "OPT_ROOTFOLLOWING":
         #     # logger(logfile, "Performing an optimization.\n")
