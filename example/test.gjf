@@ -1,7 +1,7 @@
 %NPROCSHARED=1
 %MEM=1000MB
 %CHK=test.chk
-#P BP86/STO-3G nosymm gfinput gfprint force charge guess=huckel punch=derivatives iop(3/33=1,6/7=3) prop(field,read) pop=esp
+#P BP86/STO-3G NONE nosymm gfinput gfprint force charge guess=huckel punch=derivatives iop(3/33=1,6/7=3) prop(field,read) pop=esp
 
 QM part of step 0
 
@@ -50,5 +50,3 @@ H     47.705453    85.948457    33.182908
    47.360663    86.353811    33.913707
    49.406984    87.377971    33.275356
    48.313016    86.642029    33.404644
-
-
