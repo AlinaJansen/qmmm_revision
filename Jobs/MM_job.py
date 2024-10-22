@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #   // INITIAL DESCRIPTION //
-"""Run Singlepoint Calculations"""
+"""Run Gromacs Calculations"""
 
 #   // MEATDATA //
 __author__ = 'Alina Jansen'

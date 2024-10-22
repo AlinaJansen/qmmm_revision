@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #   // INITIAL DESCRIPTION //
-"""Run Singlepoint Calculations"""
+"""Run QM Calculations"""
 
 #   // MEATDATA //
 __author__ = 'Alina Jansen'

@@ -5,22 +5,21 @@ includeprio=0
 jobtype=opt
 jobname=test
 
-gmxtop_path=C:\Users\Alina\Documents\Uni\AG_goetze\top
+gmxtop_path=
 gmxcmd=gmx
-gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
+gmxpath=
 qmcommand=g16
 charge=1
 
 # atomlists
-qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
-activeatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+qmatomslist=
+activeatomslist=
 
 # coordinatefile
-coordinatefile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
-topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
+coordinatefile=
+topologyfile=
 
 # INNER / OUTER PARAMETERS
-# XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool
 useinnerouter=0
 inneratomslist=[]
 outeratomslist=[]
