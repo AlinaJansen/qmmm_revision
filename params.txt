@@ -1,0 +1,46 @@
+# PRIO PARAMETERS
+includeprio=0
+
+# PARAMETERS
+jobtype=opt
+jobname=test
+
+gmxtop_path=
+gmxcmd=gmx
+gmxpath=
+qmcommand=g16
+charge=1
+
+# atomlists
+qmatomslist=
+activeatomslist=
+
+# coordinatefile
+coordinatefile=
+topologyfile=
+
+# INNER / OUTER PARAMETERS
+useinnerouter=0
+inneratomslist=[]
+outeratomslist=[]
+
+# default parameters?
+cores=1
+program=G16
+method=BP86
+basis=STO-3G
+multiplicity=1
+memory=1000
+extra=NONE
+
+rvdw=2.0
+rcoulomb=0.0
+databasefit=morse
+print_level=normal
+forcefield=amberGS
+
+# optimization
+f_thresh=0
+maxcycle=1000
+propagator=STEEP
+stepsize=1
