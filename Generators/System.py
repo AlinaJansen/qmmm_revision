@@ -25,7 +25,7 @@ import Generators.GeneratorGeometries as geometry
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
 from Generators import generate_pcf_from_top as make_pcf
-from Generators._helper import _flatten, get_linkatoms_angstrom
+from Generators._helper import _flatten, get_coordinates_linkatoms_angstrom
 
 #   // TODOS & NOTES //
 #   TODO:
@@ -59,8 +59,9 @@ class SystemInfo():
         '''
 
         self.dict_input_userparameters = dict_input_userparameters
+        self.int_step_current = 0
 
-        #   Make a list of all topology files
+        #   Make A List Of All Topology Files
         self.list_topology = self.get_list_topologies(self.dict_input_userparameters['topologyfile'])
 
         # Read The Different Types Of Molecules In The System
@@ -74,7 +75,10 @@ class SystemInfo():
         #   Read All Atom Lists
         #   XX AJ currently I'm assuming we're always having separate files for atom indices, only remove this comment when we finally decided so or add the possibility for lists
         self.list_atoms_qm = self.read_atoms_list(self.dict_input_userparameters['qmatomslist'])
-        self.list_atoms_active = self.read_atoms_list(self.dict_input_userparameters['activeatomslist'])
+        if self.dict_input_userparameters['jobtype'] != 'SINGLEPOINT':
+            self.list_atoms_active = self.read_atoms_list(self.dict_input_userparameters['activeatomslist'])
+        else:
+            self.list_atoms_active = []
         if dict_input_userparameters['useinnerouter']:
             self.list_atoms_inner = self.read_atoms_list(self.dict_input_userparameters['inneratomslist'])
             self.list_atoms_outer = self.read_atoms_list(self.dict_input_userparameters['outeratomslist'])
@@ -104,21 +108,23 @@ class SystemInfo():
         self.int_number_atoms = int(len(self.list_geometry_initial)/3)
 
         #   Create xyzq (Coordinates And Charges) For The Whole System
-        #   XX AJ same here, I'll make one function of it
+        #   XX AJ also prefer only one function here, I'll make one function of it
         #   XX AJ technically, I would prefer this xyzq function not in this class, but it's used in the get_linkatoms_ang, so I'll keep it here
         if dict_input_userparameters['useinnerouter']:
-            self.array_xyzq = geometry.make_xyzq_io(self.list_geometry_initial, self.list_charges, self.list_atoms_outer)
+            self.array_xyzq_initial = geometry.make_xyzq_io(self.list_geometry_initial, self.list_charges, self.list_atoms_outer)
         else:
-            self.array_xyzq = geometry.make_xyzq(self.list_geometry_initial, self.list_charges)
+            self.array_xyzq_initial = geometry.make_xyzq(self.list_geometry_initial, self.list_charges)
 
-        #    Read Linkatoms And Next Order Atoms In MM Region; For Further Information On Atom Naming See Documentation
+        #   Current Geometry Gets Updated During Optimizations
+        self.array_xyzq_current = self.array_xyzq_initial
+
+        #   Read linkatoms and next order atoms in mm region
         self.list_atoms_m1 = self.get_list_atoms_m1()
         self.list_atoms_m2 = self.get_list_atoms_m2()
 
         #   Read coordinates of linkatoms in angstrom
-        self.list_coordinates_linkatoms = get_linkatoms_angstrom(self.array_xyzq, self.list_atoms_qm, self.list_atoms_m1, self.list_connectivity_topology, [])
-        self.list_link_correction, self.list_atoms_q1, self.list_atoms_q2, self.list_atoms_q3, self.list_atoms_m3 = self.get_list_atoms_link()
-        pass
+        self.list_coordinates_linkatoms = get_coordinates_linkatoms_angstrom(self.array_xyzq_initial, self.list_atoms_qm, self.list_atoms_m1, self.list_connectivity_topology, [])
+        self.linkcorrlist, self.list_atoms_q1, self.list_atoms_q2, self.list_atoms_q3, self.list_atoms_m3 = self.get_list_atoms_link()
 
 
 
@@ -346,7 +352,7 @@ class SystemInfo():
         connectivity_list = []
         for molecule in self.list_molecules:
             current_topology = self.get_current_topology(molecule[0], topology_file)
-            for i in range(0, int(molecule[1])):
+            for _ in range(0, int(molecule[1])):
                 mollength = self.get_mollength_direct(molecule[0], current_topology)
                 connset = self.get_list_connectivity(int_count, molecule[0], current_topology)
                 connectivity_list += connset
@@ -956,7 +962,7 @@ class SystemInfo():
                     toplist.extend(self.get_list_topologies(foundname))
         return toplist
     
-    def get_atoms(self) -> list:
+    def get_atoms(self, str_qmmm_topology) -> list:
 
         '''
         ------------------------------ \\
@@ -966,7 +972,7 @@ class SystemInfo():
         ------------------------------ \\
         INPUT: \\
         ---------------  \\
-        None \\
+        str_qmmm_topology: str -> Name Of QMMM Topology File \\
         ------------------------------ \\
         RETURN: \\
         ---------------  \\
@@ -974,13 +980,12 @@ class SystemInfo():
         ------------------------------ \\
         '''
         atoms = []
-        with open('mass_map.json', 'r') as file:
+        str_file_mass_map = os.path.join('json_files', 'mass_map.json')
+        with open(str_file_mass_map, 'r') as file:
             mass_map = json.load(file)
           
         name_map = {value: key for key, value in mass_map.items()}
-        # XX AJ I need to change qmmm_topology in new version
-        qmmm_topology=0
-        with open(qmmm_topology) as qmmm_topology_file:
+        with open(str_qmmm_topology) as qmmm_topology_file:
             for line in qmmm_topology_file:
                 match = re.search(r"\[\s+moleculetype\s*\]", line, flags=re.MULTILINE)
                 if match:

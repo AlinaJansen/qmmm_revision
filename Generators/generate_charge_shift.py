@@ -77,6 +77,23 @@ def create_corr_charges(m1coordsq, m2coordsqlist, disp_vec, disp_charge_vec, m2_
     return corr_charge
 
 def write_disp_charges(m1, m2coordsqlist, disp_vec, dispcharge):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     charge_list = []
     for i in range(0, len(m2coordsqlist)):
         ab_vec = np.array(
@@ -125,6 +142,23 @@ def write_disp_charges(m1, m2coordsqlist, disp_vec, dispcharge):
     return charge_list
 
 def make_new_field(m2coordsqlist,corr_charge_list):
+    
+    '''
+    ------------------------------ \\
+    EFFECT: \\
+    --------------- \\
+    XX \\
+    ------------------------------ \\
+    INPUT: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    RETURN: \\
+    --------------- \\
+    NONE \\
+    ------------------------------ \\
+    '''
+    
     '''combine m2 and corr charges to a new list'''
     new_field=[]
     for element in m2coordsqlist:

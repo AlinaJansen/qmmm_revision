@@ -19,9 +19,11 @@ import textwrap
 from collections import defaultdict
 
 #   Imports Of Custom Libraries
-import stuff2sort.System as System
+import Generators.System as System
 import Generators.GeneratorTopologies as Top
 import Generators.GeneratorPCF as PCF
+import Jobs.Singlepoint as SP
+import Jobs.Optimization as OPT
 
 #   Imports From Custom Libraries
 from Logging.Logger import Logger
@@ -100,7 +102,7 @@ class GMX2QMMM():
                 help="Parameter File(.txt)",
                 type=str,
                 # default="path.dat"
-                default="params.txt"    # XX Florian
+                default="params.txt"    # XX AJ Do you mean params.txt?
             )
 
         #   Parse And Create Input File Member
@@ -160,8 +162,20 @@ class GMX2QMMM():
                 str_info_to_log= 'Listing the parameters given as input for this run of gmx2qmmm:\n\n' + str_parameters_input_log
             )
 
+
+
         #   Initializing The System
         self.initalize_system()
+
+        #   Generate QMMM Topology
+        self.generate_topology()
+
+        #   Add List Of Elements To System Instance
+        self.system.list_atom_elements = self.system.get_atoms(self.topology.qmmm_topology)
+
+        #   Initialize Pointchargefield
+        self.generate_PCF()
+
 
         #   // JOB SPAWNING //
         #   Assess Job Type
@@ -176,7 +190,7 @@ class GMX2QMMM():
         ------------------------------ \\
         EFFECT: \\
         --------------- \\
-        
+        Initializes The System \\
         ------------------------------ \\
         INPUT: \\
         --------------- \\
@@ -189,6 +203,44 @@ class GMX2QMMM():
         '''
         self.system = System.SystemInfo(self.defaultdict_parameters_input)
         
+    def generate_topology(self) -> None:
+
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Writes Large QMMM Topology File \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        self.topology = Top.GenerateTopology(self.defaultdict_parameters_input, self.system, self.directory_base)
+
+    def generate_PCF(self) -> None:
+        
+        '''
+        ------------------------------ \\
+        EFFECT: \\
+        --------------- \\
+        Writes Large QMMM Topology File \\
+        ------------------------------ \\
+        INPUT: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        RETURN: \\
+        --------------- \\
+        NONE \\
+        ------------------------------ \\
+        '''
+        # XX AJ I forgot what I used the Job keyword for, I think I will only need it later, I will get back to that
+        self.pointchargefield = PCF.GeneratePCF(self.defaultdict_parameters_input, self.system, self.topology, self.directory_base)
 
     def assess_job(self) -> None:
 
@@ -240,15 +292,16 @@ class GMX2QMMM():
         ------------------------------ \\
         '''
 
-        if self.defaultdict_parameters_input['jobtype'] == "SINGLEPOINT":
+        if self.defaultdict_parameters_input['jobtype'] == "singlepoint":
             # logger(logfile, "Performing an single point calculation.\n")
             # SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pcf.pcf_filename)
-            pass
+            SP_job = SP.Singlepoint(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
 
-        # elif jobtype == "OPT":
-        #     # logger(logfile, "Performing an optimization.\n")
-        #     # logger(logfile, "Getting initial energy:\n")
-        #     perform_opt(qmmmInputs)
+
+        elif self.defaultdict_parameters_input['jobtype'] == "opt":
+            # logger(logfile, "Performing an optimization.\n")
+            # logger(logfile, "Getting initial energy:\n")
+            OPT.Optimization(self.defaultdict_parameters_input, self.system, self.topology, self.pointchargefield, self.directory_base)
 
         # elif jobtype == "NMA":
         #     jobname = stepper(qmmminfo[0], step)

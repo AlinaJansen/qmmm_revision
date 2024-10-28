@@ -2,23 +2,24 @@
 includeprio=0
 
 # PARAMETERS
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\mm.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\path.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qm.dat
-!INCLUDE=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmmm.dat
-jobtype=SINGLEPOINT
+jobtype=opt
 jobname=test
 
+gmxtop_path=
+gmxcmd=gmx
+gmxpath=
+qmcommand=g16
+charge=1
+
 # atomlists
-qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
-activeatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+qmatomslist=
+activeatomslist=
 
 # coordinatefile
-coordinatefile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
-topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
+coordinatefile=
+topologyfile=
 
 # INNER / OUTER PARAMETERS
-# XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool
 useinnerouter=0
 inneratomslist=[]
 outeratomslist=[]
@@ -31,6 +32,15 @@ basis=STO-3G
 multiplicity=1
 memory=1000
 extra=NONE
+
 rvdw=2.0
+rcoulomb=0.0
 databasefit=morse
 print_level=normal
+forcefield=amberGS
+
+# optimization
+f_thresh=0
+maxcycle=1000
+propagator=STEEP
+stepsize=1
