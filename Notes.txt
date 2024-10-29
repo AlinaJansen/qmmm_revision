@@ -1,9 +1,0 @@
--------------
-General Notes
--------------
-
--> File Handling:
-
-    -> Provide Capability To Include Small Files (Acting As Existing Libraries) AND One "Big" File For Initial Parameters
-
-    

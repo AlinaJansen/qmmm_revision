@@ -20,7 +20,6 @@ coordinatefile=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/conf.g96
 topologyfile=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/topol.top
 
 # INNER / OUTER PARAMETERS
-# XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool
 useinnerouter=0
 inneratomslist=[]
 outeratomslist=[]
