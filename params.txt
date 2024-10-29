@@ -2,22 +2,22 @@
 includeprio=0
 
 # PARAMETERS
-jobtype=opt
+jobtype=singlepoint
 jobname=test
 
-gmxtop_path=C:\Users\Alina\Documents\Uni\AG_goetze\top
-gmxcmd=gmx
-gmxpath=/scratch/spetry/Gromacs_bin/bin/ 
+gmxtop_path=/home/jansea92/GROLIB/top/
+gmxcmd=gmx19gi
+gmxpath=/home/janjoswig/local/gromacs-2019.1/bin/
 qmcommand=g16
 charge=1
 
 # atomlists
-qmatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\qmatoms.ndx
-activeatomslist=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\act.ndx
+qmatomslist=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/qmatoms.ndx
+activeatomslist=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/act.ndx
 
 # coordinatefile
-coordinatefile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\conf.g96
-topologyfile=C:\Users\Alina\Documents\Uni\AG_goetze\qmmm_revision\LibFiles\topol.top
+coordinatefile=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/conf.g96
+topologyfile=/home/jansea92/mnt/Curta_home/qmmm_revision/LibFiles/topol.top
 
 # INNER / OUTER PARAMETERS
 # XX AJ use 0 and 1 for useinnerouter, consistent with includeprio and easier to turn into bool

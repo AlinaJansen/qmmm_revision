@@ -155,11 +155,11 @@ class QM():
             if not os.path.isfile(str(self.str_inputfile_qm) + ".log"):
                 # logger(logfile, "Running G16 file.\n")
                 # XX AJ commented out until testing 
-                # subprocess.call([g16cmd, str(qmfile)])
+                subprocess.call([g16cmd, str(qmfile)])
                 logname = self.str_inputfile_qm[:-3]
                 logname += "log"
-                # os.rename(logname, str(self.dict_input_userparameters['jobname'] + insert + ".gjf.log"))
-                # os.rename("fort.7", str(self.dict_input_userparameters['jobname'] + insert + ".fort.7"))
+                os.rename(logname, str(self.dict_input_userparameters['jobname'] + insert + ".gjf.log"))
+                os.rename("fort.7", str(self.dict_input_userparameters['jobname'] + insert + ".fort.7"))
                 # logger(logfile, "G16 Done.\n")
             else:
                 # logger(

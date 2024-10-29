@@ -96,25 +96,25 @@ class MM():
         self.write_mdp()
 
         # XX AJ commented out until testing 
-        # subprocess.call(
-        #     [
-        #         prefix,
-        #         "grompp",
-        #         "-p",
-        #         str(self.class_topology_qmmm.qmmm_topology),
-        #         "-c",
-        #         str(self.groname),
-        #         "-n",
-        #         str(self.ndxname),
-        #         "-f",
-        #         str(self.mdpname),
-        #         "-o",
-        #         str(self.tprname),
-        #         "-backup",
-        #         "no",
-        #     ]
-        # )
-        # subprocess.call(["rm", "mdout.mdp"])
+        subprocess.call(
+            [
+                self.prefix,
+                "grompp",
+                "-p",
+                str(self.class_topology_qmmm.qmmm_topology),
+                "-c",
+                str(self.groname),
+                "-n",
+                str(self.ndxname),
+                "-f",
+                str(self.mdpname),
+                "-o",
+                str(self.tprname),
+                "-backup",
+                "no",
+            ]
+        )
+        subprocess.call(["rm", "mdout.mdp"])
 
     
     def write_mdp(self):
@@ -182,27 +182,27 @@ class MM():
         # logger(logfile, "Running Gromacs file.\n")
        
         # XX AJ commented out until testing 
-        # subprocess.call(
-        # [
-        #     self.prefix,
-        #     "mdrun",
-        #     "-s",
-        #     self.tprname,
-        #     "-o",
-        #     self.trrname,
-        #     "-c",
-        #     self.outname,
-        #     "-x",
-        #     self.xtcname,
-        #     "-g",
-        #     self.gmxlogname,
-        #     "-e",
-        #     self.edrname,
-        #     "-backup",
-        #     "no",
-        # ]
-        # )
-        # # os.remove(outname)    
+        subprocess.call(
+        [
+            self.prefix,
+            "mdrun",
+            "-s",
+            self.tprname,
+            "-o",
+            self.trrname,
+            "-c",
+            self.outname,
+            "-x",
+            self.xtcname,
+            "-g",
+            self.gmxlogname,
+            "-e",
+            self.edrname,
+            "-backup",
+            "no",
+        ]
+        )
+        # os.remove(outname)    
 
     
     def read_mm_energy(self):
@@ -223,7 +223,7 @@ class MM():
         ------------------------------ \\
         '''
         
-        prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
+        self.prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
 
         self.mmenergy = 0.0
         # logger(logfile, "Extracting MM energy.\n")
@@ -275,7 +275,7 @@ class MM():
         ------------------------------ \\
         '''
         
-        prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
+        self.prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
 
         self.mmforces = []
         insert = ""
@@ -285,27 +285,27 @@ class MM():
         trrname = str(self.dict_input_userparameters['jobname'] + insert + ".trr")
         tprname = str(self.dict_input_userparameters['jobname'] + insert + ".tpr")
         xvgname = str(self.dict_input_userparameters['jobname'] + insert + ".xvg")
-        # p = subprocess.Popen(
-        #     [
-        #         prefix,
-        #         "traj",
-        #         "-fp",
-        #         "-f",
-        #         trrname,
-        #         "-s",
-        #         tprname,
-        #         "-of",
-        #         xvgname,
-        #         "-xvg",
-        #         "none",
-        #         "-backup",
-        #         "no",
-        #     ],
-        #     stdout=subprocess.PIPE,
-        #     stdin=subprocess.PIPE,
-        #     stderr=subprocess.STDOUT,
-        # )
-        # p.communicate(input=b"0\n")
+        p = subprocess.Popen(
+            [
+                self.prefix,
+                "traj",
+                "-fp",
+                "-f",
+                trrname,
+                "-s",
+                tprname,
+                "-of",
+                xvgname,
+                "-xvg",
+                "none",
+                "-backup",
+                "no",
+            ],
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        p.communicate(input=b"0\n")
 
         with open(xvgname) as ifile:
             for line in ifile:
