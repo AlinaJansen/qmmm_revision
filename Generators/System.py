@@ -40,7 +40,7 @@ class SystemInfo():
     This Class Reads And Stores Information About The System
     '''
 
-    def __init__(self, dict_input_userparameters, directory_base) -> None:
+    def __init__(self, dict_input_userparameters) -> None:
 
         '''
         ------------------------------ \\
@@ -59,7 +59,6 @@ class SystemInfo():
         '''
 
         self.dict_input_userparameters = dict_input_userparameters
-        self.directory_base = directory_base
         self.int_step_current = 0
 
         #   Make A List Of All Topology Files
@@ -981,7 +980,7 @@ class SystemInfo():
         ------------------------------ \\
         '''
         atoms = []
-        str_file_mass_map = os.path.join(self.directory_base, 'json_files', 'mass_map.json')
+        str_file_mass_map = os.path.join('json_files', 'mass_map.json')
         with open(str_file_mass_map, 'r') as file:
             mass_map = json.load(file)
           

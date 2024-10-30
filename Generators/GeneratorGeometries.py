@@ -171,7 +171,8 @@ def propagate_dispvec(propagator, xyzq, all_forces, float_force_max, stepsize, c
         # Fletcher-Reeves
         _flattened = list(_flatten(total_force))
         corr_fac = np.array(_flattened).dot(np.array(_flattened))
-        _flattened = list(_flatten(last_forces))
+        # XX AJ working on conjgrad later
+        # _flattened = list(_flatten(last_forces))
         corr_fac /= np.array(_flattened).dot(np.array(_flattened))
 
         corr_length = np.array(total_force)
