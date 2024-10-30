@@ -65,7 +65,7 @@ class GMX2QMMM():
         #   // DIRECTORIES //
         #   Define The Current Working Directory
         self.directory_base: str = os.path.dirname(os.path.abspath(__file__))
-
+        print(self.directory_base)
         #   // PARSER //
         #   Declare gmx2qmmm_parser Member For Input File Processing
         self.gmx2qmmm_parser: argparse.ArgumentParser = argparse.ArgumentParser\
@@ -201,7 +201,7 @@ class GMX2QMMM():
         NONE \\
         ------------------------------ \\
         '''
-        self.system = System.SystemInfo(self.defaultdict_parameters_input)
+        self.system = System.SystemInfo(self.defaultdict_parameters_input, self.directory_base)
         
     def generate_topology(self) -> None:
 

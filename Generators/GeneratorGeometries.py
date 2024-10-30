@@ -280,6 +280,7 @@ def read_gmx_box_vectors(file):
     return list_vectors_box
 
 def write_g96(filename, header, atom_information, coordinates, box_vectors):
+    coordinates = np.array(coordinates)/10
     with open(filename, 'w') as str_file:
         str_file.write(header)
         for int_atom_number, str_atom_information in enumerate(atom_information):

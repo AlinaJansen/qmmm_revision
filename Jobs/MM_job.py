@@ -227,22 +227,22 @@ class MM():
 
         self.mmenergy = 0.0
         # logger(logfile, "Extracting MM energy.\n")
-        # p = subprocess.Popen(
-        #     [
-        #         prefix,
-        #         "energy",
-        #         "-f",
-        #         edrname,
-        #         "-o",
-        #         str(edrname + ".xvg"),
-        #         "-backup",
-        #         "no",
-        #     ],
-        #     stdout=subprocess.PIPE,
-        #     stdin=subprocess.PIPE,
-        #     stderr=subprocess.STDOUT,
-        # )
-        # p.communicate(input=b"11\n\n")
+        p = subprocess.Popen(
+            [
+                self.prefix,
+                "energy",
+                "-f",
+                self.edrname,
+                "-o",
+                str(self.edrname + ".xvg"),
+                "-backup",
+                "no",
+            ],
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        p.communicate(input=b"11\n\n")
         
         with open(str(self.edrname + ".xvg")) as ifile:
             for line in ifile:

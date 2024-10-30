@@ -155,7 +155,7 @@ class QM():
             if not os.path.isfile(str(self.str_inputfile_qm) + ".log"):
                 # logger(logfile, "Running G16 file.\n")
                 # XX AJ commented out until testing 
-                subprocess.call([g16cmd, str(qmfile)])
+                subprocess.call([self.dict_input_userparameters['qmcommand'], self.str_inputfile_qm])
                 logname = self.str_inputfile_qm[:-3]
                 logname += "log"
                 os.rename(logname, str(self.dict_input_userparameters['jobname'] + insert + ".gjf.log"))
@@ -457,7 +457,9 @@ class QM_gaussian(QM):
 
         self.header += "#P " + str(self.dict_input_userparameters['method'])
         self.header += "/" + str(self.dict_input_userparameters['basis'])
-        self.header += " " + str(self.dict_input_userparameters['extra'])
+        # XX AJ change the usage of extra to False in assessment or so
+        if self.dict_input_userparameters['extra'] != "NONE":
+            self.header += " " + str(self.dict_input_userparameters['extra'])
 
         if int(self.system.int_step_current) != 0 or self.nmaflag == 1:
             self.header += " guess=read"
