@@ -108,6 +108,9 @@ class GMX2QMMM():
         #   Parse And Create Input File Member
         self.files_input_initial: argparse.Namespace = self.gmx2qmmm_parser.parse_args()
 
+        #   XX AJ I don't know why there always is a space in front of my arguments, but I don't really know how argparse works and I don't have time for that right now. Someone who knows more, please either explain it to me, change the code if .strip in the following line is not the best way to do that or remove this comment. Also change it for other arguments please.
+        self.files_input_initial.parameterFile = self.files_input_initial.parameterFile.strip()
+
         #   Set File Path For Logging (Absolute Path)
         self.path_filepath_logfile = os.path.abspath(self.files_input_initial.logfile)
 

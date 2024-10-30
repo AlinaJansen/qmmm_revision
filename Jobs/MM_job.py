@@ -88,7 +88,7 @@ class MM():
         NONE \\
         ------------------------------ \\
         '''
-        
+
         write_g96(self.groname, self.string_structure_gmx_header, self.list_structure_gmx_atoms, self.system.array_xyzq_current, self.list_box_vectors_large)
 
         self.prefix =  self.dict_input_userparameters['gmxpath'] + self.dict_input_userparameters['gmxcmd']
@@ -135,6 +135,7 @@ class MM():
         ------------------------------ \\
         '''
     
+        #   XX AJ self.float_distance_max is not working atm, there is a zero in the mdp file. I will for now not use 0 as input, but I will fix that later
         if self.dict_input_userparameters['rcoulomb'] == 0:
             self.dict_input_userparameters['rcoulomb'] = self.float_distance_max
         if self.dict_input_userparameters['rvdw'] == 0:
