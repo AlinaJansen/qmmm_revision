@@ -2,7 +2,7 @@
 includeprio=0
 
 # PARAMETERS
-jobtype=test
+jobtype=sp
 jobname=test
 
 gmxtop_path=
